@@ -1,0 +1,194 @@
+# Chapter 5: Language models and AI engineering
+
+**Weeks 23-32 &nbsp;·&nbsp; about 98 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
+
+---
+
+This is the longest stage, and for someone aiming at AI Engineer it is the centre of this book.
+
+## What you will be able to do
+
+Ship a language-model application with an evaluation suite you built **before** you started
+optimising, an error taxonomy taken from real traces, and a cost per thousand requests you measured.
+
+## The one idea to take from this chapter
+
+Almost every practitioner who writes about this arrives at the same conclusion: **the main reason AI
+products fail is the absence of an evaluation system**. It is also, encouragingly, the thing hiring
+managers name as the clearest signal that someone has really built with these models rather than
+watched videos.
+
+An application with a good interface and no labelled examples is hard to improve, because there is
+no way to tell whether a change helped. The same application with a hundred hand-labelled traces, a
+documented set of failure modes, and a judge you have checked against your own labels is a different
+proposition entirely. Few people do this, which is exactly why it is worth doing.
+
+## What to learn
+
+**The model as a dependency.** Treat it like a database: a stochastic function with a latency budget,
+a token bill and a schema contract. Learn tool use first, since agents, retrieval and structured
+output are all built on it. Learn structured output properly, and remember that constrained decoding
+guarantees the **shape** of the answer, not its truth.
+
+Learn the economics, because they come up in interviews and in budget conversations. Caching a
+static prompt prefix can reduce input cost by around ninety per cent, but there is a minimum
+cacheable prefix length, so a short system prompt may never cache at all. Batch endpoints are
+substantially cheaper for work that can wait. Routing easy requests to a smaller model behind a
+confidence check often does more than any of it. These figures are provider-specific and they move,
+so check the current pricing pages rather than trusting a number in any document, including this one.
+
+**Context engineering.** The context window is a budget you allocate, not a bucket you fill. Order it
+so the stable parts (system prompt, tool definitions, examples) come first and can be cached, and the
+dynamic parts (retrieved documents, history) come after. The harder problems are all about time:
+compacting history as it grows, deciding what persists across sessions, compressing errors before
+they enter the context, and noticing that a long context window does not mean the model attends
+usefully to all of it.
+
+This is the shift the field made over the last two years, from wordsmithing one prompt to curating
+the whole token budget. It is also why "prompt engineer" is not really a job title any more.
+
+**Retrieval that survives contact.** Chunk, embed, take the top few, put them in the prompt: that is
+a prototype rather than an architecture. The current bar adds hybrid retrieval (dense embeddings for
+meaning, keyword search for exact tokens like product codes), reranking, chunking that respects
+document structure, metadata filters, citations back to source spans, an explicit path for "I do not
+have that information", and routing by query complexity.
+
+The most important habit: **measure retrieval separately from generation**. If you only measure
+end-to-end, you cannot tell whether to fix the retriever or the prompt, and you can lose a week
+rewording a prompt when the document was never fetched.
+
+**Evaluation, which is most of the work.** The order matters more than the tooling, and most people
+get it backwards.
+
+1. Ship a deliberately rough first version, so you have real traces
+2. Collect a hundred or more of them
+3. **Read them yourself**, by hand
+4. Write a free-text note on each failure
+5. Cluster those notes into a handful of failure modes
+6. **Now** write pass/fail assertions, one per failure mode
+7. Add a model-based judge only for what assertions cannot reach
+8. Check the judge against your own labels, and report agreement properly
+9. Wire it into CI
+10. Fix the most common failure first, then measure again
+
+Steps three to five are the stage. Prefer binary pass/fail criteria to a one-to-five scale, since
+nobody applies a five-point scale consistently and the disagreement swamps the signal. If something
+genuinely needs gradation, split it into several binary checks.
+
+Build your own small trace viewer rather than adopting a general platform. A hundred lines that show
+input, retrieved chunks, prompt, output and two label buttons will get you through a hundred traces
+in an hour. A tool that takes six clicks per trace means you will look at twelve and stop.
+
+**Agents and workflows.** Most things called agents would be better as workflows, and the judgement
+about when not to use one is itself worth demonstrating.
+
+| Pattern | Use when |
+|---|---|
+| One call with tools | Most tasks, genuinely |
+| Prompt chaining | The task decomposes and each step can be evaluated separately |
+| Routing | There are distinct input categories |
+| Parallel calls, then aggregate | Subtasks are independent, or you want a vote |
+| Orchestrator and workers | Subtasks are not known until runtime |
+| Generate, critique, revise | There are clear quality criteria |
+| A true agent | You cannot hardcode the path, but you can verify progress |
+
+Write the loop yourself before reaching for a framework. It is about sixty lines, or two hundred with
+error compaction, context management, a turn limit and a human-approval step for anything
+destructive. Once you have written it you can debug any framework; if you start with a framework you
+may struggle to debug your own application.
+
+**MCP** is one of the few current "hot skills" that looks safe to invest in, because it has reached a
+versioned specification with a formal deprecation policy. Learn it from the specification and the
+changelog rather than from tutorials: the 2026-07-28 release moved to a stateless core, and most
+2025 tutorials teach the session model it removed.
+
+**Fine-tuning, considered fourth.** The order that works is a good prompt, then examples, then
+retrieval, and only then fine-tuning. It is the right tool for style and format consistency, for
+moving work to a smaller and cheaper model, and for narrow domain tasks. It is the wrong tool for
+adding facts, which belong in retrieval where they can be updated and cited. Roughly half the time
+the honest conclusion is that it was not worth it, and publishing that comparison shows more
+judgement than a successful fine-tune does.
+
+## Resources
+
+All 39 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+
+The ones to begin with:
+
+- [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy. A free repository, 3-5 hours.
+- [a smol course (post-training)](https://huggingface.co/learn/smol-course/en/unit0/1) — Ben Burtenshaw. A free course, 25-35 hours.
+- [Anthropic Courses (API fundamentals, real-world prompting, prompt evaluations, tool use)](https://github.com/anthropics/courses) — Anthropic education team. A free course, 12-18 hours.
+- [Anthropic Engineering blog](https://www.anthropic.com/engineering) — Anthropic engineering and applied AI teams. A free article, 1-2 hours.
+
+## What to build
+
+**An evaluation-first application.** Pick a narrow task you personally care about and can judge:
+extracting fields from your own documents, triaging your own issue tracker, drafting first-pass
+replies. Then follow the ten steps above in order.
+
+The output is a repository where the evaluation suite predates the optimisation, plus a chart of the
+pass rate across versions. This is, in my view, the single most useful thing you can build in this
+whole book.
+
+Then re-scope it into a small product with a public URL, following the two-week plan below.
+
+## Before you move on
+
+- You can explain why error analysis comes before evaluation tooling.
+- You can explain how you checked your judge, and which two numbers you report.
+- You can show a CI run that failed because a prompt change made things worse.
+- You can state your cost per thousand requests and three ways to reduce it.
+
+## A few things worth knowing
+
+- **`nanoGPT` is marked "very old and deprecated" by its own author**, whose README points readers to
+  [nanochat](https://github.com/karpathy/nanochat) instead. It is still recommended by many current roadmaps, which makes it a quick way to
+  tell whether a list has been re-checked.
+- **Frameworks after the raw loop, not before.** Provider APIs have converged enough that the
+  abstraction hides less than it used to, and teams have reported real reductions in code and
+  maintenance after moving back to raw SDKs. Both sides of this argument agree on the learning order.
+- **Free deployment tiers have changed.** Creating Gradio or Docker Spaces on Hugging Face now
+  requires a paid plan for personal accounts, and some other free allowances have gone. Check the
+  current pricing page before planning a weekend around a tutorial.
+- **Model names age quickly.** Everything specific in this chapter will be superseded. Tokenisation,
+  attention, cache economics, retrieval, evaluation and context management will not, so that is where
+  the study time is best spent.
+
+---
+
+## Your first AI product: a two-week plan
+
+One user, one job, one screen, one metric. If you cannot phrase it as "this person does X in
+Z seconds instead of W minutes", it is not scoped yet.
+
+**Write the non-goals down on day one.** No authentication, no payments, no autonomous agent, no
+fine-tuning, no custom vector store, no mobile app. Each is a week you are choosing not to spend, and
+having the list written down is what stops you spending it anyway late on day nine.
+
+| Day | What you do | What exists at the end |
+|---|---|---|
+| 1 | Name the person and the task. Write the README first: problem, user, success metric, non-goals | A scoped problem |
+| 2 | **Hand-write 30-50 real input and expected-output pairs** | Your evaluation set, and your specification |
+| 3 | The roughest possible end-to-end path: hardcoded input, one call, printed output | You have hit every part of the pipeline once |
+| 4 | Evaluation harness, version one: assertion checks over the gold set | **A single pass-rate number.** Everything after this is measured |
+| 5 | Data layer: ingest, chunk, embed, index | Retrieval works |
+| 6 | Retrieval evaluation: recall at k, two chunking strategies compared | The numbers that make your best interview story |
+| 7 | Generation: structured output, citations to source spans, a path for "I do not know" | Grounded answers |
+| - | **Weekend check: a pass-rate number exists, or reduce scope now** | An honest decision point |
+| 8 | A thin interface. Do not build authentication | Something usable |
+| 9 | Logging of every request, and the crudest possible trace viewer | You can see what is happening |
+| 10 | **Read 100 traces. Cluster the failures. Add them to the gold set** | An error taxonomy |
+| 11 | Fix only the most common failure, then re-measure | The pass rate moves, or you fixed the wrong thing |
+| 12 | Deploy and harden: container, secrets, rate limit, per-user cost cap, graceful degradation | **A public URL** |
+| 13 | A judge for the subjective part, checked against your labels. Evaluations in CI | Regressions fail the build |
+| 14 | Ship the story: short demo, before-and-after metric, decisions, known failures, cost table | Something you can show people |
+
+Day 10 is the one people skip, and it is the day that makes the difference. It also feels the least
+like progress, which is presumably why.
+
+It is a product rather than a demo when there is a public URL, a number that moved, evaluations in
+CI, an honest list of known failures, a cost table, and at least one user who is not you.
+
+---
+
+[Previous: Deep learning](../04-deep-learning/README.md) &nbsp;·&nbsp; [Next: Running it in production](../06-production/README.md)
