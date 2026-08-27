@@ -2,6 +2,8 @@
 
 **Week 0 &nbsp;·&nbsp; about 8 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** Before you learn anything, you make two decisions and one setup: which role you are aiming at, how many hours a week you can honestly give, and a working Python environment with free compute. Eight hours here saves months later, because most people who quit do so over a vague goal or a broken setup, not over hard material.
+
 ---
 
 ## What you will be able to do
@@ -30,8 +32,8 @@ If you genuinely cannot decide, **AI Engineer** is a reasonable default. It has 
 for someone who already ships software, and the shared part of this book takes you most of the
 way towards the other two.
 
-**Know what the interviews assess.** Eugene Yan, a Principal Applied Scientist at Amazon who led ML teams earlier in his career and is
-now at Anthropic, has published [his own hiring rubric](https://eugeneyan.com/writing/how-to-interview/). He assesses software engineering
+**Know what the interviews assess.** Eugene Yan — who led ML teams earlier in his career, spent years as a Principal Applied Scientist
+at Amazon, and is now at Anthropic — has published [his own hiring rubric](https://eugeneyan.com/writing/how-to-interview/). He assesses software engineering
 fundamentals, **data literacy**, comfort with uncertainty, **evaluation frameworks**, and breadth of
 knowledge. The two in bold are the ones almost no course teaches and almost no portfolio
 demonstrates, so the projects in this book are built to produce evidence of them.

@@ -2,6 +2,8 @@
 
 **Weeks 14-22 &nbsp;·&nbsp; about 90 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** You build a tiny neural network engine from an empty file, learn PyTorch properly, practise diagnosing training that quietly fails, and build attention with your own hands. You finish with a model you trained yourself and can explain — which is what separates you from someone who only calls APIs.
+
 ---
 
 ## What you will be able to do
@@ -73,10 +75,10 @@ disproportionate share of confusing model behaviour: arithmetic mistakes, letter
 sensitivity and the higher cost of non-English text. Both Karpathy and Stanford's CS336 open with it,
 which is not a coincidence.
 
-Read *Attention Is All You Need* **after** this, not before. It is a 2017 machine-translation paper
+Read [*Attention Is All You Need*](https://arxiv.org/abs/1706.03762) **after** this, not before. It is a 2017 machine-translation paper
 describing an encoder-decoder model, and a current language model shares perhaps half its design.
 Read cold as a first resource it tends to discourage people; read after you have built the thing it
-is genuinely enjoyable.
+is genuinely enjoyable. Its annotated entry is in [Chapter 5's resources](../05-language-models/resources/README.md).
 
 ## Resources
 
@@ -87,11 +89,12 @@ The ones to begin with:
 - [CS231n course notes (Neural Networks + Convolutional Neural Networks modules)](https://cs231n.github.io/) — Andrej Karpathy, Justin Johnson & Fei-Fei Li. Free documentation, 15-20 hours.
 - [Dive into Deep Learning (d2l.ai)](https://d2l.ai/) — Aston Zhang, Zachary C. Lipton, Mu Li & Alexander J. Smola. A free interactive book, 60-100 hours.
 - [fastbook — Deep Learning for Coders with fastai & PyTorch (free Jupyter notebooks)](https://github.com/fastai/fastbook) — Jeremy Howard & Sylvain Gugger. A free book, 20 hours.
-- [Kaggle Notebooks — free GPU/TPU quota](https://www.kaggle.com/docs/efficient-gpu-usage) — Kaggle. A free tool, 30 hours.
+- [Kaggle Notebooks — free GPU/TPU quota](https://www.kaggle.com/docs/notebooks) — Kaggle. A free tool, 30 hours.
 
 ## What to build
 
-**A model you trained yourself,** with an honest ablation. Pick one:
+**A model you trained yourself,** with an honest ablation — the model retrained with one component
+removed or swapped at a time, to measure what each one contributed. Pick one:
 
 - A classifier on 200-plus photos **you took**, in raw PyTorch, deployed as a small demo
 - A character-level language model on a corpus that means something to you, with the modern

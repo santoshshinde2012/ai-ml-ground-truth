@@ -2,9 +2,10 @@
 
 **A working developer's path into AI and machine learning.**
 
-Eight chapters, one ordered path: from shipping software to shipping AI systems, in about
-450 hours of guided work. Each chapter has its own folder, with its full resource list in a
-`resources` folder alongside it.
+**The short version.** Eight chapters, one ordered path: from shipping software to shipping AI
+systems in about 450 hours. You build something real in every chapter, and one product grows across
+the whole book. Each chapter has its own folder, with its full resource list in a `resources`
+folder alongside it.
 
 ---
 

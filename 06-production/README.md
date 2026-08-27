@@ -2,6 +2,12 @@
 
 **Weeks 33-37 &nbsp;·&nbsp; about 55 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** Your Chapter 5 product becomes a system: containerised, tested on every push, deployed, watched, and cheap enough to defend in a budget conversation. Little here is glamorous, and its absence is what separates a demo from something a team would trust.
+
+**From this week, [Chapter 8: Finding the work](../08-finding-the-work/README.md) runs alongside
+this chapter and the next. Open it now — the search it describes has a longer lead time than
+anything left to build.**
+
 ---
 
 ## What you will be able to do

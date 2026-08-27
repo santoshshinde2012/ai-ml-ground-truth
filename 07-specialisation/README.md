@@ -2,6 +2,8 @@
 
 **Weeks 38-43 &nbsp;·&nbsp; about 70 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** The shared path ends here. You pick one of three roles — AI Engineer, ML Engineer, or Data Scientist — spend about forty hours going deeper, and thirty building a capstone matched to that role's interviews. One branch done well beats three sampled.
+
 ---
 
 Plan roughly 40 hours of depth and 30 on the capstone — and budget the capstone first. It is the
@@ -10,14 +12,28 @@ round.
 
 Do one branch. The shared path you have finished is what makes the other two accessible later.
 
+[Chapter 8: Finding the work](../08-finding-the-work/README.md) should already be running alongside
+this chapter. If it is not open yet, open it today.
+
 ## Branch A — AI Engineer
 
-**Go deeper on:** agent harnesses (sub-agents, memory, verification loops, durable execution,
-human-in-the-loop gates); evaluation as a speciality (trajectory evaluation, tool-call correctness,
-multi-turn evaluation, keeping a judge calibrated over time); reliability and safety (guardrails,
-prompt injection and why it is unsolved, least privilege for tools, rate limits and per-user cost
-caps); and the product layer (designing for a component that is sometimes wrong, capturing feedback
-that feeds your evaluation set).
+**Go deeper on four things.**
+
+- **Agent harnesses.** Sub-agents, memory, verification loops, durable execution, and
+  human-in-the-loop gates.
+- **Evaluation as a speciality.** Judging the whole trajectory, not just the final answer;
+  tool-call correctness; multi-turn evaluation; keeping a judge calibrated over time.
+- **Reliability and safety.** Guardrails; prompt injection — hostile instructions hidden in
+  content the model reads — and why it is unsolved; least privilege for tools; rate limits and
+  per-user cost caps.
+- **The product layer.** Designing for a component that is sometimes wrong, and capturing user
+  feedback that feeds your evaluation set.
+
+The depth material is a deliberate return to the strongest of the [Chapter 5](../05-language-models/resources/README.md)
+and [Chapter 6](../06-production/resources/README.md) resources, read fully this time: the Anthropic
+engineering blog's agent sequence end to end, [12-Factor Agents](https://github.com/humanlayer/12-factor-agents),
+and Husain and Shankar's evals course applied to your own traces. There is no CS336 equivalent for
+this branch yet; its depth lives in the engineering literature and in systems you instrument yourself.
 
 **Capstone, pick one:** a rigorous public evaluation of something the field has not measured well; an
 agentic system with trajectory evaluation and real users; or an open-source tool other people come to
@@ -30,12 +46,17 @@ you already have.
 
 ## Branch B — ML Engineer
 
-**Go deeper on:** the data layer (orchestration, warehouse modelling, data quality tests,
-point-in-time correctness at scale); training at scale (data and model parallelism, mixed precision,
-gradient accumulation and checkpointing, profiling, scaling laws); serving and inference optimisation
-(quantisation, distillation, compilation, batching strategies, KV-cache management); and
-post-training (supervised fine-tuning, preference optimisation, reinforcement learning from
-verifiable rewards).
+**Go deeper on four things.**
+
+- **The data layer.** Orchestration, warehouse modelling, data quality tests, and point-in-time
+  correctness at scale.
+- **Training at scale.** Data and model parallelism, mixed precision, gradient accumulation and
+  checkpointing, profiling, and scaling laws.
+- **Serving and inference optimisation.** Quantisation — storing weights in lower precision to
+  shrink and speed up a model — plus distillation, compilation, batching strategies, and managing
+  the KV cache.
+- **Post-training.** Supervised fine-tuning, preference optimisation, and reinforcement learning
+  from verifiable rewards.
 
 [Stanford's CS336](https://cs336.stanford.edu/) is the rigorous free path here, and it is a graduate systems course rather than an
 introduction. For six weeks, watch four lectures and do **Assignment 1 only**, timeboxed at forty to
@@ -52,12 +73,15 @@ would justify escalating is usually the strongest move available.
 
 ## Branch C — Data Scientist
 
-**Go deeper on:** experimentation (randomisation units, power calculations before you run, the
-peeking problem, multiple comparisons, novelty effects, interference in marketplaces, variance
-reduction, guardrail metrics); causal inference (potential outcomes, confounders and colliders,
-difference-in-differences, instrumental variables, regression discontinuity, matching, sensitivity
-analysis); the classical statistics deliberately deferred earlier; and communication, which is the
-highest-leverage and least-taught part.
+**Go deeper on four things.**
+
+- **Experimentation.** Randomisation units, power calculations before you run, the peeking
+  problem, multiple comparisons, novelty effects, interference in marketplaces, variance
+  reduction, and guardrail metrics.
+- **Causal inference.** Potential outcomes, confounders and colliders, difference-in-differences,
+  instrumental variables, regression discontinuity, matching, and sensitivity analysis.
+- **The classical statistics** deliberately deferred earlier in the book.
+- **Communication** — the highest-leverage and least-taught part of the role.
 
 One honest caveat: **experimentation and causal inference are the one area where the core references
 sit outside the set of material this book leans on most heavily**, so vet whatever you pick here

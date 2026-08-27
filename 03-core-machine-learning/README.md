@@ -2,6 +2,8 @@
 
 **Weeks 6-13 &nbsp;·&nbsp; about 80 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** This chapter teaches you to train a model honestly: split the data so the score means something, pick a metric that maps to a real cost, beat a simple baseline, and explain the result. The same discipline carries straight into evaluating language models later. You finish with a model served behind an API.
+
 ---
 
 ## Is this still worth eight weeks in 2026?
@@ -110,7 +112,7 @@ concrete to attach it to, tends to go better.
 
 ## Resources
 
-All 34 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 33 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 

@@ -137,7 +137,7 @@ The most recent publicly-released CS231n video set. Use this rather than the wid
 
 Where to get the current syllabus, slides (PDFs are public, e.g. the 2026 lecture decks) and the three programming assignments. Worth doing assignment 1–2 by hand after Karpathy: implementing a fully-connected net and a CNN in raw NumPy is the single best test of whether you actually understood backprop. Flag honestly: because current-year videos are not public, do not expect a self-contained video course here — pair the 2026 materials with the publicly posted prior-year playlist.
 
-> **Worth knowing.** Slides and notes are public, but the lecture videos link into Canvas and are Stanford-only. The freely watchable CS231n videos on YouTube are still the 2017 recordings.
+> **Worth knowing.** Slides and notes are public, but the current-year lecture videos link into Canvas and are Stanford-only. The most recent freely watchable set is the 2025 YouTube playlist listed above.
 
 ### [The Little Book of Deep Learning](https://fleuret.org/public/lbdl.pdf)
 
@@ -151,7 +151,7 @@ A ~160-page phone-readable PDF (500,000+ downloads in its first year) that does 
 
 *Justin Johnson* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
 
-Johnson re-taught CS231n at Michigan with the full lecture set publicly posted on YouTube (playlist: youtube.com/playlist?list=PL5-TkQAfAZFbzxjBHtzdVCWE0Zbhomg7r), including the excellent 'Backpropagation', 'Training Neural Networks I/II', and 'Convolutional Networks' lectures. This is effectively the public-video CS231n that Stanford no longer releases. Best single video source for CNNs and training dynamics if you prefer a lecturer to a book.
+Johnson re-taught CS231n at Michigan with the full lecture set publicly posted on YouTube (playlist: youtube.com/playlist?list=PL5-TkQAfAZFbzxjBHtzdVCWE0Zbhomg7r), including the excellent 'Backpropagation', 'Training Neural Networks I/II', and 'Convolutional Networks' lectures. This is effectively a complete public-video CS231n, at greater depth than the single 2025 Stanford playlist. Best single video source for CNNs and training dynamics if you prefer a lecturer to a book.
 
 > **Worth knowing.** The host has a broken TLS certificate chain, so some browsers warn on the URL, and the Fall 2020 material is six years stale. The YouTube lecture playlist is the more reliable route in.
 

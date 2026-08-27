@@ -11,11 +11,15 @@ Prices and free tiers change often, so check a resource's own page before you pl
 
 The resources on the main path for this chapter. If you only do a few things, do these.
 
+One item the chapter assigns is annotated elsewhere: 3Blue1Brown's [*Essence of Linear Algebra*](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
+has its full entry in [Chapter 3's resources](../../03-core-machine-learning/resources/README.md),
+but the chapter asks you to start watching it now.
+
 ### [CS50's Introduction to Programming with Python (CS50P)](https://cs50.harvard.edu/python/)
 
 *David J. Malan* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 90-120 hours
 
-The single best rigor-per-hour intro to Python that exists, and the only free beginner course that makes you write unit tests (pytest), handle exceptions properly, and use regex and OOP. Its problem sets are auto-graded with real edge cases, which forces you to practise debugging in a way gentler courses do not. Choose this over Python for Everybody if you have the discipline for a course that will actually fail your submissions. Weeks 0-8 are the mandatory part; the final project is optional for an ML path. Do this first, before touching NumPy or pandas.
+The single best rigor-per-hour intro to Python that exists, and the only free beginner course that makes you write unit tests (pytest), handle exceptions properly, and use regex and OOP. Its problem sets are auto-graded with real edge cases, which forces you to practise debugging in a way gentler courses do not. Choose this over Python for Everybody if you have the discipline for a course that will actually fail your submissions. Weeks 0-8 are the mandatory part; the final project is optional for an ML path. If Python is not yet one of your languages, do this first, before touching NumPy or pandas — and budget its hours on top of the chapter's 50. If Python is already yours, skip it entirely.
 
 ### [DuckDB documentation](https://duckdb.org/docs/current/)
 

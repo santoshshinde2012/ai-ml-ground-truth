@@ -2,6 +2,8 @@
 
 **Week 33 onward &nbsp;·&nbsp; runs alongside chapters 6 and 7.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** The search is a process you run, not a verdict on you: present three deep projects well, practise the interview stories out loud, track your numbers, and use the doors that are actually open. This chapter runs alongside the last two, because it takes months and starting early teaches you what the market wants.
+
 ---
 
 ## Presenting your work

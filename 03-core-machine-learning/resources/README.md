@@ -15,7 +15,7 @@ The resources on the main path for this chapter. If you only do a few things, do
 
 *Gareth James, Daniela Witten, Trevor Hastie & Robert Tibshirani, with Jonathan Taylor on the Python edition* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 60-90 hours
 
-The single highest-value free text in the whole domain, and the one that makes you *statistically* literate rather than just API-literate. It is where the bias-variance decomposition, resampling/cross-validation, the bootstrap, regularisation (ridge/lasso), and tree ensembles are explained by the people who invented several of them. Take the Python edition (ISLP, 2023, adds the `ISLP` pip package) unless you have a reason to want R. Do NOT confuse it with *The Elements of Statistical Learning* (ESL) by Hastie/Tibshirani/Friedman — same authors, but ESL is the graduate-level maths version and is a classic beginner trap. Read ISL after or alongside Ng, through the middle weeks of this chapter.
+The single highest-value free text in the whole domain, and the one that makes you *statistically* literate rather than just API-literate. It is where the bias-variance decomposition, resampling/cross-validation, the bootstrap, regularisation (ridge/lasso), and tree ensembles are explained by the people who invented several of them. Take the Python edition (ISLP, 2023, adds the `ISLP` pip package) unless you have a reason to want R. Do NOT confuse it with *The Elements of Statistical Learning* (ESL) by Hastie/Tibshirani/Friedman — same authors, but ESL is the graduate-level maths version and is a classic beginner trap. Start ISL in your first week and read it through the middle weeks of this chapter — alongside Ng's courses, if you take that track.
 
 ### [Approaching (Almost) Any Machine Learning Problem](https://github.com/abhishekkrthakur/approachingalmost)
 
@@ -49,7 +49,7 @@ The free canonical reference for the half of tabular ML that decides whether you
 
 *Andrew Ng with Eddy Shyu, Aarti Bagul & Geoff Ladwig* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 60-90 hours
 
-This is the 2022 ground-up rebuild of the 2012 course — Python/NumPy/scikit-learn instead of Octave, which was the single loudest complaint about the original. It beats every other on-ramp on one axis that matters enormously for a beginner: Ng builds *intuition* for cost functions, gradient descent, regularisation, bias/variance and the diagnostic loop ('should I get more data or more features?') better than anyone else teaching. Start here in your first week of this chapter and do all three courses.
+This is the 2022 ground-up rebuild of the 2012 course — Python/NumPy/scikit-learn instead of Octave, which was the single loudest complaint about the original. It beats every other on-ramp on one axis that matters enormously for a beginner: Ng builds *intuition* for cost functions, gradient descent, regularisation, bias/variance and the diagnostic loop ('should I get more data or more features?') better than anyone else teaching. If you want a guided course track rather than the book-first route the chapter recommends, start here in your first week and do all three courses.
 
 > **Worth knowing.** Teaches TensorFlow/Keras while the rest of the deep-learning path is PyTorch, the dominant research and industry framework — a real friction cost. Paid, with limited audit access.
 

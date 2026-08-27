@@ -2,6 +2,8 @@
 
 **Weeks 1-5 &nbsp;·&nbsp; about 50 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** You already program; this chapter teaches the data dialect — arrays and shapes, dataframes and cleaning judgement, and enough SQL to be trusted with real data. You finish by publishing a small, reproducible analysis of a dataset you found yourself, which becomes the seed of everything you build later.
+
 ---
 
 ## What you will be able to do
@@ -16,7 +18,8 @@ and the second dialect takes a little while. What you need is small but you need
 and `dtype`, indexing and slicing, views against copies, `reshape` and `transpose`, axis semantics,
 vectorising a loop into an array expression, and above all **broadcasting**.
 
-Broadcasting deserves the extra time. A large share of the debugging you will do over the next six
+Broadcasting deserves the extra time. It is the set of rules by which NumPy stretches a smaller
+array to match a larger one's shape. A large share of the debugging you will do over the next six
 months is shape errors, silent broadcasts and transposes in the wrong place.
 
 Alongside this, watch 3Blue1Brown's [*Essence of Linear Algebra*](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab). Three hours of video, and it gives
@@ -63,7 +66,7 @@ All 26 resources for this chapter, with notes on each, are in **[resources/](res
 
 The ones to begin with:
 
-- [CS50's Introduction to Programming with Python (CS50P)](https://cs50.harvard.edu/python/) — David J. Malan. A free course, 90-120 hours.
+- [CS50's Introduction to Programming with Python (CS50P)](https://cs50.harvard.edu/python/) — David J. Malan. A free course, 90-120 hours. Only if Python is not yet one of your languages: its hours sit on top of this chapter's 50, not inside them. If you already write Python, start with NumPy and pandas instead. Only if Python is not yet one of your languages: its hours sit on top of this chapter's 50, not inside them. If you already write Python, start with NumPy and pandas instead.
 - [DuckDB documentation](https://duckdb.org/docs/current/) — Hannes Mühleisen & Mark Raasveldt; DuckDB Foundation. Free documentation, 4-8 hours.
 - [Learn Git Branching](https://learngitbranching.js.org/) — Peter Cottle. A free interactive tutorial, 3-5 hours.
 - [Mode / ThoughtSpot SQL Tutorial (Basic, Intermediate, Advanced)](https://www.thoughtspot.com/sql-tutorial) — ThoughtSpot. A free interactive tutorial, 10-15 hours.
@@ -81,7 +84,9 @@ The ones to begin with:
 - Five charts, each captioned with what it shows and what it does not
 
 Choose a dataset that **you found yourself**: a city open-data portal, a government export, a niche
-marketplace, or your own exported data from a service you use. Your own data works especially well.
+marketplace, or your own exported data from a service you use. Prefer one with an outcome you could
+later predict — a delay, a price, a category — because [Chapter 3](../03-core-machine-learning/README.md)
+will ask you to model it. Your own data works especially well.
 You will hit real date parsing, timezone problems and ragged JSON, and you will care enough to
 finish.
 
@@ -101,7 +106,7 @@ finish.
   is the better choice.
 - **Polars can wait.** It is a good library, but scikit-learn, Hugging Face datasets, seaborn and
   effectively every tutorial speak pandas. Learning Polars first means constant conversion and an
-  inability to follow along. You will use it once in this chapter, as a contrast.
+  inability to follow along. If you want a taste, rewrite one cleaning function in it once the pandas version works — optional, and strictly second.
 - **Titanic, Iris and MNIST** are fine for a ninety-minute warm-up. As portfolio pieces they are so
   common that they tell a reviewer very little about you, which is a shame given the effort. A
   dataset you sourced yourself does much more work on your behalf.

@@ -2,6 +2,8 @@
 
 **Weeks 23-32 &nbsp;·&nbsp; about 98 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
+**The short version.** This is the centre of the book. You learn to treat a language model as a dependency: control what goes into its context, retrieve the right facts, and — above all — measure whether it works before trying to make it better. You finish by shipping a small, real product in two weeks, with an evaluation suite and a user who is not you.
+
 ---
 
 This is the longest stage, and for someone aiming at AI Engineer it is the centre of this book.
@@ -21,14 +23,16 @@ watched videos.
 An application with a good interface and no labelled examples is hard to improve, because there is
 no way to tell whether a change helped. The same application with a hundred hand-labelled traces, a
 documented set of failure modes, and a judge you have checked against your own labels is a different
-proposition entirely. Few people do this, which is exactly why it is worth doing.
+proposition entirely. A trace is the saved record of one request — input, intermediate steps,
+output. A judge is a model prompted to grade another model's answers against criteria you wrote.
+Few people do this, which is exactly why it is worth doing.
 
 ## What to learn
 
 **The model as a dependency.** Treat it like a database: a stochastic function with a latency budget,
 a token bill and a schema contract. Learn tool use first, since agents, retrieval and structured
-output are all built on it. Learn structured output properly, and remember that constrained decoding
-guarantees the **shape** of the answer, not its truth.
+output are all built on it. Learn structured output properly, and remember that constrained decoding — forcing each generated
+token to fit your schema — guarantees the **shape** of the answer, not its truth.
 
 Learn the economics, because they come up in interviews and in budget conversations. Caching a
 static prompt prefix can reduce input cost by around ninety per cent, but there is a minimum
@@ -97,7 +101,8 @@ error compaction, context management, a turn limit and a human-approval step for
 destructive. Once you have written it you can debug any framework; if you start with a framework you
 may struggle to debug your own application.
 
-**MCP** is one of the few current "hot skills" that looks safe to invest in, because it has reached a
+**MCP**, the Model Context Protocol, is an open standard for connecting a model to tools and data. It
+is one of the few current "hot skills" that looks safe to invest in, because it has reached a
 versioned specification with a formal deprecation policy. Learn it from the specification and the
 changelog rather than from tutorials: the 2026-07-28 release moved to a stateless core, and most
 2025 tutorials teach the session model it removed.
@@ -185,6 +190,12 @@ having the list written down is what stops you spending it anyway late on day ni
 
 Day 10 is the one people skip, and it is the day that makes the difference. It also feels the least
 like progress, which is presumably why.
+
+Days 12 and 13 ask for skills this book has not taught yet — containers, secrets, CI. That is
+deliberate: [Chapter 6](../06-production/README.md) teaches them properly, and takes this exact
+application as its starting point. For now the crudest deploy that produces a public URL is enough.
+The old free Hugging Face route is now paid, but the compute table in
+[Chapter 1](../01-getting-oriented/README.md) still holds: Modal's free credits cover a deployed demo.
 
 It is a product rather than a demo when there is a public URL, a number that moved, evaluations in
 CI, an honest list of known failures, a cost table, and at least one user who is not you.
