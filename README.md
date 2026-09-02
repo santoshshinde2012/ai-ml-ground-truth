@@ -3,9 +3,9 @@
 **A working developer's path into AI and machine learning.**
 
 **The short version.** Eight chapters, one ordered path: from shipping software to shipping AI
-systems in about 450 hours. You build something real in every chapter, and one product grows across
-the whole book. Each chapter has its own folder, with its full resource list in a `resources`
-folder alongside it.
+systems in about 450 hours. You build something real in every chapter on **one thread** — one dataset
+becomes one model becomes one AI product. Each chapter has a week-by-week plan and a `resources`
+folder for deeper reading.
 
 ---
 
@@ -48,6 +48,9 @@ way this book will teach you to treat every claim: check it, correct it, and kee
 
 - [Who this book is for](#who)
 - [How to read this book](#how-to-use)
+- [Start here: your first week](#first-week)
+- [One thread through the whole book](#one-thread)
+- [Terms in plain English](#glossary)
 - [The path at a glance](#path)
 - [How much time it takes](#time)
 - [How each chapter works](#chapters-work)
@@ -108,6 +111,107 @@ learned all this.
 **Give yourself room.** The plan below assumes ten to twelve hours a week, not twenty. A slower plan
 you finish is worth more than a faster one you abandon, and there is no prize for rushing.
 
+**Find one place to ask questions.** You will get stuck, and a stuck hour with no one to ask is
+how most self-study ends. Pick one community early and use it: the [fast.ai forums](https://forums.fast.ai/),
+the [DataTalks.Club Slack](https://datatalks.club/slack.html), or the [Hugging Face forums](https://discuss.huggingface.co/)
+are all free, active and kind to beginners. Ask with what you tried and what you saw; that habit is
+itself a skill people hire for.
+
+**When you feel lost, do this:** open the chapter you are on, find the week plan near the top, and
+do only that week's row. Do not browse the resource list for something better. The list is for
+lookup, not for choosing your next hour.
+
+---
+
+<a id="first-week"></a>
+
+## Start here: your first week
+
+If eight chapters and forty-three weeks feel like a lot, start smaller. **Week 0 is eight hours.**
+You do not need to understand machine learning yet. You need a target role, a public repo, a log
+file, and a notebook that runs. The day-by-day plan for that week is at the top of
+[Chapter 1](01-getting-oriented/README.md).
+
+**End of week 0:** you have a public repo, a log, a role, and Colab working. Open
+[Chapter 2](02-data-foundations/README.md) and follow **Week 1** of its plan.
+
+---
+
+<a id="one-thread"></a>
+
+## One thread through the whole book
+
+You are not collecting random projects. **One dataset becomes one model becomes one AI product.**
+That is the end-to-end path interviewers can follow in five minutes.
+
+```mermaid
+flowchart LR
+    D["Ch 2: Find and clean<br/>your own dataset"]
+    M["Ch 3: Train a model<br/>on that data · API"]
+    DL["Ch 4: Train something<br/>yourself · optional depth"]
+    LLM["Ch 5: LLM app on<br/>documents in the same domain"]
+    PROD["Ch 6: Deploy, monitor,<br/>cost table"]
+    JOB["Ch 8: README + stories<br/>while you build"]
+
+    D --> M --> LLM --> PROD
+    M -.-> DL
+    PROD --> SPEC["Ch 7: Capstone"]
+    LLM --> JOB
+    PROD --> JOB
+```
+
+| Chapter | What you add to the same thread | Concrete example |
+|---|---|---|
+| 2 | A dataset **you found**, cleaned, with a decision log | City parking tickets → "Which zones get the most disputes?" |
+| 3 | A tabular model + FastAPI on that dataset | Predict dispute outcome; expose `/predict` |
+| 4 | A model **you trained** (optional but strong) | Small classifier on your own photos, or a tiny LM |
+| 5 | An LLM feature on **documents in the same world** | Extract fields from ticket appeal PDFs; eval suite first |
+| 6 | That app in Docker, CI, monitoring, cost per 1k requests | Same app — now production-shaped |
+| 7 | Go deep on **one** role; capstone extends the thread | AI Eng: public eval of your extractor; DS: experiment memo |
+| 8 | Present three projects; job search runs from week 33 | README template + tracker from Chapter 8 |
+
+If you change datasets every chapter, you will finish tired and with nothing coherent to show.
+Pick a domain you care about in Chapter 2 and stay with it until Chapter 6 at minimum.
+
+---
+
+<a id="glossary"></a>
+
+## Terms in plain English
+
+Every term below is also explained in plain words where it first matters in a chapter. Come back
+here whenever a word feels fuzzy.
+
+| Term | Plain English |
+|---|---|
+| **Array / tensor** | A grid of numbers with a shape, such as 1,000 rows by 20 columns |
+| **Broadcasting** | The rules by which NumPy stretches a small array to match a bigger one. Handy, and a source of silent bugs |
+| **Dataframe** | A table in pandas: rows, and columns with names |
+| **Point-in-time** | A query or feature that uses only what was known before the event. It is how you stop the future leaking in |
+| **Model** | A program that learns patterns from data and makes predictions |
+| **Training** | Showing the model examples so it adjusts its internal numbers |
+| **Validation / test split** | Hold back some data the model never sees during training, so you know if it works on new cases |
+| **Leakage** | Accidentally letting the model peek at the answer during training — makes scores look great and fail in production |
+| **Metric** | The number you optimise — accuracy, precision, recall, etc. Pick one that matches real cost of being wrong |
+| **Feature** | One input column or signal the model uses |
+| **Pipeline** | sklearn wrapper that runs preprocessing and model together — prevents leakage |
+| **API** | HTTP endpoint others call: send JSON in, get JSON out |
+| **Embedding** | A list of numbers representing meaning of text — used for search |
+| **Retrieval (RAG)** | Fetch relevant documents, put them in the prompt, then ask the model |
+| **Prompt** | The instructions and data you send the model in one call |
+| **Context window** | How much text fits in one model call — a budget, not unlimited memory |
+| **Context engineering** | Choosing what goes into that window: system prompt, documents, history, tools |
+| **Trace** | Saved record of one request: input, steps, output |
+| **Evaluation (eval)** | Tests that check if the AI output is good — like unit tests for non-deterministic code |
+| **Gold set** | Hand-written input and expected-output pairs you trust. Your ground truth |
+| **Pass rate** | The share of gold-set examples your application gets right |
+| **Judge** | Another model (or rules) that grades answers against criteria you wrote |
+| **Fine-tuning** | Further training on your examples — for style/format, not for adding new facts |
+| **Agent** | Model loop that picks tools and steps on its own — use only when a fixed workflow cannot |
+| **Docker** | Package your app so it runs the same everywhere |
+| **CI** | Tests that run on every git push — including eval tests for prompts |
+| **Drift** | Inputs or outputs changing over time — often a broken data pipe, not a smarter world |
+
 ---
 
 <a id="path"></a>
@@ -120,7 +224,7 @@ flowchart TD
     S1["<b>Chapter 2 — Data foundations</b><br/>weeks 1-5 · 50 hours<br/>Arrays, dataframes, SQL"]
     S2["<b>Chapter 3 — Core machine learning</b><br/>weeks 6-13 · 80 hours<br/>Validation, metrics, tree models, the maths you need"]
     S3["<b>Chapter 4 — Deep learning</b><br/>weeks 14-22 · 90 hours<br/>Backpropagation, PyTorch, transformers"]
-    S4["<b>Chapter 5 — Language models</b><br/>weeks 23-32 · 98 hours<br/>Context, retrieval, evaluation, agents"]
+    S4["<b>Chapter 5 — Language models</b><br/>weeks 23-32 · 100 hours<br/>Context, retrieval, evaluation, agents"]
     S5["<b>Chapter 6 — Production</b><br/>weeks 33-37 · 55 hours<br/>Containers, CI, serving, monitoring, cost"]
     S6{"<b>Chapter 7 — Specialise</b><br/>weeks 38-43 · 70 hours"}
     A["AI Engineer"]
@@ -152,10 +256,10 @@ flowchart TD
 | 2 | **[Data foundations](02-data-foundations/README.md)** | Weeks 1-5 | 50 | Take a messy real dataset to a published, reproducible analysis | [list](02-data-foundations/resources/README.md) |
 | 3 | **[Core machine learning](03-core-machine-learning/README.md)** | Weeks 6-13 | 80 | Build a model with an honest validation scheme and a metric you can justify | [list](03-core-machine-learning/resources/README.md) |
 | 4 | **[Deep learning](04-deep-learning/README.md)** | Weeks 14-22 | 90 | Write backpropagation from scratch, train a network, and debug one that is not learning | [list](04-deep-learning/resources/README.md) |
-| 5 | **[Language models and AI engineering](05-language-models/README.md)** | Weeks 23-32 | 98 | Ship an LLM application with an evaluation suite you built before optimising it | [list](05-language-models/resources/README.md) |
+| 5 | **[Language models and AI engineering](05-language-models/README.md)** | Weeks 23-32 | 100 | Ship an LLM application with an evaluation suite you built before optimising it | [list](05-language-models/resources/README.md) |
 | 6 | **[Running it in production](06-production/README.md)** | Weeks 33-37 | 55 | Deploy, monitor, roll back, and state your cost per thousand requests | [list](06-production/resources/README.md) |
 | 7 | **[Choosing a specialisation](07-specialisation/README.md)** | Weeks 38-43 | 70 | Go deep on one role, with a capstone matched to its interviews | [list](07-specialisation/resources/README.md) |
-| 8 | **[Finding the work](08-finding-the-work/README.md)** | Week 33 on | - | Present your work well and run a sensible job search | [list](08-finding-the-work/resources/README.md) |
+| 8 | **[Finding the work](08-finding-the-work/README.md)** | Week 33 on | 3-4 a week | Present your work well and run a sensible job search | [list](08-finding-the-work/resources/README.md) |
 
 ---
 
@@ -183,7 +287,9 @@ gantt
 ```
 
 The x-axis is the week number. The job search deliberately overlaps the last two stages, because
-in practice it takes several months and starting early tells you a lot.
+in practice it takes several months and starting early tells you a lot. It adds three to four
+hours a week on top of the chapter hours, so weeks 33 to 43 are the fullest in the book. If that
+is too much, slow the chapters down rather than skipping the search.
 
 | Pace | Hours per week | Duration | Suits |
 |---|---|---|---|
@@ -235,10 +341,11 @@ flowchart LR
 The step people skip is **build it yourself**, and it is the one that does most of the work. If you
 can finish a chapter by watching, something has gone wrong with the chapter.
 
-Chapters 1 to 6 are laid out the same way: **what you will be able to do**, **what to learn**,
-**resources**, **what to build** and **before you move on**, usually closing with **a few things
-worth knowing**. The final two chapters are about choosing and searching rather than studying, and
-are structured around branches and habits instead.
+Chapters 1 to 6 share one layout: **week plan** (what to do each week), **what you will be able
+to do**, **what to learn**, **resources**, **what to build** and **before you move on**, usually
+closing with **a few things worth knowing**. Chapters 1 and 5 add day-by-day plans where the work
+needs finer scheduling, and Chapters 7 and 8 are organised around the three branches and the job
+search instead.
 
 ---
 
@@ -276,25 +383,27 @@ through line by line. Interviewers increasingly ask.
 
 ## Projects, in order of difficulty
 
-What each one proves, and separately what makes it stand out. Those are different questions.
+What each one proves, and separately what makes it stand out. Those are different questions. The
+**Where you build it** column maps each project to the chapter whose build exercise covers it, or
+notes when it is optional or spans several chapters.
 
-| # | Project | Proves | What makes it stand out |
-|---|---|---|---|
-| 1 | Deploy any pretrained model and get a public URL (3 hours) | You can go from model to link | Nothing. It is a warm-up whose job is to remove the fear of deploying. |
-| 2 | Structured extraction from messy text you have, into validated JSON | Prompting, schema-constrained output, error handling | A 50-example gold set and field-level accuracy |
-| 3 | A modelling competition entry with a deliberately designed validation scheme (optional) | You understand leakage and metric choice | The write-up, not the rank. "My first scheme was optimistic by 0.04 and here is why." |
-| 4 | Scrape or pull a dataset that does not exist in tidy form, and publish the analysis | **You can source your own data** | Publishing the cleaned dataset so someone else can use it |
-| 5 | A classical model served behind a real API, containerised and tested | The bridge from modelling to software | A load-test number, and a note on the accuracy-latency tradeoff you chose |
-| 6 | Retrieval over a corpus that is genuinely hard: statutes, versioned API docs, a codebase | The most requested skill on current job posts | A hand-labelled retrieval set with recall at k for two chunking strategies |
-| 7 | An evaluation harness as the product itself | Testing non-deterministic systems, which is rare | Publishing the failure taxonomy you found |
-| 8 | A fine-tuned small model with a before-and-after table | You know **when** fine-tuning is warranted | An honest four-way comparison, especially if the answer is "not worth it" |
-| 9 | A workflow, not an agent, doing one real job for a real user | Architectural judgement | A written justification for not using an agent, with numbers |
-| 10 | Reproduce a paper or core algorithm, then verify it | You can turn a paper into working code | Documenting where your numbers diverge, and why |
-| 11 | A merged pull request in a major ML repository | Navigating an unfamiliar codebase, surviving review | Fixing a bug you personally hit while building something |
-| 12 | A shipped product with real users who are not your friends | Scoping, distribution, operating under cost constraints | A public metrics page. Any number beats any adjective. |
-| 13 | An open-source tool or dataset others depend on | Taste, engineering and stewardship | External adoption, which a reviewer can verify without trusting you |
-| 14 | A rigorous public evaluation of something not measured well | Experimental design and statistical honesty | It is how individuals become known. Have someone review the method first. |
-| 15 | A sustained record of shipping and writing up | Durability, and that the rest was not a one-off | Eighteen months of dated write-ups cannot be copied |
+| # | Project | Where you build it | Proves | What makes it stand out |
+|---|---|---|---|---|
+| 1 | Deploy any pretrained model and get a public URL (3 hours) | Ch 5 warm-up (before two-week plan) | You can go from model to link | Nothing. It is a warm-up whose job is to remove the fear of deploying. |
+| 2 | Structured extraction from messy text you have, into validated JSON | Ch 5 (narrow task option) | Prompting, schema-constrained output, error handling | A 50-example gold set and field-level accuracy |
+| 3 | A modelling competition entry with a deliberately designed validation scheme (optional) | Ch 3 optional; Ch 7 Kaggle | You understand leakage and metric choice | The write-up, not the rank. "My first scheme was optimistic by 0.04 and here is why." |
+| 4 | Scrape or pull a dataset that does not exist in tidy form, and publish the analysis | Ch 2 | **You can source your own data** | Publishing the cleaned dataset so someone else can use it |
+| 5 | A classical model served behind a real API, containerised and tested | Ch 3 build; Ch 6 hardening | The bridge from modelling to software | A load-test number, and a note on the accuracy-latency tradeoff you chose |
+| 6 | Retrieval over a corpus that is genuinely hard: statutes, versioned API docs, a codebase | Ch 5 (days 5-6 of two-week plan) | The most requested skill on current job posts | A hand-labelled retrieval set with recall at k for two chunking strategies |
+| 7 | An evaluation harness as the product itself | Ch 5 | Testing non-deterministic systems, which is rare | Publishing the failure taxonomy you found |
+| 8 | A fine-tuned small model with a before-and-after table | Ch 5 optional | You know **when** fine-tuning is warranted | An honest four-way comparison, especially if the answer is "not worth it" |
+| 9 | A workflow, not an agent, doing one real job for a real user | Ch 5 | Architectural judgement | A written justification for not using an agent, with numbers |
+| 10 | Reproduce a paper or core algorithm, then verify it | Ch 4 or Ch 7 Branch B | You can turn a paper into working code | Documenting where your numbers diverge, and why |
+| 11 | A merged pull request in a major ML repository | Ch 7 | Navigating an unfamiliar codebase, surviving review | Fixing a bug you personally hit while building something |
+| 12 | A shipped product with real users who are not your friends | Ch 5 two-week plan + Ch 6 | Scoping, distribution, operating under cost constraints | A public metrics page. Any number beats any adjective. |
+| 13 | An open-source tool or dataset others depend on | Ch 7 Branch A capstone | Taste, engineering and stewardship | External adoption, which a reviewer can verify without trusting you |
+| 14 | A rigorous public evaluation of something not measured well | Ch 7 Branch A capstone | Experimental design and statistical honesty | It is how individuals become known. Have someone review the method first. |
+| 15 | A sustained record of shipping and writing up | Ch 8 (ongoing) | Durability, and that the rest was not a one-off | Eighteen months of dated write-ups cannot be copied |
 
 Three punch above their weight for the effort involved: the **deliberate leakage write-up** (project
 3), the **published failure taxonomy** (project 7), and the **honest fine-tuning comparison whose
@@ -400,11 +509,13 @@ Two studies shaped how the book asks you to work, and both are easiest to reach 
 Dunlosky and colleagues (2013), on which study techniques actually hold up, and Roediger and
 Karpicke (2006), on why self-testing feels worse in the moment and works better in the end.
 
-A few places deserve extra scepticism, and I would rather point them out myself. The
-experimentation and causal-inference references in Chapter 7 sit outside the set of material this
-book leans on most heavily, so vet those choices with particular care. The two-mode rule for AI
+A few places deserve extra scepticism, and I would rather point them out myself. The causal and
+experimentation resources in [Chapter 7](07-specialisation/resources/README.md) sit outside the
+rest of the book's heaviest curation, so vet them with particular care. The two-mode rule for AI
 assistants is a reasonable compromise, not a proven method. And the four-to-eight-month job-search
 estimate is judgement layered on older data.
 
 If something here has drifted out of date, that is the field doing what it does. Check it against
-the source, adjust, and keep going.
+the source, adjust, and keep going. If you find a broken link or a claim that no longer holds, an
+issue or a pull request on this repository is very welcome; corrections from readers are how a book
+like this stays useful.

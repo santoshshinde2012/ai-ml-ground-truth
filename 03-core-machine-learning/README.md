@@ -4,6 +4,25 @@
 
 **The short version.** This chapter teaches you to train a model honestly: split the data so the score means something, pick a metric that maps to a real cost, beat a simple baseline, and explain the result. The same discipline carries straight into evaluating language models later. You finish with a model served behind an API.
 
+**Use your Chapter 2 dataset.** Same repo or a fork — the story should connect.
+
+---
+
+## Your eight-week plan
+
+About ten hours a week. Follow the rows; do not skip the baseline or the README.
+
+| Week | Focus | Do this | Done when |
+|---|---|---|---|
+| 6 | Problem + split | Define prediction target; choose split (random / time / group); justify in writing | Split documented in README |
+| 7 | Baseline + leakage | Majority-class baseline (`DummyClassifier`); one **deliberate** leakage mistake, then fix with Pipeline | Before/after scores in README |
+| 8 | Logistic regression | ISL or scikit-learn MOOC; metric tied to cost | Beats baseline on honest metric |
+| 9 | Trees | Random forest + boosted tree (XGBoost); SHAP on one wrong prediction | Model comparison table |
+| 10 | Threshold | Cost matrix; pick threshold from curve, not 0.5 | Can explain threshold out loud |
+| 11 | API | FastAPI `/predict`; pydantic validation; pytest | Bad input returns 422 |
+| 12 | Polish | Confidence intervals; "what failed" section; load-test note | README is the deliverable |
+| 13 | Buffer | Re-build one model from empty file; rehearse interview story on leakage | Can rebuild without tutorial |
+
 ---
 
 ## Is this still worth eight weeks in 2026?
@@ -61,14 +80,20 @@ heavy imbalance and PR-AUC does not; calibration, and when it matters; and the f
 classification threshold is a decision you derive from a cost curve, not the 0.5 that came in the
 box.
 
+**A tiny threshold example.** Suppose false negatives cost ten times false positives — you miss a
+fraud case ten times worse than you flag an honest transaction. On 1% positives, a model that
+always says "no" still scores 99% accuracy. You might choose recall-heavy metrics, plot precision
+against recall, and pick a threshold where recall is 0.85 even if precision drops to 0.40 — because
+that is what your cost matrix implies. The default 0.5 would never appear in that reasoning.
+
 **Tree models.** For most tabular problems a gradient-boosted tree is the answer, and knowing why
 rather than just that is the difference between an engineer and a library caller. Learn what bagging
 and boosting each buy you, and what `max_depth`, `min_child_weight`, `subsample`, `colsample_bytree`
 and early stopping actually do to bias and variance.
 
 Also learn interpretability: permutation importance and why it misleads under correlated features,
-partial dependence, and SHAP. This is precisely what tabular models have and language models largely
-do not. Where a bank, insurer or hospital needs a defensible reason for a decision, an explainable
+partial dependence, and SHAP, which attributes a single prediction to the features that drove it.
+This is precisely what tabular models have and language models largely do not. Where a bank, insurer or hospital needs a defensible reason for a decision, an explainable
 tree is the answer.
 
 One nuance worth carrying: the familiar line that tree ensembles always beat deep learning on
@@ -103,7 +128,7 @@ The minimum is small enough to name:
 
 That is perhaps twenty to forty hours of honest study rather than a semester. Classical hypothesis
 testing is deliberately down-weighted here; it matters a great deal for experimentation work, which
-is covered in the Data Scientist specialisation.
+is covered in the [Data Scientist branch of Chapter 7](../07-specialisation/README.md).
 
 The counter-argument deserves respect too. People who take the code-first route and never come back
 to the maths tend to plateau at the point where they need to read a paper, debug an unusual loss, or
@@ -112,14 +137,14 @@ concrete to attach it to, tends to go better.
 
 ## Resources
 
-All 33 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 32 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 
-- [An Introduction to Statistical Learning (ISLP — Python edition, 2023; ISLR 2nd ed. — R, 2021, corrected June 2023)](https://www.statlearning.com/) — Gareth James, Daniela Witten, Trevor Hastie & Robert Tibshirani, with Jonathan Taylor on the Python edition. A free book, 60-90 hours.
+- [An Introduction to Statistical Learning (ISLP — Python edition)](https://www.statlearning.com/) — Gareth James, Daniela Witten, Trevor Hastie & Robert Tibshirani, with Jonathan Taylor. A free book, 60-90 hours across the chapter.
+- [scikit-learn: Common Pitfalls and Recommended Practices](https://scikit-learn.org/stable/common_pitfalls.html) — scikit-learn core developers. Free documentation, 2-3 hours. Read it in week 7, before the leakage exercise.
 - [Approaching (Almost) Any Machine Learning Problem](https://github.com/abhishekkrthakur/approachingalmost) — Abhishek Thakur. A free book, 20-30 hours.
-- [Essence of Linear Algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab) — Grant Sanderson. A free video, 8-12 hours.
-- [Interpretable Machine Learning: A Guide for Making Black Box Models Explainable](https://christophm.github.io/interpretable-ml-book/) — Christoph Molnar. A free book, 12-18 hours.
+- [Interpretable Machine Learning](https://christophm.github.io/interpretable-ml-book/) — Christoph Molnar. A free book, 12-18 hours; the SHAP and permutation-importance chapters first.
 
 ## What to build
 
@@ -155,8 +180,6 @@ understand the mechanism rather than the name, and it makes a good story.
   three, and conclude they are not a maths person. They usually are; it was the wrong book.
 - **If you want Strang's linear algebra**, MIT 18.065 is the machine-learning-facing course. 18.06
   is excellent and spends its first month on material you will not use here.
-- **Audit rather than buy.** Most of the courses here can be audited free. The certificate is
-  rarely what changes anyone's mind, and the money is better spent on compute.
 - **Kaggle is a good gym and a weak portfolio.** Competitions give fast, honest feedback on
   validation design, which is genuinely valuable. They also remove problem framing, data sourcing
   and metric choice, which are three of the harder parts of the job.

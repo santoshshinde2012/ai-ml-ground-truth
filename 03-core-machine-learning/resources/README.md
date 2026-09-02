@@ -9,55 +9,13 @@ Prices and free tiers change often, so check a resource's own page before you pl
 
 ## Start here
 
-The resources on the main path for this chapter. If you only do a few things, do these.
+The resources on the main path for this chapter, in the order the chapter uses them. If you only do a few things, do these.
 
 ### [An Introduction to Statistical Learning (ISLP — Python edition, 2023; ISLR 2nd ed. — R, 2021, corrected June 2023)](https://www.statlearning.com/)
 
 *Gareth James, Daniela Witten, Trevor Hastie & Robert Tibshirani, with Jonathan Taylor on the Python edition* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 60-90 hours
 
-The single highest-value free text in the whole domain, and the one that makes you *statistically* literate rather than just API-literate. It is where the bias-variance decomposition, resampling/cross-validation, the bootstrap, regularisation (ridge/lasso), and tree ensembles are explained by the people who invented several of them. Take the Python edition (ISLP, 2023, adds the `ISLP` pip package) unless you have a reason to want R. Do NOT confuse it with *The Elements of Statistical Learning* (ESL) by Hastie/Tibshirani/Friedman — same authors, but ESL is the graduate-level maths version and is a classic beginner trap. Start ISL in your first week and read it through the middle weeks of this chapter — alongside Ng's courses, if you take that track.
-
-### [Approaching (Almost) Any Machine Learning Problem](https://github.com/abhishekkrthakur/approachingalmost)
-
-*Abhishek Thakur* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20-30 hours
-
-The missing 'how a practitioner actually does it' book, and free from the author himself. It is code-first and opinionated about the things courses skip: how to structure an ML project's folders, how to build cross-validation schemes correctly for different problem types (stratified, group, time-based), evaluation metric selection, approaching categorical variables and text/image features, feature selection, and hyperparameter tuning. This is the practical complement to ISL's theory and the closest thing to an apprenticeship in workflow discipline. Read it after Kaggle Learn's Feature Engineering course.
-
-> **Worth knowing.** A six-year-old book whose code examples' APIs have moved on, and the linked repo hosts the book itself rather than runnable code. Still strong on cross-validation discipline and problem framing.
-
-### [Essence of Linear Algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
-
-*Grant Sanderson* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 8-12 hours
-
-The highest-leverage few hours in this chapter, and the place to start. 16 chapters, ~3 hours of video (8-12 with pauses and notes), and it gives you the one thing most linear algebra courses never do: matrices as geometric transformations of space rather than grids of numbers to row-reduce. After chapter 4 ('Matrix multiplication as composition') the sentence 'a neural network layer is a linear map followed by a nonlinearity' stops being jargon.
-
-### [Hands-On Machine Learning with Scikit-Learn and PyTorch (O'Reilly, published 2 December 2025) + official notebook repo](https://github.com/ageron/handson-mlp)
-
-*Aurélien Géron* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 60-90 hours
-
-This is your *doing* book, the counterweight to ISL's *understanding*. Chapters 1-9 are the best practical treatment anywhere of the end-to-end workflow: the end-to-end housing project, stratified splits, scikit-learn Pipelines and ColumnTransformer, feature scaling and engineering, classification metrics and the precision/recall tradeoff, decision trees, ensembles/boosting, dimensionality reduction and clustering. Note: the previous 3rd edition (*Scikit-Learn, Keras & TensorFlow*, 2022, repo `ageron/handson-ml3`) has been superseded — the new edition swaps TensorFlow/Keras for PyTorch and the Hugging Face ecosystem, ~875 pages, 19 notebooks + 5 appendices. Buy the PyTorch edition.
-
-> **Worth knowing.** A first edition, so it has had far less errata shakeout than the mature handson-ml3.
-
-### [Interpretable Machine Learning: A Guide for Making Black Box Models Explainable](https://christophm.github.io/interpretable-ml-book/)
-
-*Christoph Molnar* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 12-18 hours
-
-The free canonical reference for the half of tabular ML that decides whether your model actually ships: permutation feature importance and why it lies under correlated features, partial dependence and ICE plots, LIME, and SHAP. Molnar covers the methods behind the chapter's argument that regulated industries need defensible, explainable decisions — and he is honest about each method's failure modes. It is also the most common follow-up question after 'which model did you pick?' in interviews.
-
-### [Machine Learning Specialization (3 courses)](https://www.coursera.org/specializations/machine-learning-introduction)
-
-*Andrew Ng with Eddy Shyu, Aarti Bagul & Geoff Ladwig* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 60-90 hours
-
-This is the 2022 ground-up rebuild of the 2012 course — Python/NumPy/scikit-learn instead of Octave, which was the single loudest complaint about the original. It beats every other on-ramp on one axis that matters enormously for a beginner: Ng builds *intuition* for cost functions, gradient descent, regularisation, bias/variance and the diagnostic loop ('should I get more data or more features?') better than anyone else teaching. If you want a guided course track rather than the book-first route the chapter recommends, start here in your first week and do all three courses.
-
-> **Worth knowing.** Teaches TensorFlow/Keras while the rest of the deep-learning path is PyTorch, the dominant research and industry framework — a real friction cost. Paid, with limited audit access.
-
-### [Neural Networks (Deep Learning series, chapters 1-7+)](https://www.3blue1brown.com/topics/neural-networks)
-
-*Grant Sanderson* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-6 hours
-
-The best free explanation on the internet of the two ideas that ARE the math of deep learning: gradient descent (ch. 2-3) and backpropagation calculus (ch. 5, which walks the chain rule through ∂C/∂w explicitly). Crucially, this series is actively maintained and now current for the LLM era — it extends through 'Transformers, the tech behind LLMs' (ch. 5-6 in the newer numbering), 'Attention in transformers, step-by-step', 'How might LLMs store facts', and a July 2026 lesson on cross-entropy ('Compression is Intelligence Part 2'). That matters: most 'math for ML' curricula stop at 2018-era content, and the attention/softmax/QK^T math is now table stakes.
+The single highest-value free text in the whole domain, and the one that makes you *statistically* literate rather than just API-literate. It is where the bias-variance decomposition, resampling/cross-validation, the bootstrap, regularisation (ridge/lasso), and tree ensembles are explained by the people who invented several of them. Take the Python edition (ISLP, 2023, adds the `ISLP` pip package) unless you have a reason to want R. Do not confuse it with *The Elements of Statistical Learning* (ESL) by Hastie/Tibshirani/Friedman — same authors, but ESL is the graduate-level maths version and is a classic beginner trap. Start ISL in your first week and read it through the middle weeks of this chapter — alongside Ng's courses, if you take that track.
 
 ### [scikit-learn MOOC — Machine learning in Python with scikit-learn (Inria)](https://inria.github.io/scikit-learn-mooc/)
 
@@ -67,45 +25,43 @@ The most underrated resource in this list, and arguably the best free structured
 
 > **Worth knowing.** The hosted cohort run is on fun-mooc.fr; the GitHub Pages version is the always-open self-study copy.
 
-### [scikit-learn User Guide (v1.9 stable) — especially §3 Model Selection and Evaluation and §12 Common Pitfalls](https://scikit-learn.org/stable/user_guide.html)
-
-*scikit-learn core developers* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
-
-Almost every beginner treats sklearn docs as API lookup and never reads the prose. That is a mistake: the User Guide is a genuine textbook with the math and the failure modes written by the people who implemented them. Two pages are non-negotiable — the model-selection/cross-validation chapter (why KFold vs StratifiedKFold vs GroupKFold vs TimeSeriesSplit, why nested CV exists) and 'Common Pitfalls and Recommended Practices', which is the clearest free write-up of data leakage, inconsistent preprocessing, and controlling randomness.
-
 ### [scikit-learn: Common Pitfalls and Recommended Practices](https://scikit-learn.org/stable/common_pitfalls.html)
 
 *scikit-learn core developer team* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2-3 hours
 
 Called out separately from the User Guide because it is the highest-leverage page for a beginner and almost nobody reads it. It covers inconsistent preprocessing, the two flavours of data leakage (fitting a transformer on the full dataset before splitting; leaking during cross-validation) with correct-vs-incorrect code side by side, and how to control randomness so your results are actually reproducible. Data leakage is the #1 reason beginner models show 0.97 AUC in a notebook and fail in production; this page is the vaccine. Read it in your first week or two of this chapter, not months later.
 
-### [Statistical Learning with Python (StanfordOnline, edX) — free companion course to ISLP](https://www.edx.org/learn/python/stanford-university-statistical-learning-with-python)
+### [scikit-learn User Guide (v1.9 stable) — especially §3 Model Selection and Evaluation and §12 Common Pitfalls](https://scikit-learn.org/stable/user_guide.html)
 
-*Trevor Hastie & Robert Tibshirani* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20-30 hours
+*scikit-learn core developers* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
 
-The authors' own lecture videos walking through ISL chapter by chapter, with Python labs. This is the cheapest possible way to get a Stanford statistics professor to explain cross-validation and the bootstrap to you personally, and it removes the main failure mode of self-studying ISL (bouncing off the notation and quitting at chapter 3). An R-lab version exists at the same platform if you prefer R. Pair it 1:1 with your ISL reading rather than treating it as a separate course.
+Almost every beginner treats sklearn docs as API lookup and never reads the prose. That is a mistake: the User Guide is a genuine textbook with the math and the failure modes written by the people who implemented them. Two pages are non-negotiable — the model-selection/cross-validation chapter (why KFold vs StratifiedKFold vs GroupKFold vs TimeSeriesSplit, why nested CV exists) and 'Common Pitfalls and Recommended Practices', which is the clearest free write-up of data leakage, inconsistent preprocessing, and controlling randomness.
 
-> **Worth knowing.** Lectures are a decade old and were filmed for the R edition — only the labs are Python. "Free" means audit-only; the certificate and some graded material are paid.
+### [Approaching (Almost) Any Machine Learning Problem](https://github.com/abhishekkrthakur/approachingalmost)
 
-### [StatQuest with Josh Starmer (Statistics Fundamentals, Machine Learning, Neural Networks playlists)](https://www.youtube.com/@statquest/playlists)
+*Abhishek Thakur* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20-30 hours
 
-*Josh Starmer* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
+The missing 'how a practitioner actually does it' book, and free from the author himself. It is code-first and opinionated about the things courses skip: how to structure an ML project's folders, how to build cross-validation schemes correctly for different problem types (stratified, group, time-based), evaluation metric selection, approaching categorical variables and text/image features, feature selection, and hyperparameter tuning. This is the practical complement to ISL's theory and the closest thing to an apprenticeship in workflow discipline. Read it once your first baseline exists, in the middle weeks of this chapter.
 
-The probability-and-statistics leg of the tripod, and the correct antidote to sitting through a semester of intro stats. Starmer is a real statistician (not a content farm), and his videos are the fastest path to genuine understanding of the handful of stats concepts that matter for ML: probability vs likelihood, maximum likelihood estimation, expected value, the normal/binomial distributions, Bayes' theorem, entropy and cross-entropy, R², bias-variance, cross-validation, ROC/AUC, confusion matrices, and p-values-explained-well-enough-to-then-ignore. Use it as a *lookup index*, not a linear course: the moment a term confuses you, search 'StatQuest <term>' and watch one 12-minute video. If you want the same material as a book, his *StatQuest Illustrated Guide to Machine Learning* is the paid version.
-
-### [The Matrix Calculus You Need For Deep Learning](https://explained.ai/matrix-calculus/)
-
-*Terence Parr & Jeremy Howard* &nbsp;·&nbsp; Paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-8 hours
-
-The definitive 'just enough' calculus document, and the answer to 'what part of vector calculus is actually load-bearing.' It explicitly scopes itself — 'We assume no math knowledge beyond what you learned in calculus 1' — and covers exactly the gap between scalar derivatives and the Jacobians/chain rules that backprop needs, ending with the gradient of an actual neural network loss. Critically, the authors themselves tell you **when** to read it: after you're already familiar with training neural networks, not before. That single sentence from Jeremy Howard is the strongest primary-source evidence for the top-down ordering in this whole domain.
-
-> **Worth knowing.** Undated page with content frozen at 2018.
+> **Worth knowing.** A six-year-old book whose code examples' APIs have moved on, and the linked repo hosts the book itself rather than runnable code. Still strong on cross-validation discipline and problem framing.
 
 ### [XGBoost official documentation (v3.x)](https://xgboost.readthedocs.io/en/stable/)
 
 *Tianqi Chen* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 6-10 hours
 
 You cannot claim tabular ML competence without being able to tune a boosted tree deliberately rather than by superstition. Read the 'Introduction to Boosted Trees' tutorial (Chen's own derivation of the objective and why regularisation is baked into the split criterion) and then the parameter documentation until you can predict each parameter's effect on bias and variance before you change it.
+
+### [Interpretable Machine Learning: A Guide for Making Black Box Models Explainable](https://christophm.github.io/interpretable-ml-book/)
+
+*Christoph Molnar* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 12-18 hours
+
+The free canonical reference for the half of tabular ML that decides whether your model actually ships: permutation feature importance and why it misleads under correlated features, partial dependence and ICE plots, LIME, and SHAP. Molnar covers the methods behind the chapter's argument that regulated industries need defensible, explainable decisions — and he is honest about each method's failure modes. It is also the most common follow-up question after 'which model did you pick?' in interviews.
+
+### [StatQuest with Josh Starmer (Statistics Fundamentals, Machine Learning, Neural Networks playlists)](https://www.youtube.com/@statquest/playlists)
+
+*Josh Starmer* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
+
+The probability-and-statistics leg of the tripod, and the correct antidote to sitting through a semester of intro stats. Starmer is a real statistician (not a content farm), and his videos are the fastest path to genuine understanding of the handful of stats concepts that matter for ML: probability vs likelihood, maximum likelihood estimation, expected value, the normal/binomial distributions, Bayes' theorem, entropy and cross-entropy, R², bias-variance, cross-validation, ROC/AUC, confusion matrices, and p-values-explained-well-enough-to-then-ignore. Use it as a *lookup index*, not a linear course: the moment a term confuses you, search 'StatQuest <term>' and watch one 12-minute video. If you want the same material as a book, his *StatQuest Illustrated Guide to Machine Learning* is the paid version.
 
 ## Optional depth
 
@@ -123,7 +79,7 @@ The only linear algebra course built entirely on the top-down philosophy — 'to
 
 *Tengyu Ma & Andrew Ng* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 40-60 hours
 
-This is the mathematical version of everything Ng teaches gently on Coursera — the derivations of least squares from probabilistic assumptions, GLMs and the exponential family, generative vs discriminative learning, kernels and SVMs, learning theory and the formal bias-variance decomposition. It is NOT a first course; it is the course you come back to a few months in, once you want to understand *why* rather than *how*.
+This is the mathematical version of everything Ng teaches gently on Coursera — the derivations of least squares from probabilistic assumptions, GLMs and the exponential family, generative vs discriminative learning, kernels and SVMs, learning theory and the formal bias-variance decomposition. It is not a first course; it is the course you come back to a few months in, once you want to understand *why* rather than *how*.
 
 > **Worth knowing.** Rigorous ML-theory notes (SVMs, GLMs, EM), not a beginner on-ramp — they assume the linear algebra and probability covered earlier in this book.
 
@@ -132,6 +88,14 @@ This is the mathematical version of everything Ng teaches gently on Coursera —
 *Google's ML education team* &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&nbsp; 15-20 hours
 
 Best used as a fast, interactive first week or as a refresher — not as your main course. The refreshed version restructured into four sections: ML models (linear/logistic regression, classification), data (numerical, categorical, overfitting/datasets), advanced models (neural nets, embeddings, LLMs), and real-world ML (production, AutoML, fairness). The genuinely valuable and modern parts are the 'Data' section and the 'Real-world ML' section — production concerns and fairness are things almost no beginner course covers — plus a new LLM module covering tokens, n-grams, transformers, self-attention, distillation, fine-tuning and prompting, which is why this is now a reasonable bridge from classical ML into Chapter 5's language-model material.
+
+### [Hands-On Machine Learning with Scikit-Learn and PyTorch (O'Reilly, published 2 December 2025) + official notebook repo](https://github.com/ageron/handson-mlp)
+
+*Aurélien Géron* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 60-90 hours
+
+This is your *doing* book, the counterweight to ISL's *understanding*. Chapters 1-9 are the best practical treatment anywhere of the end-to-end workflow: the end-to-end housing project, stratified splits, scikit-learn Pipelines and ColumnTransformer, feature scaling and engineering, classification metrics and the precision/recall tradeoff, decision trees, ensembles/boosting, dimensionality reduction and clustering. Note: the previous 3rd edition (*Scikit-Learn, Keras & TensorFlow*, 2022, repo `ageron/handson-ml3`) has been superseded — the new edition swaps TensorFlow/Keras for PyTorch and the Hugging Face ecosystem, ~875 pages, 19 notebooks + 5 appendices. Buy the PyTorch edition.
+
+> **Worth knowing.** A first edition, so it has had far less errata shakeout than the mature handson-ml3.
 
 ### [Introduction to Probability for Data Science](https://probability4datascience.com/)
 
@@ -145,6 +109,14 @@ The best free, rigorous, genuinely ML-oriented probability textbook — and prob
 
 The right role for Khan Academy in 2026 is remediation and drill, not primary instruction — it is where you go when a 3Blue1Brown video assumed something you don't have, or when you realise you can watch a concept but not execute it. Its genuine advantage over every video-only resource is graded practice exercises with hints and mastery tracking, which is exactly what visual-intuition resources lack.
 
+### [Machine Learning Specialization (3 courses)](https://www.coursera.org/specializations/machine-learning-introduction)
+
+*Andrew Ng with Eddy Shyu, Aarti Bagul & Geoff Ladwig* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 60-90 hours
+
+This is the 2022 ground-up rebuild of the 2012 course — Python/NumPy/scikit-learn instead of Octave, which was the single loudest complaint about the original. It beats every other on-ramp on one axis that matters enormously for a beginner: Ng builds *intuition* for cost functions, gradient descent, regularisation, bias/variance and the diagnostic loop ('should I get more data or more features?') better than anyone else teaching. If you want a guided course track rather than the book-first route the chapter recommends, start here in your first week and do all three courses.
+
+> **Worth knowing.** Teaches TensorFlow/Keras while the rest of the deep-learning path is PyTorch, the dominant research and industry framework — a real friction cost. Paid, with limited audit access.
+
 ### [Mathematics for Machine Learning (the mml-book) + free PDF](https://mml-book.github.io/)
 
 *Marc Peter Deisenroth, A. Aldo Faisal & Cheng Soon Ong* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 40-80 hours
@@ -155,7 +127,7 @@ The canonical, most-cited free maths-for-ML text, published by Cambridge Univers
 
 *Luis Serrano, PhD* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 94 hours
 
-The most current well-produced paid alternative, and the better buy than the Imperial specialization for most 2026 beginners: it was refreshed in 2024, its three courses cover the full tripod (Imperial's third course is PCA rather than probability/statistics, leaving a gaping stats hole), and it is explicitly built around ML use cases with NumPy labs throughout. Serrano is unusually good at the visual-first explanation style without sacrificing correctness. Prereqs are stated as high-school math plus basic Python. Place it as the 'I want one structured paid course that covers everything and holds me accountable' option, taken alongside coding — not before it.
+The most current well-produced paid alternative, and the better buy than the Imperial specialisation for most 2026 beginners: it was refreshed in 2024, its three courses cover the full tripod (Imperial's third course is PCA rather than probability/statistics, leaving a gaping stats hole), and it is explicitly built around ML use cases with NumPy labs throughout. Serrano is unusually good at the visual-first explanation style without sacrificing correctness. Prereqs are stated as high-school math plus basic Python. Place it as the 'I want one structured paid course that covers everything and holds me accountable' option, taken alongside coding — not before it.
 
 > **Worth knowing.** Coursera paid subscription required; the free audit has no graded assignments. This is the only paywalled item among otherwise free maths resources.
 
@@ -171,7 +143,7 @@ The best-known structured, graded, Python-notebook-based maths-for-ML sequence �
 
 *Prof. Gilbert Strang* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 50-80 hours
 
-If you want Strang, **this** is the Strang course to take for machine learning, and almost nobody tells beginners that. 18.065 is his ML-facing sequel: column space, matrix factorization, orthonormal columns, eigenvalues/eigenvectors, positive definite and semidefinite matrices, SVD, least squares, and gradient descent — reviewed with applications to probability, statistics and optimisation, plus lectures on deep learning itself. It skips the freshman-engineering material that makes 18.06 slow for an ML learner. Videos of all lectures are free on OCW (except Lectures 28-29, unrecorded lab sessions).
+If you want Strang, **this** is the Strang course to take for machine learning, and almost nobody tells beginners that. 18.065 is his ML-facing sequel: column space, matrix factorisation, orthonormal columns, eigenvalues/eigenvectors, positive definite and semidefinite matrices, SVD, least squares, and gradient descent — reviewed with applications to probability, statistics and optimisation, plus lectures on deep learning itself. It skips the freshman-engineering material that makes 18.06 slow for an ML learner. Videos of all lectures are free on OCW (except Lectures 28-29, unrecorded lab sessions).
 
 > **Worth knowing.** Use it for the linear algebra, not the deep-learning chapters. Strang has retired and there is no updated OCW offering.
 
@@ -179,7 +151,7 @@ If you want Strang, **this** is the Strang course to take for machine learning, 
 
 *Prof. Gilbert Strang* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 120-160 hours
 
-The most famous linear algebra course ever recorded, and the OCW Scholar (18.06SC) version is the right one to link — it is built for independent study with recitation videos by MIT instructors, problem sets with solutions, and full exams, all free under Creative Commons. Strang's four-fundamental-subspaces framing is genuinely beautiful. But be clear-eyed about the fit: 18.06 is a general engineering-mathematics course, not an ML course. It front-loads Gaussian elimination, LU/PA=LU factorization, and null-space computation, and the SVD — arguably the single most ML-relevant topic — arrives near the end.
+The most famous linear algebra course ever recorded, and the OCW Scholar (18.06SC) version is the right one to link — it is built for independent study with recitation videos by MIT instructors, problem sets with solutions, and full exams, all free under Creative Commons. Strang's four-fundamental-subspaces framing is genuinely beautiful. But be clear-eyed about the fit: 18.06 is a general engineering-mathematics course, not an ML course. It front-loads Gaussian elimination, LU/PA=LU factorisation, and null-space computation, and the SVD — arguably the single most ML-relevant topic — arrives near the end.
 
 > **Worth knowing.** The "Fall 2011" label is the OCW Scholar packaging date, not the video date — the lectures are 1999-vintage SD. The Java demonstrations in the course materials no longer run in current browsers.
 
@@ -187,9 +159,15 @@ The most famous linear algebra course ever recorded, and the OCW Scholar (18.06S
 
 *Jared Wilber, Brent Werness and collaborators* &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-6 hours
 
-When bias-variance, cross-validation, ROC/AUC or precision-recall refuse to click from text, come here. Fourteen scroll-driven essays with charts you drag and manipulate: The Bias Variance Tradeoff, Cross-Validation, Train/Test/Validation Sets, Precision & Recall, ROC & AUC, Decision Trees, Random Forest, Linear and Logistic Regression, Neural Networks, Equality of Odds, Reinforcement Learning, and a two-part Double Descent explainer (which is the concept that connects classical bias-variance to why massively overparameterized modern models work — a genuinely useful bridge to the LLM era). No signup, no install. Highest concept-per-hour ratio of anything in this list.
+When bias-variance, cross-validation, ROC/AUC or precision-recall refuse to click from text, come here. Fourteen scroll-driven essays with charts you drag and manipulate: The Bias Variance Tradeoff, Cross-Validation, Train/Test/Validation Sets, Precision & Recall, ROC & AUC, Decision Trees, Random Forest, Linear and Logistic Regression, Neural Networks, Equality of Odds, Reinforcement Learning, and a two-part Double Descent explainer (which is the concept that connects classical bias-variance to why massively overparameterised modern models work — a genuinely useful bridge to the LLM era). No signup, no install. Highest concept-per-hour ratio of anything in this list.
 
 > **Worth knowing.** Roughly 2021 vintage: good for classical ML intuition, but it covers nothing from the post-2022 era.
+
+### [Neural Networks (Deep Learning series, chapters 1-7+)](https://www.3blue1brown.com/topics/neural-networks)
+
+*Grant Sanderson* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-6 hours
+
+The best free explanation on the internet of the two ideas that are the maths of deep learning: gradient descent (ch. 2-3) and backpropagation calculus (ch. 5, which walks the chain rule through ∂C/∂w explicitly). Crucially, this series is actively maintained and now current for the LLM era — it extends through 'Transformers, the tech behind LLMs' (ch. 5-6 in the newer numbering), 'Attention in transformers, step-by-step', 'How might LLMs store facts', and a July 2026 lesson on cross-entropy ('Compression is Intelligence Part 2'). That matters: most 'math for ML' curricula stop at 2018-era content, and the attention/softmax/QK^T math is now table stakes.
 
 ### [Seeing Theory — A Visual Introduction to Probability and Statistics](https://seeing-theory.brown.edu/)
 
@@ -198,6 +176,14 @@ When bias-variance, cross-validation, ROC/AUC or precision-recall refuse to clic
 The fastest possible way to get intuition for distributions, sampling, and Bayesian updating, because you drag sliders and watch the distributions move rather than reading formulas. Six chapters: basic probability, compound probability, probability distributions, frequentist inference, Bayesian inference, and regression analysis. Webby Award winner, hosted by Brown. Perfect as a 3-hour weekend session slotted between StatQuest videos, especially for grasping the central limit theorem, likelihood, and the prior-to-posterior update that underpins every Bayesian framing in ML. Note: the site is no longer actively maintained, though Brown has committed to continue hosting it.
 
 > **Worth knowing.** Officially archived by its authors — if a browser change breaks the D3.js visualisations, nobody will fix them.
+
+### [Statistical Learning with Python (StanfordOnline, edX) — free companion course to ISLP](https://www.edx.org/learn/python/stanford-university-statistical-learning-with-python)
+
+*Trevor Hastie & Robert Tibshirani* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20-30 hours
+
+The authors' own lecture videos walking through ISL chapter by chapter, with Python labs. This is the cheapest possible way to get a Stanford statistics professor to explain cross-validation and the bootstrap to you personally, and it removes the main failure mode of self-studying ISL (bouncing off the notation and quitting at chapter 3). An R-lab version exists at the same platform if you prefer R. Pair it 1:1 with your ISL reading rather than treating it as a separate course.
+
+> **Worth knowing.** Lectures are a decade old and were filmed for the R edition — only the labs are Python. "Free" means audit-only; the certificate and some graded material are paid.
 
 ### [TabPFN-2.5: Advancing the State of the Art in Tabular Foundation Models](https://arxiv.org/abs/2511.08667)
 
@@ -211,9 +197,17 @@ Read this so you are not two years out of date on the one question everyone thin
 
 *Andriy Burkov* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 8-12 hours
 
-The best *map* of the territory: ~140 pages covering supervised and unsupervised learning, SVMs, neural networks, ensembles, gradient descent, clustering and dimensionality reduction, autoencoders and transfer learning, feature engineering and hyperparameter tuning. Its job is orientation and revision, not first learning — read it in a weekend before you start, then again before interviews. The read-first-buy-later policy means you can evaluate it for free with no piracy. Note the 2019 publication date: it predates the LLM era, so treat the neural-network chapters as historical context.
+The best *map* of the territory: ~140 pages covering supervised and unsupervised learning, SVMs, neural networks, ensembles, gradient descent, clustering and dimensionality reduction, autoencoders and transfer learning, feature engineering and hyperparameter tuning. Its job is orientation and revision, not first learning — read it in a weekend before you start, then again before interviews. The read-first-buy-later policy means you can evaluate it for free before deciding. Note the 2019 publication date: it predates the LLM era, so treat the neural-network chapters as historical context.
 
 > **Worth knowing.** 2019 content sold under a 2019–2025 copyright banner, which reads fresher than it is. A compact classical-ML reference only — the LLM material lives in a separate 2025 companion volume. Honour-system paid, not free.
+
+### [The Matrix Calculus You Need For Deep Learning](https://explained.ai/matrix-calculus/)
+
+*Terence Parr & Jeremy Howard* &nbsp;·&nbsp; Paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-8 hours
+
+The definitive 'just enough' calculus document, and the answer to 'what part of vector calculus is actually load-bearing.' It explicitly scopes itself — 'We assume no math knowledge beyond what you learned in calculus 1' — and covers exactly the gap between scalar derivatives and the Jacobians/chain rules that backprop needs, ending with the gradient of an actual neural network loss. Critically, the authors themselves tell you **when** to read it: after you're already familiar with training neural networks, not before. That single sentence from Jeremy Howard is the strongest primary-source evidence for the top-down ordering in this whole domain.
+
+> **Worth knowing.** Undated page with content frozen at 2018.
 
 ### [The state of Tabular Foundation Models (2026) — Mindful Modeler](https://mindfulmodeler.substack.com/p/the-state-of-tabular-foundation-models)
 
@@ -237,7 +231,7 @@ Not for reading end to end. Useful to have when you need to look something up.
 
 *Brent Werness & Rachel Hu, within Dive into Deep Learning by Aston Zhang, Zachary C. Lipton, Mu Li & Alexander J. Smola* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 15-25 hours
 
-The most precisely scoped free answer to 'exactly which math does deep learning use, and nothing more.' Eleven sections: geometry & linear-algebraic operations, eigendecompositions, single-variable calculus, multivariable calculus (gradients, chain rule, backpropagation, Hessians), integral calculus, random variables, maximum likelihood, distributions, naive Bayes, statistics, and information theory (entropy, KL, cross-entropy). That list IS the minimum viable curriculum — you can use it directly as a syllabus checklist against any other resource.
+The most precisely scoped free answer to 'exactly which math does deep learning use, and nothing more.' Eleven sections: geometry & linear-algebraic operations, eigendecompositions, single-variable calculus, multivariable calculus (gradients, chain rule, backpropagation, Hessians), integral calculus, random variables, maximum likelihood, distributions, naive Bayes, statistics, and information theory (entropy, KL, cross-entropy). That list is the minimum viable curriculum — you can use it directly as a syllabus checklist against any other resource.
 
 > **Worth knowing.** Author affiliations are as of writing rather than current.
 
@@ -251,7 +245,7 @@ Read after XGBoost, and mainly to learn *when each wins* rather than to memorise
 
 *Kevin Patrick Murphy* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-20 hours, as a reference
 
-The definitive modern graduate reference for probabilistic ML — MIT Press, March 2022, with the free draft PDF still being updated (latest revision 2025-04-18) and every figure reproducible via Python/JAX/TensorFlow colabs in the probml/pyprobml repo. It unifies classical statistical foundations with deep learning in one consistent notation, and a companion volume ('Advanced Topics') goes further. On placement: this is roughly a thousand pages and it is NOT a book that teaches you math — it is a book that assumes linear algebra, multivariable calculus and probability and then uses them at speed. Endorsements calling it suitable for 'people new to the field' mean new to ML, not new to math.
+The definitive modern graduate reference for probabilistic ML — MIT Press, March 2022, with the free draft PDF still being updated (latest revision 2025-04-18) and every figure reproducible via Python/JAX/TensorFlow colabs in the probml/pyprobml repo. It unifies classical statistical foundations with deep learning in one consistent notation, and a companion volume ('Advanced Topics') goes further. On placement: this is roughly a thousand pages and it is not a book that teaches you maths — it is a book that assumes linear algebra, multivariable calculus and probability and then uses them at speed. Endorsements calling it suitable for 'people new to the field' mean new to ML, not new to maths.
 
 > **Worth knowing.** A 1000-page graduate-level probabilistic-ML textbook, not a maths primer — use it as a reference or stretch goal rather than prerequisite reading.
 

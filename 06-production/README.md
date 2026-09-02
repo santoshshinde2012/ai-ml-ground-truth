@@ -5,8 +5,22 @@
 **The short version.** Your Chapter 5 product becomes a system: containerised, tested on every push, deployed, watched, and cheap enough to defend in a budget conversation. Little here is glamorous, and its absence is what separates a demo from something a team would trust.
 
 **From this week, [Chapter 8: Finding the work](../08-finding-the-work/README.md) runs alongside
-this chapter and the next. Open it now — the search it describes has a longer lead time than
-anything left to build.**
+this chapter and the next.** Open it now; the search it describes has a longer lead time than
+anything left to build.
+
+---
+
+## Your five-week plan
+
+About eleven hours a week. You are **finishing** the Chapter 5 app, not starting a new one.
+
+| Week | Focus | Do this | Done when |
+|---|---|---|---|
+| 33 | Docker + deploy | Multi-stage Dockerfile; deploy to Modal or similar; public URL | Image under 500 MB |
+| 34 | CI | GitHub Actions: pytest + data tests + **eval assertions** | Bad prompt fails build |
+| 35 | Observability | Structured logs; trace viewer; two real alerts | Dashboard shows last 100 requests |
+| 36 | Cost + rollback | Cost table (see template below); rollback runbook filled in | Can read both out loud |
+| 37 | Incident | Break on purpose; write incident report; model card with **do not use for** | Report in repo |
 
 ---
 
@@ -41,6 +55,32 @@ control with an identifier logged on every call.
 rollback?" before anyone asks. What the alert looks like, the command that rolls back, how to switch
 models without redeploying, the kill switch, and who to tell.
 
+```markdown
+# Rollback runbook — [service name]
+
+## When to use this
+- Alert: eval pass rate below 70% for 15 minutes (link: [dashboard URL])
+- Alert: p95 latency above 3s for 10 minutes
+- Manual: user reports systematic wrong answers
+
+## Roll back application
+1. `git checkout [last-good-tag]` or redeploy previous image: `[registry]/app:[tag]`
+2. Confirm health: `curl https://[url]/health`
+
+## Roll back model (no full redeploy)
+1. Set env `MODEL_ID=[previous-model]` or switch config in [config path]
+2. Restart workers: `[your command]`
+
+## Kill switch
+- Disable feature flag `LLM_ENABLED=false` or route to static fallback message
+
+## Who to notify
+- [Your name / on-call channel]
+
+## After rollback
+- Open incident doc; attach traces from first failing request
+```
+
 **Serving.** FastAPI for one model. vLLM if you are serving an open-weights model yourself; it is
 worth understanding paged attention and continuous batching well enough to explain why throughput
 improves, since that is a good interview answer and you now know enough to actually follow it. Ray
@@ -68,6 +108,16 @@ then the effect of restructuring the prompt so the static prefix caches, routing
 cheaper model, and moving latency-tolerant work to a batch endpoint. Report the evaluation pass rate
 alongside each variant, because a cost reduction that quietly degrades quality is the classic trap.
 
+| Variant | Cost / 1k requests | Eval pass rate | Notes |
+|---|---|---|---|
+| Baseline (single model, full prompt) | $2.40 | 71% | No caching |
+| Cached static prefix (~2k tokens) | $1.10 | 71% | Prefix must exceed provider minimum |
+| Route easy queries to smaller model | $0.85 | 68% | Check quality drop before shipping |
+| Batch endpoint for async work | $0.55 | 71% | Adds minutes of latency |
+
+Fill in your own numbers from provider logs — treat any figure in a tutorial, including this table,
+as a placeholder until you measure.
+
 For self-hosting, the honest answer is arithmetic rather than preference: compare API cost per month
 against GPU hours including idle time plus the engineering hours to run it, and find the request
 volume where the lines cross. Knowing how to do that calculation matters more than which side you
@@ -75,21 +125,22 @@ land on.
 
 ## Resources
 
-All 28 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 29 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 
-- [AI Evals Free Email Course (17 parts)](https://ai.hamel.dev/eval-course) — Hamel Husain & Shreya Shankar. A free course, 5-6 hours.
-- [Eugene Yan — Start Here (LLM patterns, evals, ML in production)](https://eugeneyan.com/start-here/) — Eugene Yan. A free article, 10-15 hours.
-- [FastAPI official documentation and tutorial](https://fastapi.tiangolo.com/) — Sebastián Ramírez. Free documentation, 10-15 hours.
-- [GitHub Actions documentation (quickstart + workflows + deployment)](https://docs.github.com/en/actions) — GitHub documentation team. Free documentation, 6-10 hours.
+- [Docker documentation — Get started, and the Python guide](https://docs.docker.com/get-started/) — Docker documentation team. Free documentation, 4-6 hours. Week 33.
+- [FastAPI official documentation and tutorial](https://fastapi.tiangolo.com/) — Sebastián Ramírez. Free documentation, 10-15 hours; do not skip the testing chapter.
+- [GitHub Actions documentation](https://docs.github.com/en/actions) — GitHub documentation team. Free documentation, 6-10 hours. Week 34.
+- [Prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) — OpenAI developer documentation. Free, 1-2 hours; read your own provider's equivalent too. Week 36.
 
 ## What to build
 
 Take the application from [Chapter 5](../05-language-models/README.md) and finish it properly: a multi-stage Dockerfile, CI running tests
 and evaluations, deployment to a free tier, structured logging of every request, a small dashboard,
-two alerts you would actually act on, a rollback runbook, a cost table, and a model card that
-includes what the system should **not** be used for.
+two alerts you would actually act on, a rollback runbook, a cost table, and a model card. A model
+card is a one-page note on what the system is for, what it was evaluated on, and what it should
+**not** be used for.
 
 Then break it on purpose and write a short incident report: what you injected, how long detection
 took, what fired, how you rolled back, and what you would change. That document is worth more than
@@ -101,6 +152,18 @@ another model in a portfolio, because very few people have one.
 - You can reproduce a model from a commit hash.
 - You can show your dashboard and justify each alert.
 - You can read your incident report and your cost table out loud.
+
+## A few things worth knowing
+
+- **Deploy on day one of the week, not day five.** The first deploy always surfaces something: a
+  missing system library, a secret that was only in your shell, a port that is not exposed. Finding
+  that on Monday leaves the week for fixing it.
+- **Your first image will be huge.** Everyone's is. `docker history` shows which layer is to blame;
+  it is usually build tools, unused CUDA libraries or training data, and the image tends to halve in
+  twenty minutes once you look.
+- **Secrets never go in the image.** Pass them in at run time as environment variables or from the
+  platform's secret store, keep a `.env.example` with the names but no values, and check that
+  `.dockerignore` and `.gitignore` both exclude the real file.
 
 ---
 

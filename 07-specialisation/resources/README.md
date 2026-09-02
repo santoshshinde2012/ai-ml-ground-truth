@@ -1,8 +1,8 @@
 # Resources — Chapter 7: Choosing a specialisation
 
 The resources for this chapter, grouped by how central each is, with a short note on what each one
-is for. As the chapter notes, its experimentation and causal-inference references sit outside this
-set — vet those with particular care.
+is for. The shared list covers practice grounds and open-source paths. Each branch then has its own
+depth section: start there once you have picked.
 
 Prices and free tiers change often, so check a resource's own page before you plan around one.
 
@@ -10,7 +10,7 @@ Prices and free tiers change often, so check a resource's own page before you pl
 
 ## Start here
 
-The resources on the main path for this chapter. If you only do a few things, do these.
+The resources on the main path for this chapter, in the order the chapter uses them. If you only do a few things, do these.
 
 ### [Kaggle Playground Series](https://www.kaggle.com/competitions?searchQuery=playground+series)
 
@@ -20,13 +20,13 @@ The correct entry point to Kaggle in 2026, and the one to use **instead** of Tit
 
 > **Worth knowing.** Playground datasets are synthetically generated from real-world data. Seasons rotate monthly, so any fixed season link goes stale — search Kaggle competitions for the current Playground Series.
 
-### [The Embedded Entrepreneur: How to Build an Audience-Driven Business](https://www.amazon.com/Embedded-Entrepreneur-Build-Audience-Driven-Business/dp/3982195764)
+### [scikit-learn Contributing Guide](https://scikit-learn.org/stable/developers/contributing.html)
 
-*Arvid Kahl* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 8-10 hours
+*scikit-learn core maintainers* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-4 hours
 
-The best structured antidote to the beginner failure mode of building a technically impressive AI thing nobody wants. Kahl's sequence — Audience Discovery, Audience Exploration, Problem Discovery, then Audience Building — inverts the usual order: find the customers first, build the solution with them. For an AI portfolio this is what converts 'RAG over documents' into 'RAG over the 2,400-page regulation that 40 people in this Slack complain about weekly', which is exactly the specificity hiring managers reward. The book itself was written this way with 500+ alpha readers.
+Read this **before** you plan an open-source-contribution path, because it is refreshingly honest and contradicts most career advice. The maintainers state they rarely use the 'good first issue' label because such issues 'often prove more complex than originally anticipated', and that contributing code 'generally requires advanced skills, and it may not be the best place to begin if you are new to open source contribution.' They point newcomers instead at bug triage, reviewing others' PRs, and documentation, and look at 'Easy', 'help wanted' and 'Needs Investigation' labels.
 
-> **Worth knowing.** A bootstrapping and audience-building book, the weakest topical fit in an AI/ML learning path. Sold through a commerce listing with no free preview.
+> **Worth knowing.** The project has explicitly hardened against low-effort and AI-assisted contributions: an LLM-generated PR will be closed and can burn goodwill. Read the guide, start with issue triage and docs, and expect a high bar.
 
 ### [PyTorch good-first-issue queue](https://github.com/pytorch/pytorch/contribute)
 
@@ -36,13 +36,71 @@ Unlike most large ML repositories, PyTorch tends to keep a genuinely populated a
 
 > **Worth knowing.** A tool, not a lesson — and PyTorch "good first issues" are frequently C++/CUDA/compiler-internals work, not beginner-friendly in the way the label implies.
 
-### [scikit-learn Contributing Guide](https://scikit-learn.org/stable/developers/contributing.html)
+## Branch A — AI Engineer depth
 
-*scikit-learn core maintainers* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-4 hours
+There is no single course for this branch yet; its depth lives in the engineering literature and in
+systems you instrument yourself. The plan is a full, careful re-read of the strongest
+[Chapter 5](../../05-language-models/resources/README.md) and
+[Chapter 6](../../06-production/resources/README.md) resources: the Anthropic engineering blog's
+agent sequence end to end, *12-Factor Agents*, and Husain and Shankar's evals material applied to
+your own traces.
 
-Read this **before** you plan an open-source-contribution path, because it is refreshingly honest and contradicts most career advice. The maintainers state they rarely use the 'good first issue' label because such issues 'often prove more complex than originally anticipated', and that contributing code 'generally requires advanced skills, and it may not be the best place to begin if you are new to open source contribution.' They point newcomers instead at bug triage, reviewing others' PRs, and documentation, and look at 'Easy', 'help wanted' and 'Needs Investigation' labels.
+## Branch B — ML Engineer depth
 
-> **Worth knowing.** The project has explicitly hardened against low-effort and AI-assisted contributions: an LLM-generated PR will be closed and can burn goodwill. Read the guide, start with issue triage and docs, and expect a high bar.
+If you picked Branch B, start here rather than with the shared list above.
+
+### [Stanford CS336: Language Modelling from Scratch (Spring 2026)](https://cs336.stanford.edu/)
+
+*Percy Liang & Tatsunori Hashimoto* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 40-60 hours for Assignment 1 only; 150-250 hours for the full course
+
+The most rigorous free language-model curriculum there is, and the natural depth path for this branch. Seventeen lectures: tokenisation, resource accounting, architectures, attention alternatives and mixture-of-experts, GPUs and TPUs, Triton kernels, parallelism, scaling laws, inference, evaluation, data sourcing and filtering, post-training (SFT, RLHF, RLVR) and alignment. Five assignments: Basics, Systems, Scaling, Data, and Alignment and Reasoning RL. For this chapter, timebox it: watch the first four lectures, do **Assignment 1 only**, and treat that as your capstone. You will touch tokenisation, a from-scratch training stack, and the systems thinking interviews test. Skip the paid certificate; the [lecture recordings](https://www.youtube.com/playlist?list=PLoROMvodv4rMqXOcazWaTUHhq-yembLCV) and [assignment repositories](https://github.com/stanford-cs336) are public.
+
+> **Worth knowing.** A graduate systems course, not an introduction: it assumes fluent PyTorch and comfort with GPUs. Assignment 1 alone is forty to sixty hours if done honestly. The rest is a second-year project, not a six-week sprint.
+
+## Branch C — Data Scientist depth
+
+If you picked Branch C, start here. These three references sit outside the rest of this book's curated set — vet them with particular care, but practitioners name them constantly for good reason.
+
+### [Trustworthy Online Controlled Experiments (companion site)](https://www.experimentguide.com/)
+
+*Ron Kohavi, Diane Tang & Ya Xu* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid book; free companion materials &nbsp;·&nbsp; 20-30 hours
+
+The standard reference for A/B testing at scale, written by experimentation leaders from Microsoft,
+Google and LinkedIn. The book itself is paid; the companion site at experimentguide.com carries
+slides, FAQs, and supplementary material worth reading before you buy. Read it for the mechanics
+that actually matter in interviews: randomisation units, guardrail metrics, peeking, carryover,
+validity checks, and why a surprising positive result should make you suspicious first. Pair with
+your capstone — an experiment write-up with a sensitivity analysis is exactly what this prepares.
+
+> **Worth knowing.** Not free in full. Use the companion site and library access, and buy the book
+> only if experimentation is the branch you are committing to.
+
+### [The Effect: An Introduction to Research Design and Causality](https://theeffectbook.net/)
+
+*Nicholas Huntington-Klein* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free online &nbsp;·&nbsp; 25-40 hours
+
+A gentler complement to the Mixtape: research design and identification first, regression mechanics
+second. Part 1 uses causal diagrams to make confounding and identification intuitive; Part 2 covers
+implementation with controls, matching and regression discontinuity. The free Bookdown version stays
+on theeffectbook.net; a print edition exists if you prefer paper. Best for someone who finds the
+Mixtape's pace fast, or who needs to explain a design choice to a non-technical stakeholder in a
+decision memo — which is most of the Data Scientist job.
+
+> **Worth knowing.** Examples lean econometric. The `causaldata` package (R, Stata, Python) holds
+> the book's datasets if you want to run the code alongside the prose.
+
+### [Causal Inference: The Mixtape (2nd edition, online)](https://mixtape.scunning.com/)
+
+*Scott Cunningham* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free online &nbsp;·&nbsp; 30-50 hours
+
+The most approachable free introduction to causal inference for social-science-style questions.
+Cunningham walks difference-in-differences, matching, regression discontinuity, instrumental
+variables and sensitivity analysis with plain language and worked examples in R and Stata. The
+online second edition is still being polished — expect typos — but it is readable now and costs
+nothing. Use it when your capstone needs a causal claim, not just a correlation with a good p-value.
+
+> **Worth knowing.** The 2nd-edition web version is explicitly a work-in-progress. Code is in R/Stata,
+> not Python — translate the ideas, not the syntax, unless your capstone is in R.
 
 ## Optional depth
 
@@ -55,6 +113,14 @@ Worth your time if the chapter left you wanting more, or if this is where you wa
 The canonical existence proof that one person can ship and monetise an AI product, and a useful corrective to the mythology. Real numbers: PhotoAI launched Feb 2023, ~$5.4K MRR in week one, ~$132-138K MRR by Nov 2025. But read the caveats hiring managers and founders both note — it came after roughly 70 failed projects, and it launched into an audience of ~350K followers. The transferable lessons are narrow scope, boring stack (vanilla PHP), ship daily, tweet every ship and every revenue milestone; the non-transferable part is the pre-existing distribution.
 
 > **Worth knowing.** Anonymous user-generated content with no editorial review; every revenue number is a third-party estimate — Levels publishes his own figures on his open startup pages. One extreme outlier is not a template, and its PHP/SQLite/one-VPS stack is not what this book teaches.
+
+### [The Embedded Entrepreneur: How to Build an Audience-Driven Business](https://www.amazon.com/Embedded-Entrepreneur-Build-Audience-Driven-Business/dp/3982195764)
+
+*Arvid Kahl* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 8-10 hours
+
+The best structured antidote to the beginner failure mode of building a technically impressive AI thing nobody wants. Kahl's sequence — Audience Discovery, Audience Exploration, Problem Discovery, then Audience Building — inverts the usual order: find the customers first, build the solution with them. For an AI portfolio this is what converts 'RAG over documents' into 'RAG over the 2,400-page regulation that 40 people in this Slack complain about weekly', which is exactly the specificity hiring managers reward. The book itself was written this way with 500+ alpha readers.
+
+> **Worth knowing.** A bootstrapping and audience-building book, the weakest topical fit in an AI/ML learning path. Sold through a commerce listing with no free preview.
 
 ## Keep for reference
 
@@ -96,9 +162,10 @@ Transformers is the friendliest large ML repo culturally — the contributing gu
 
 *Vinod Chugani* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; under an hour
 
-Useful mainly as a blunt statement of the consensus: these datasets are red flags to experienced technical reviewers because when every bootcamp graduate has an identical Titanic notebook, the notebook carries zero signal — it confirms you can follow a tutorial, not that you can formulate a problem, source data, build a system and measure impact. Its constructive fix is the right one: add at least one project where you sourced your own data, defined your own question and made your own decisions. Read it once for the framing, then ignore listicle sites entirely.
+Useful mainly as a blunt statement of the consensus: these datasets tell an experienced reviewer very little, because when every bootcamp graduate has an identical Titanic notebook, the notebook carries zero signal — it confirms you can follow a tutorial, not that you can formulate a problem, source data, build a system and measure impact. Its constructive fix is the right one: add at least one project where you sourced your own data, defined your own question and made your own decisions. Read it once for the framing, then move on.
 
 > **Worth knowing.** SEO-oriented content marketing on a stats-tutorial site: thin sourcing, and no data behind its hiring claims. Read it as framing, not as evidence.
 
 ---
+
 [Back to the chapter](../README.md) &nbsp;·&nbsp; [Back to the book](../../README.md)

@@ -9,7 +9,21 @@ Prices and free tiers change often, so check a resource's own page before you pl
 
 ## Start here
 
-The resources on the main path for this chapter. If you only do a few things, do these.
+The resources on the main path for this chapter, in the order the chapter uses them. If you only do a few things, do these.
+
+### [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html)
+
+*Andrej Karpathy* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 40-70 hours
+
+This is the single best answer to 'how much maths do I actually need before writing code', because Karpathy states the prerequisite himself on the course page: 'Solid programming (Python), intro-level math (e.g. derivative, gaussian).' That is the whole gate. Lecture 1 builds micrograd — a ~100-line scalar autograd engine — from nothing, and in doing so it teaches you the chain rule by making you implement it, which is strictly more durable than watching a derivation. Lecture 5 ('Becoming a Backprop Ninja') forces you to hand-derive backward passes through matrix multiply, softmax, cross-entropy and BatchNorm, which is the real matrix-calculus exam.
+
+> **Worth knowing.** Frozen since February 2024. Strong on backprop, MLPs and transformer intuition, but stops before post-training, RLHF and the scaling infrastructure behind a modern LLM.
+
+### [PyTorch official tutorials — "Learn the Basics"](https://docs.pytorch.org/tutorials/beginner/basics/intro.html)
+
+*Suraj Subramanian, Seth Juarez, Cassie Breviu, Dmitry Soshnikov & Ari Bornstein* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 8-12 hours
+
+The 8-part official path (Tensors, Datasets/DataLoaders, Transforms, Build Model, Autograd, Optimization Loop, Save/Load) using FashionMNIST. Non-negotiable: this is where you learn the idioms of the framework everyone actually uses, and how to read the docs when Stack Overflow fails. Every section opens in Colab. Do it in week 15, straight after the autograd exercise — or, if you took the fast.ai-first route, right after lesson 3 — so you can see what fastai is abstracting away. Docs currently track PyTorch 2.13.
 
 ### [CS231n course notes (Neural Networks + Convolutional Neural Networks modules)](https://cs231n.github.io/)
 
@@ -27,30 +41,6 @@ The best 'math + code in the same cell' book: every concept appears as prose, eq
 
 > **Worth knowing.** Author affiliations are as of the 2023 publication and are now out of date. Follow the PyTorch code path; the MXNet one is obsolete.
 
-### [fastbook — Deep Learning for Coders with fastai & PyTorch (free Jupyter notebooks)](https://github.com/fastai/fastbook)
-
-*Jeremy Howard & Sylvain Gugger* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20 hours
-
-The book behind the course, released in full as runnable notebooks. Read chapter N after watching lesson N — the book contains the derivations and 'further research' questions the video skims. Chapter 4 ('MNIST basics'), where you build SGD from scratch, is the bridge to Karpathy. Note: the prettified web edition at fastai.github.io/fastbook2e only shows 6 of 20 chapters in full — use the GitHub notebooks, which are complete and free.
-
-> **Worth knowing.** A 2020 book whose last commit is two years old: the fastai-specific APIs and environment pins are what rot, so expect dependency-resolution pain on a fresh install. The top-down pedagogy still holds up.
-
-### [Kaggle Notebooks — free GPU/TPU quota](https://www.kaggle.com/docs/notebooks)
-
-*Kaggle* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
-
-Kaggle is the clear answer for a learner with no money. Kaggle gives a visible, predictable weekly quota (one P100 16GB or two T4s, plus TPU access) rather than Colab's undisclosed, demand-dependent allocation that can silently drop you to CPU at peak times. Two extra advantages for a beginner: datasets are already mounted (no download bandwidth cost) and public notebooks let you read how strong practitioners structure real training code. Practical rule: prototype in Colab because it starts faster, run anything that matters on Kaggle because the quota is honest. Colab free (T4, ~15–30 GPU-hours/week depending on demand) is the fallback, not the plan.
-
-> **Worth knowing.** Kaggle changes its weekly GPU/TPU allowance, so treat any printed hours figure as approximate and check the current limits.
-
-### [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html)
-
-*Andrej Karpathy* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 40-70 hours
-
-This is the single best answer to 'how much maths do I actually need before writing code', because Karpathy states the prerequisite himself on the course page: 'Solid programming (Python), intro-level math (e.g. derivative, gaussian).' That is the whole gate. Lecture 1 builds micrograd — a ~100-line scalar autograd engine — from nothing, and in doing so it teaches you the chain rule by making you implement it, which is strictly more durable than watching a derivation. Lecture 5 ('Becoming a Backprop Ninja') forces you to hand-derive backward passes through matrix multiply, softmax, cross-entropy and BatchNorm, which is the real matrix-calculus exam.
-
-> **Worth knowing.** Frozen since February 2024. Strong on backprop, MLPs and transformer intuition, but stops before post-training, RLHF and the scaling infrastructure behind a modern LLM.
-
 ### [Practical Deep Learning for Coders (fast.ai)](https://course.fast.ai/)
 
 *Jeremy Howard* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 40-80 hours
@@ -59,23 +49,47 @@ Included here as the primary source for the entire 'just enough math' position, 
 
 > **Worth knowing.** The current course is the 2022 recording, so expect API drift in the notebooks. It is a deep-learning course, not a math resource.
 
-### [PyTorch official tutorials — "Learn the Basics"](https://docs.pytorch.org/tutorials/beginner/basics/intro.html)
+### [fastbook — Deep Learning for Coders with fastai & PyTorch (free Jupyter notebooks)](https://github.com/fastai/fastbook)
 
-*Suraj Subramanian, Seth Juarez, Cassie Breviu, Dmitry Soshnikov & Ari Bornstein* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 8-12 hours
+*Jeremy Howard & Sylvain Gugger* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20 hours
 
-The 8-part official path (Tensors, Datasets/DataLoaders, Transforms, Build Model, Autograd, Optimization Loop, Save/Load) using FashionMNIST. Non-negotiable: this is where you learn the idioms of the framework everyone actually uses, and how to read the docs when Stack Overflow fails. Every section opens in Colab. Do it early in this chapter, right after fast.ai lesson 3, so you can see what fastai is abstracting away. Docs currently track PyTorch 2.13.
+The book behind the course, released in full as runnable notebooks. Read chapter N after watching lesson N — the book contains the derivations and 'further research' questions the video skims. Chapter 4 ('MNIST basics'), where you build SGD from scratch, is the bridge to Karpathy. Note: the prettified web edition at fastai.github.io/fastbook2e only shows 6 of 20 chapters in full — use the GitHub notebooks, which are complete and free.
+
+> **Worth knowing.** A 2020 book whose last commit is two years old: the fastai-specific APIs and environment pins are what rot, so expect dependency-resolution pain on a fresh install. The top-down pedagogy still holds up.
+
+### [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY)
+
+*Andrej Karpathy* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 8 hours
+
+The canonical 'build a transformer with your own hands' lecture. Type it, don't watch it. This is the step that converts 'attention is a weighted average' from a phrase into something you can debug. Part of the Neural Networks: Zero to Hero series (https://karpathy.ai/zero-to-hero.html); if you have no backprop background, do the micrograd lecture (#1) first.
+
+> **Worth knowing.** A from-scratch teaching build rather than the current state of the art — pair it with nanochat for how a modern model is actually assembled.
+
+### [Let's build the GPT Tokenizer](https://youtu.be/zduSFxRajkE)
+
+*Andrej Karpathy* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4 hours
+
+Tokenisation is the #1 source of weird LLM behaviour that beginners misattribute to 'the model is weak' — trailing whitespace bugs, non-English cost blowups, JSON key sensitivity, arithmetic failures. 2h13m building BPE from scratch. Stanford CS336 also opens with tokenisation for the same reason. Do this immediately after 'Let's build GPT'.
 
 ### [Understanding Deep Learning (UDL)](https://udlbook.github.io/udlbook/)
 
 *Simon J.D. Prince* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 60-80 hours
 
-This is the book that should have replaced Goodfellow as the default recommendation, and in 2026 it has. It is modern (transformers, diffusion, graph nets, self-supervised learning), ruthlessly curated rather than encyclopedic, and comes with free Colab notebooks, full slides for the early chapters, and answers to selected problems — so a self-learner can actually check themselves. For a beginner path: do NOT read it cover-to-cover first. Use it as the lookup layer under fast.ai and Karpathy — when a lesson says 'we use batch norm here', read the UDL chapter that night.
+This is the book that should have replaced Goodfellow as the default recommendation, and in 2026 it has. It is modern (transformers, diffusion, graph nets, self-supervised learning), ruthlessly curated rather than encyclopedic, and comes with free Colab notebooks, full slides for the early chapters, and answers to selected problems — so a self-learner can actually check themselves. For a beginner path: do not read it cover to cover first. Use it as the lookup layer under fast.ai and Karpathy — when a lesson says 'we use batch norm here', read the UDL chapter that night.
 
 > **Worth knowing.** The book site alone is thin: the notebooks, slides, figures and answer booklet live in the GitHub repo at github.com/udlbook/udlbook.
 
 ## Optional depth
 
 Worth your time if the chapter left you wanting more, or if this is where you want to specialise.
+
+### [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+
+*Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser & Illia Polosukhin* &nbsp;·&nbsp; Paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3 hours
+
+Read it once, mid-journey — after Karpathy's GPT video, not before. Reading it cold as your first resource is the classic beginner mistake: it's a 2017 machine-translation paper about an encoder-decoder model, and a 2026 LLM shares maybe half its design. Its lasting value is that it teaches you to read papers and shows you what has and hasn't survived nine years.
+
+> **Worth knowing.** The primary source, not a tutorial — read it after the Illustrated Transformer and Karpathy's GPT lecture, or you will bounce off it.
 
 ### [Deep Learning Specialization (DeepLearning.AI / Coursera)](https://www.coursera.org/specializations/deep-learning)
 
@@ -89,7 +103,7 @@ Worth your time if the chapter left you wanting more, or if this is where you wa
 
 *Jeremy Howard with Jonathan Whitaker, Tanishq Abraham & Wasim Lorgat, plus Stability.ai and Hugging Face contributors* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
 
-You rebuild a modern deep learning framework and Stable Diffusion from the ground up — matrix multiplication, backprop, ResNets, U-Nets, transformers, optimizers, mixed precision, DDPM/DDIM. This is fast.ai's answer to the criticism that it hides too much, and it is the ideal 'act three' after Part 1 + Karpathy. Not a beginner resource: it explicitly assumes Part 1 or equivalent PyTorch/Kaggle competence.
+You rebuild a modern deep learning framework and Stable Diffusion from the ground up — matrix multiplication, backprop, ResNets, U-Nets, transformers, optimisers, mixed precision, DDPM/DDIM. This is fast.ai's answer to the criticism that it hides too much, and it is the ideal 'act three' after Part 1 + Karpathy. Not a beginner resource: it explicitly assumes Part 1 or equivalent PyTorch/Kaggle competence.
 
 > **Worth knowing.** The headline deliverable — implementing Stable Diffusion from scratch — targets a deprecated model generation, and DDPM-style formulations have largely given way to flow matching. Strongest as a foundations course.
 
@@ -166,6 +180,14 @@ Not for reading end to end. Useful to have when you need to look something up.
 Published 2016 and, by the authors' own statement, only minor corrections since. Parts I–II (linear algebra, probability, numerical computation, feedforward nets, regularisation, optimisation, CNNs — roughly chapters 2–9) are still the cleanest rigorous treatment of the mathematics. Everything about sequence models and generative models is pre-transformer and pre-diffusion and should be skipped. **The trap:** it is the most-recommended and least-finished book in the field. Treat it as an encyclopedia you open for one rigorous explanation (vanishing gradients, why L2 regularisation does what it does), never as a beginner's reading plan.
 
 > **Worth knowing.** A decade old and structurally missing the transformer architecture, so it cannot serve as a 2026 deep-learning text on its own. Dense and notation-heavy graduate reference that beginners reliably bounce off.
+
+### [Kaggle Notebooks — free GPU/TPU quota](https://www.kaggle.com/docs/notebooks)
+
+*Kaggle* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
+
+Kaggle is the clear answer for a learner with no money. Kaggle gives a visible, predictable weekly quota (one P100 16GB or two T4s, plus TPU access) rather than Colab's undisclosed, demand-dependent allocation that can silently drop you to CPU at peak times. Two extra advantages for a beginner: datasets are already mounted (no download bandwidth cost) and public notebooks let you read how strong practitioners structure real training code. Practical rule: prototype in Colab because it starts faster, run anything that matters on Kaggle because the quota is honest. Colab free (T4, ~15–30 GPU-hours/week depending on demand) is the fallback, not the plan.
+
+> **Worth knowing.** Kaggle changes its weekly GPU/TPU allowance, so treat any printed hours figure as approximate and check the current limits.
 
 ### [Lightning AI Studios — free tier](https://lightning.ai/pricing)
 

@@ -4,6 +4,25 @@
 
 **The short version.** You already program; this chapter teaches the data dialect — arrays and shapes, dataframes and cleaning judgement, and enough SQL to be trusted with real data. You finish by publishing a small, reproducible analysis of a dataset you found yourself, which becomes the seed of everything you build later.
 
+**This dataset carries forward.** Chapter 3 models it. Chapter 5 can use documents in the same domain. Do not switch datasets mid-book unless you must.
+
+---
+
+## Your five-week plan
+
+About ten hours a week. Each week ends with something on GitHub.
+
+| Week | Focus | Do this | Done when |
+|---|---|---|---|
+| 1 | Setup + NumPy | uv project; NumPy basics; start 3Blue1Brown Essence of Linear Algebra (1-3 videos) | `arr.shape` and broadcasting exercises work |
+| 2 | pandas | McKinney ch 4-7 or pandas Getting Started; write 3 cleaning functions with tests | Functions + tests in `src/` |
+| 3 | SQL | SQLBolt 1-13, then ThoughtSpot tutorial; DuckDB on your CSV | Top-N-per-group query runs |
+| 4 | Your dataset | Find data **you** sourced (city portal, export, scrape); cleaning decision log | Eight+ tests pass; log has 3+ decisions |
+| 5 | Publish | README (question / answer / limitation); five charts; `uv run` reproduces | Stranger can clone and reproduce |
+
+New words in this chapter — array, broadcasting, dataframe, point-in-time — are explained where
+they first appear below, and collected in [Terms in plain English](../README.md#glossary).
+
 ---
 
 ## What you will be able to do
@@ -62,14 +81,18 @@ verify and debug the result against a schema you understand, and interviews stil
 
 ## Resources
 
-All 26 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 27 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 
-- [CS50's Introduction to Programming with Python (CS50P)](https://cs50.harvard.edu/python/) — David J. Malan. A free course, 90-120 hours. Only if Python is not yet one of your languages: its hours sit on top of this chapter's 50, not inside them. If you already write Python, start with NumPy and pandas instead. Only if Python is not yet one of your languages: its hours sit on top of this chapter's 50, not inside them. If you already write Python, start with NumPy and pandas instead.
-- [DuckDB documentation](https://duckdb.org/docs/current/) — Hannes Mühleisen & Mark Raasveldt; DuckDB Foundation. Free documentation, 4-8 hours.
-- [Learn Git Branching](https://learngitbranching.js.org/) — Peter Cottle. A free interactive tutorial, 3-5 hours.
+- [Python for Data Analysis, 3rd Edition](https://wesmckinney.com/book/) — Wes McKinney. A free book, 40-60 hours; chapters 4 to 8 and 10 are the ones that matter.
+- [NumPy: the absolute basics for beginners](https://numpy.org/doc/stable/user/absolute_beginners.html) — NumPy documentation contributors. Free documentation, 3-6 hours.
 - [Mode / ThoughtSpot SQL Tutorial (Basic, Intermediate, Advanced)](https://www.thoughtspot.com/sql-tutorial) — ThoughtSpot. A free interactive tutorial, 10-15 hours.
+- [uv — official documentation](https://docs.astral.sh/uv/) — Charlie Marsh. Free documentation, 2-4 hours; the Getting Started and Projects pages are enough.
+
+If Python is not yet one of your languages, do [CS50P](https://cs50.harvard.edu/python/) first.
+Its 90 to 120 hours sit on top of this chapter's 50, not inside them, and the chapter will make
+much more sense afterwards.
 
 ## What to build
 

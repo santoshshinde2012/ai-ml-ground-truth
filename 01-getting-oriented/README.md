@@ -6,6 +6,20 @@
 
 ---
 
+## Your week 0 plan
+
+About eight hours total. Do the days in order; skip nothing that ends in a commit or a log line.
+
+| Day | Hours | Do this | Done when |
+|---|---|---|---|
+| 1 | 2 | Read "Pick one target role" below. Write your choice + one non-salary reason in README. | Role is written down |
+| 2 | 2 | Run the uv commands below. `git init`, push to a **public** repo. | Friend can clone and run `uv sync` |
+| 3 | 1 | Create `LOG.md`. Add today's line (see What to build). | First log entry exists |
+| 4 | 1 | Open Google Colab. Run `import pandas as pd; print(pd.__version__)`. Try switching to a GPU runtime. | Notebook runs; CPU is fine today |
+| 5 | 2 | Read Eugene Yan's interview article (linked in Resources); note the two skills in bold. Skim the compute table below. | You can name the two skills and your GPU plan |
+
+---
+
 ## What you will be able to do
 
 Name the specific role you are working towards, and open a project without fighting your tools.
@@ -41,8 +55,18 @@ demonstrates, so the projects in this book are built to produce evidence of them
 **Set up your tools.** Three things changed recently enough that a lot of tutorials are now wrong.
 
 - **Environments: use [uv](https://docs.astral.sh/uv/).** One binary replaces pip, venv, pyenv,
-  pipx and poetry, and it installs Python itself. Four commands get you a working project. It is
-  still pre-1.0, and it does not replace conda for CUDA or heavy compiled scientific stacks.
+  pipx and poetry, and it installs Python itself. Four commands get you a working project:
+
+  ```bash
+  uv python install 3.13
+  uv init my-learning-repo
+  cd my-learning-repo
+  uv add pandas numpy jupyterlab
+  ```
+
+  Run code with `uv run python script.py` or `uv run jupyter lab`. Hand someone `pyproject.toml`
+  and `uv.lock` to reproduce your environment. uv is still pre-1.0, and it does not replace conda
+  for CUDA or heavy compiled scientific stacks.
 - **pandas 3.0 changed some defaults.** Copy-on-Write is now the only mode, so chained assignment
   raises an error rather than a warning, and text columns get a real string dtype instead of
   `object`. This makes a useful test of any tutorial: if it teaches `inplace=True`, works around
@@ -78,16 +102,21 @@ All 9 resources for this chapter, with notes on each, are in **[resources/](reso
 
 The ones to begin with:
 
-- [2025 Stack Overflow Developer Survey — AI section](https://survey.stackoverflow.co/2025/ai) — Stack Overflow research team. A free dataset, 1 hour.
-- [AI and Job Postings: From Destruction to Creation?](https://hiringlab.indeed.com/2026/07/08/ai-and-job-postings-from-destruction-to-creation/) — Guillermo Gallacher. A free article, under an hour.
-- [Deliberate Practice and Performance in Music, Games, Sports, Education, and Professions: A Meta-Analysis](https://gwern.net/doc/psychology/2014-macnamara.pdf) — Brooke N. Macnamara, David Z. Hambrick & Frederick L. Oswald. A free paper, 2 hours.
-- [How to Interview and Hire ML/AI Engineers](https://eugeneyan.com/writing/how-to-interview/) — Eugene Yan. A free article, 1 hour.
+- [How to Interview and Hire ML/AI Engineers](https://eugeneyan.com/writing/how-to-interview/) — Eugene Yan. A free article, 1 hour. The hiring rubric this book is built around.
+- [The Rise of the AI Engineer](https://www.latent.space/p/ai-engineer) — Shawn "swyx" Wang. A free article, 1 hour. Where the role you are most likely to be hired into got its name.
+- [AI and Job Postings: From Destruction to Creation?](https://hiringlab.indeed.com/2026/07/08/ai-and-job-postings-from-destruction-to-creation/) — Guillermo Gallacher. A free article, under an hour. Honest expectations about the junior market.
+- [Teach Yourself Programming in Ten Years](https://www.norvig.com/21-days.html) — Peter Norvig. A free article, under an hour. The antidote to "AI engineer in 30 days".
 
 ## What to build
 
 Create your learning repository, add a `LOG.md`, make your first commit, and push it. Public is
-better, even this early. Then set up one project with `uv` and confirm you can get a GPU session
-in Colab.
+better, even this early. One line per session is enough:
+
+```markdown
+2026-08-28 · 2h · Created repo with uv; Colab GPU session works · Broke: forgot `uv run` prefix
+```
+
+Then set up one project with `uv` and confirm you can get a GPU session in Colab.
 
 ## Before you move on
 

@@ -1,12 +1,33 @@
 # Chapter 5: Language models and AI engineering
 
-**Weeks 23-32 &nbsp;·&nbsp; about 98 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
+**Weeks 23-32 &nbsp;·&nbsp; about 100 hours.** &nbsp;·&nbsp; [Index](../README.md) &nbsp;·&nbsp; [Resources for this chapter](resources/README.md)
 
 **The short version.** This is the centre of the book. You learn to treat a language model as a dependency: control what goes into its context, retrieve the right facts, and — above all — measure whether it works before trying to make it better. You finish by shipping a small, real product in two weeks, with an evaluation suite and a user who is not you.
 
+**Same thread.** Build on documents from your Chapter 2 domain — ticket appeals, API docs you use at work, your exported notes. The eval discipline is the same as Chapter 3, applied to text.
+
 ---
 
-This is the longest stage, and for someone aiming at AI Engineer it is the centre of this book.
+## Your ten-week overview
+
+Weeks 23-32, about ten hours a week. Weeks 27-28 are the **two-week product sprint** (detailed day plan below).
+
+| Week | Focus | Do this | Done when |
+|---|---|---|---|
+| 23 | Model as dependency | Anthropic API course; one script calling the API with logging | Every call logs prompt id + latency |
+| 24 | Context + tools | Structured output; tool call that returns real data | Tool result in trace |
+| 25 | Retrieval | Chunk corpus; embed; on 20 hand-labelled queries measure recall at k (did the right chunk land in the top k?) | Two chunk strategies compared |
+| 26 | Eval workflow | 50 gold pairs (inputs with the output you expect); read 30 traces; write failure notes | Failure modes listed |
+| 27-28 | **Two-week product** | Follow day-by-day plan below | Public URL + pass-rate chart |
+| 29 | Agents vs workflows | Write 60-line loop yourself; justify workflow in README | Can debug without framework |
+| 30 | MCP or cost | MCP spec **or** caching + routing cost table | One measured optimisation |
+| 31 | Fine-tuning (optional) | Honest before/after — include "not worth it" if true | Four-way comparison table |
+| 32 | Buffer | CI eval gate; rehearse system-design story | Prompt change fails CI when quality drops |
+
+New words in this chapter — context engineering, retrieval, gold set, pass rate, trace, judge — are
+explained where they first appear below, and collected in [Terms in plain English](../README.md#glossary).
+
+---
 
 ## What you will be able to do
 
@@ -116,20 +137,24 @@ judgement than a successful fine-tune does.
 
 ## Resources
 
-All 39 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 35 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 
-- [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy. A free repository, 3-5 hours.
-- [a smol course (post-training)](https://huggingface.co/learn/smol-course/en/unit0/1) — Ben Burtenshaw. A free course, 25-35 hours.
-- [Anthropic Courses (API fundamentals, real-world prompting, prompt evaluations, tool use)](https://github.com/anthropics/courses) — Anthropic education team. A free course, 12-18 hours.
-- [Anthropic Engineering blog](https://www.anthropic.com/engineering) — Anthropic engineering and applied AI teams. A free article, 1-2 hours.
+- [Deep Dive into LLMs like ChatGPT](https://www.youtube.com/watch?v=7xTGNNLPyMI) — Andrej Karpathy. A free video, 4 hours. Watch it in week 23 for the map.
+- [Anthropic Courses (API fundamentals, prompting, evaluations, tool use)](https://github.com/anthropics/courses) — Anthropic education team. A free course, 12-18 hours.
+- [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/) — Hamel Husain. A free article, 1 hour. Then the Evals FAQ by the same authors.
+- [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — Erik Schluntz & Barry Zhang. A free article, 1 hour.
 
 ## What to build
 
-**An evaluation-first application.** Pick a narrow task you personally care about and can judge:
+**Warm up first, in about three hours.** Deploy any pretrained model behind a public URL. It proves
+nothing about you, and that is the point: its only job is to remove the fear of deploying before
+the real work starts.
+
+**Next, the evaluation-first application.** Pick a narrow task you personally care about and can judge:
 extracting fields from your own documents, triaging your own issue tracker, drafting first-pass
-replies. Then follow the ten steps above in order.
+replies. Follow the ten steps above in order.
 
 The output is a repository where the evaluation suite predates the optimisation, plus a chart of the
 pass rate across versions. This is, in my view, the single most useful thing you can build in this
@@ -152,9 +177,6 @@ Then re-scope it into a small product with a public URL, following the two-week 
 - **Frameworks after the raw loop, not before.** Provider APIs have converged enough that the
   abstraction hides less than it used to, and teams have reported real reductions in code and
   maintenance after moving back to raw SDKs. Both sides of this argument agree on the learning order.
-- **Free deployment tiers have changed.** Creating Gradio or Docker Spaces on Hugging Face now
-  requires a paid plan for personal accounts, and some other free allowances have gone. Check the
-  current pricing page before planning a weekend around a tutorial.
 - **Model names age quickly.** Everything specific in this chapter will be superseded. Tokenisation,
   attention, cache economics, retrieval, evaluation and context management will not, so that is where
   the study time is best spent.
@@ -173,7 +195,7 @@ having the list written down is what stops you spending it anyway late on day ni
 | Day | What you do | What exists at the end |
 |---|---|---|
 | 1 | Name the person and the task. Write the README first: problem, user, success metric, non-goals | A scoped problem |
-| 2 | **Hand-write 30-50 real input and expected-output pairs** | Your evaluation set, and your specification |
+| 2 | **Hand-write 30-50 real input and expected-output pairs** | Your gold set: the evaluation set, and the specification |
 | 3 | The roughest possible end-to-end path: hardcoded input, one call, printed output | You have hit every part of the pipeline once |
 | 4 | Evaluation harness, version one: assertion checks over the gold set | **A single pass-rate number.** Everything after this is measured |
 | 5 | Data layer: ingest, chunk, embed, index | Retrieval works |

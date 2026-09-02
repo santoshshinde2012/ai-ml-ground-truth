@@ -4,6 +4,26 @@
 
 **The short version.** You build a tiny neural network engine from an empty file, learn PyTorch properly, practise diagnosing training that quietly fails, and build attention with your own hands. You finish with a model you trained yourself and can explain — which is what separates you from someone who only calls APIs.
 
+**Same thread, new skill.** You still know tabular ML from Chapter 3. Here you learn *how neural nets learn* — the machinery behind LLMs.
+
+---
+
+## Your nine-week plan
+
+About ten hours a week. Karpathy first unless you need an early win (fast.ai lesson 1-3), as noted below.
+
+| Week | Focus | Do this | Done when |
+|---|---|---|---|
+| 14 | Autograd | Karpathy micrograd / Zero to Hero 1-2; rebuild `Value` from empty file | Backward pass on paper + code |
+| 15 | PyTorch basics | Official PyTorch tutorial; training loop from memory | Loop runs on toy data |
+| 16 | Debug training | Overfit 10 samples; learning-rate sweep; loss curves | Can name 3 failure modes |
+| 17 | MLP / CNN | Dive into Deep Learning or CS231n notes; one small classifier | Validation loss decreases |
+| 18 | Transfer learning | fast.ai lessons 1-4 **or** fastbook ch 1-4; freeze/unfreeze head | Demo on **your** images or domain |
+| 19 | Attention intuition | Karpathy build-GPT video; type along | Can draw attention block |
+| 20 | Tokeniser | Karpathy tokeniser video; byte-level on small corpus | Encode/decode round-trip works |
+| 21 | Your model | Pick capstone option from What to build; config file | Training reproducible from config |
+| 22 | Ablation + deploy | Ablation table (incl. failed runs); public demo link | README + honest ablation |
+
 ---
 
 ## What you will be able to do
@@ -47,6 +67,22 @@ should be able to type from nothing. Know why `model.train()` and `model.eval()`
 `zero_grad()` exists, what `torch.no_grad()` saves you, and why both the model and the data need to
 be on the same device.
 
+The loop you should be able to type from an empty file:
+
+```python
+model.train()
+for epoch in range(num_epochs):
+    for x, y in train_loader:
+        x, y = x.to(device), y.to(device)
+        optimizer.zero_grad()
+        loss = criterion(model(x), y)
+        loss.backward()
+        optimizer.step()
+```
+
+`model.eval()` and `torch.no_grad()` replace `model.train()` when you are measuring validation loss.
+If you cannot write this without looking, you are not ready to debug someone else's training code.
+
 **Training dynamics, and how to break them.** This is the part that separates people who can debug
 training from people who change the architecture and hope. Instrument your runs with loss curves for
 both splits, gradient norms per layer, and activation histograms.
@@ -78,18 +114,18 @@ which is not a coincidence.
 Read [*Attention Is All You Need*](https://arxiv.org/abs/1706.03762) **after** this, not before. It is a 2017 machine-translation paper
 describing an encoder-decoder model, and a current language model shares perhaps half its design.
 Read cold as a first resource it tends to discourage people; read after you have built the thing it
-is genuinely enjoyable. Its annotated entry is in [Chapter 5's resources](../05-language-models/resources/README.md).
+is genuinely enjoyable. Its annotated entry is in [resources/](resources/README.md).
 
 ## Resources
 
-All 22 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 25 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 
-- [CS231n course notes (Neural Networks + Convolutional Neural Networks modules)](https://cs231n.github.io/) — Andrej Karpathy, Justin Johnson & Fei-Fei Li. Free documentation, 15-20 hours.
-- [Dive into Deep Learning (d2l.ai)](https://d2l.ai/) — Aston Zhang, Zachary C. Lipton, Mu Li & Alexander J. Smola. A free interactive book, 60-100 hours.
-- [fastbook — Deep Learning for Coders with fastai & PyTorch (free Jupyter notebooks)](https://github.com/fastai/fastbook) — Jeremy Howard & Sylvain Gugger. A free book, 20 hours.
-- [Kaggle Notebooks — free GPU/TPU quota](https://www.kaggle.com/docs/notebooks) — Kaggle. A free tool, 30 hours.
+- [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) — Andrej Karpathy. A free course, 40-70 hours; lecture 1 (micrograd) is week 14.
+- [PyTorch official tutorials — "Learn the Basics"](https://docs.pytorch.org/tutorials/beginner/basics/intro.html) — PyTorch documentation team. Free documentation, 8-12 hours.
+- [Practical Deep Learning for Coders](https://course.fast.ai/) — Jeremy Howard. A free course, 40-80 hours; lessons 1 to 4 are what this chapter uses.
+- [Understanding Deep Learning](https://udlbook.github.io/udlbook/) — Simon J.D. Prince. A free book, 60-80 hours as a lookup layer, not a read-through.
 
 ## What to build
 
