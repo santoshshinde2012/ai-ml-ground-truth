@@ -50,8 +50,9 @@ early win, invert it and do fast.ai's first three lessons before the autograd ex
 The heat in this argument mostly comes from people who did one and not the other. Both authors have
 said versions of "learn it, then learn why".
 
-**On frameworks:** PyTorch, and only PyTorch, for at least a year. TensorFlow's own release notes
-now point new generative-AI users elsewhere. JAX is aimed at people optimising very large training
+**On frameworks:** PyTorch, and only PyTorch, for at least a year. TensorFlow now limits itself to
+security fixes, bug fixes and dependency updates, and its own 2.21 announcement points new
+generative-AI work to Keras 3, JAX or PyTorch. JAX is aimed at people optimising very large training
 runs. Keras is a reasonable production tool and a poor teaching one, because it hides the training
 loop, which is the thing you most need to see.
 
@@ -118,7 +119,7 @@ is genuinely enjoyable. Its annotated entry is in [resources/](resources/README.
 
 ## Resources
 
-All 25 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 26 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 
@@ -164,8 +165,9 @@ were within noise, with wall-clock times alongside, says more about you than a g
 - **fast.ai's own API is not PyTorch.** Its abstractions are excellent for learning and rare in
   industry, so plan to rewrite at least one project in plain PyTorch.
 - **Do not wait for a course that has not shipped.** Karpathy's LLM101n repository has been archived
-  since 2024 with a syllabus and no materials. The syllabus is a good checklist;
-  [nanochat](https://github.com/karpathy/nanochat) is the working artefact to read instead.
+  since 2024 with a syllabus and no materials. The syllabus is a good checklist. For working code,
+  read [microgpt](https://karpathy.github.io/2026/02/12/microgpt/), a single 200-line file that
+  trains a small GPT, and then [nanochat](https://github.com/karpathy/nanochat), the full pipeline.
 
 ---
 

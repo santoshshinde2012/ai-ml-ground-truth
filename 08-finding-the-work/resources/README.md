@@ -23,9 +23,9 @@ The one pay source that breaks the AI premium down **by level**, which corrects 
 
 *Exponent Team* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 3 hours
 
-Useful only as a structural map of the 2026 loop, which it describes consistently with Eugene Yan's hiring-side account: recruiter screen, technical phone screen, sometimes a take-home notebook, then an onsite of 4–6 rounds mixing 1–2 coding rounds, an ML coding round, a 45–55 minute ML system design round (frame the task, data pipeline, training, evaluation, drift monitoring), and 1–2 behavioural rounds. Two 2026-specific signals worth verifying independently: the coding bar in ML loops has risen close to general SWE level, and Meta reportedly now runs an AI-assisted coding round where you debug and extend a real codebase using an LLM.
+Useful only as a structural map of the 2026 loop, which it describes consistently with Eugene Yan's hiring-side account: recruiter screen, technical phone screen, sometimes a take-home notebook, then an onsite of 4–6 rounds mixing 1–2 coding rounds, an ML coding round, a 45–55 minute ML system design round (frame the task, data pipeline, training, evaluation, drift monitoring), and 1–2 behavioural rounds. One 2026 signal it reports: the coding bar in ML loops has risen close to general SWE level. Separately, Meta's own hiring page says many of its interviews now include a built-in AI assistant. Candidates are expected to use it, so practise reading, debugging and extending existing code with one.
 
-> **Worth knowing.** Commercial content marketing from a company that sells interview prep, so its recommendations map onto its paid product; the 'DRIVE framework' is proprietary branding, not an industry standard.
+> **Worth knowing.** Commercial content marketing from Aced (formerly Exponent), a company that sells interview prep, so its recommendations map onto its paid product. The 'DRIVE framework' is proprietary branding, not an industry standard.
 
 ### [normcore-llm-reads](https://gist.github.com/veekaybee/be375ab33085102f9027853128dc5f0e)
 
@@ -47,6 +47,14 @@ The best single 'where is the industry actually going' briefing, and it is writt
 
 Worth your time if the chapter left you wanting more, or if this is where you want to specialise.
 
+### [AI Exposure Isn't Squeezing Advertised Pay in the US — It's Boosting It](https://hiringlab.indeed.com/2026/09/17/ai-exposure-isnt-squeezing-advertised-pay-in-the-us-its-boosting-it/)
+
+*Jack Kennedy, Indeed Hiring Lab* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; under an hour
+
+The most recent evidence for this chapter's point on pay. Since 2021, advertised pay in the most AI-exposed occupations rose about 46%, against 25% in the least exposed. Part of that rise reflects fewer, more senior postings: in those occupations the entry-level share fell from 29% to 10% between 2021 and 2026. The post-ChatGPT pay premium is 5.7% once the mix of occupations is held constant. It narrows to 2.4% when the seniority mix is held constant instead. The gap is large for senior roles and negligible at entry level, though the author treats that split as suggestive. Use it to set realistic pay expectations for your first AI role.
+
+> **Worth knowing.** It measures advertised pay on US Indeed postings, not what people are actually paid, and "AI exposure" is an occupation-level score rather than a measure of your particular job.
+
 ### [CIRR verified bootcamp outcomes](https://www.cirr.org/schooldata)
 
 *Council on Integrity in Results Reporting* &nbsp;·&nbsp; Dataset &nbsp;·&nbsp; Free &nbsp;·&nbsp; under an hour
@@ -55,13 +63,13 @@ Include it for what it **no longer** shows, which is a finding in itself. CIRR i
 
 > **Worth knowing.** The latest cohort data predates the 2025–26 junior-hiring contraction, and almost all covered schools are software-engineering bootcamps, not AI/ML programmes.
 
-### [The Fearless Future: PwC's 2025 Global AI Jobs Barometer](https://www.pwc.com/gx/en/issues/artificial-intelligence/job-barometer/2025/report.pdf)
+### [PwC 2026 Global AI Jobs Barometer (full report)](https://www.pwc.com/gx/en/issues/artificial-intelligence/job-barometer/2026/2026-global-ai-jobs-barometer-full-report.pdf)
 
 *PwC global research team* &nbsp;·&nbsp; Paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1 hour
 
-The largest-N job-ad study available and the origin of the widely-quoted '56% wage premium for AI skills' (up from 25% the prior year) and 'skills sought are changing 66% faster in the most AI-exposed jobs'. That second number matters more than the first: it is the empirical case for building *learning velocity* rather than a fixed tool stack. A 2026 edition has since been published; search for the current PwC AI Jobs Barometer before quoting figures. Caveat: consultancy report, incentive to overstate the premium.
+The largest job-ad study available: more than one billion adverts across 27 countries and territories. Its 2026 headline is an average wage premium of 62% for AI skills, up from 57% the year before. Postings for jobs needing specific AI skills grew 69%, against 9% for the whole market. The most useful part for you is the entry-level analysis. In the US, AI-exposed entry-level roles are seven times more likely to ask for senior skills such as judgement and leadership. Those roles have grown 35% since 2019, while other entry-level roles shrank 10%. It supports this book's approach: show judgement early, not just tool knowledge.
 
-> **Worth knowing.** PwC is a consultancy with a commercial interest in AI-transformation advisory, and the wage-premium headlines are its own analysis, not peer-reviewed. 2025 data being read in late 2026.
+> **Worth knowing.** PwC is a consultancy with a commercial interest in AI-transformation advisory, and the headline figures are its own analysis, not peer-reviewed. The wage premium is an average that ranges from 16% to 118% by industry, and an entry-level offer is unlikely to reflect it.
 
 ## Keep for reference
 
@@ -79,9 +87,9 @@ The most-used roadmap in the world, and worth knowing. It correctly frames the A
 
 *levels.fyi* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; under an hour
 
-Use as a live lookup, not as a target. Average ML/AI SWE total compensation is around $245,000 in the US. Use it as a *calibration exercise*: filter to entry-level in your own city and compare that to the headline figure. The gap is usually large. Its weakness is severe survivorship and big-tech bias — nobody posts their ₹6 LPA or $78K offer.
+Use as a live lookup, not as a target. The site gives a median total compensation of about $250,000 for ML/AI software engineers in the US. Use it as a *calibration exercise*: filter to entry-level in your own city and compare that to the headline figure. The gap is usually large. Its weakness is severe survivorship and big-tech bias — nobody posts their ₹6 LPA or $78K offer.
 
-> **Worth knowing.** A tool, not a learning resource. The $245,000 figure is average total compensation, United States, self-reported and undated — not a median, and not what an entry-level candidate should expect.
+> **Worth knowing.** A tool, not a learning resource. The headline is a self-reported US median across all levels, weighted towards large employers, and not what an entry-level candidate should expect.
 
 ### [ML-YouTube-Courses](https://github.com/dair-ai/ML-YouTube-Courses)
 

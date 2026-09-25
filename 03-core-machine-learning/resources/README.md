@@ -185,13 +185,21 @@ The authors' own lecture videos walking through ISL chapter by chapter, with Pyt
 
 > **Worth knowing.** Lectures are a decade old and were filmed for the R edition — only the labs are Python. "Free" means audit-only; the certificate and some graded material are paid.
 
-### [TabPFN-2.5: Advancing the State of the Art in Tabular Foundation Models](https://arxiv.org/abs/2511.08667)
+### [TabPFN-3.5: Technical Report](https://arxiv.org/abs/2609.17895)
 
-*Léo Grinsztajn, Noah Hollmann, Frank Hutter et al.* &nbsp;·&nbsp; Paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2-3 hours
+*Benjamin Jäger, Nick Erickson, Léo Grinsztajn, Frank Hutter et al.* &nbsp;·&nbsp; Paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2-3 hours
 
-Read this so you are not two years out of date on the one question everyone thinks they know the answer to. TabPFN is a transformer pretrained on millions of synthetic supervised tasks that does in-context learning on tabular data with no task-specific training. TabPFN-2.5 reports a 100% win rate against default XGBoost on classification datasets up to ~10k rows / 500 features and ~87% on datasets up to 100k rows / 2k features, and leads TabArena, substantially outperforming *tuned* tree-based models.
+Read this so your picture of tabular modelling is current. TabPFN, from Prior Labs, is a transformer pretrained on synthetic tasks. It predicts on a new table from the training rows you pass in, with no training of its own. TabPFN-3 (May 2026) scaled this to a million training rows. TabPFN-3.5 (September 2026) reports the top results on TabArena, plus gains on temporal and grouped splits, text columns and wide tables. These are vendor reports, so read them next to a public leaderboard such as TabArena rather than on their own.
 
-> **Worth knowing.** A frontier research paper, not beginner reading — useful as a pointer that the tabular baseline is moving.
+> **Worth knowing.** A research report, not beginner reading. The weights are licensed for non-commercial, non-production use only, and the library asks you to log in and accept that licence on first use. TabICLv2 from Inria is a permissively licensed alternative.
+
+### [Tabular Foundation Models: A short and opinionated guide](https://tabularfoundationmodels.com/)
+
+*Christoph Molnar* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 5-8 hours
+
+A short free book, by the author of *Interpretable Machine Learning*, on how TabPFN and TabICL predict without training, how to use them in Python, and when to bet on them. Read it after your boosted-tree baseline exists, not before. It is a gentle way into an area of tabular modelling that is moving quickly.
+
+> **Worth knowing.** New in 2026, and the author says openly that he is excited about these models. Treat it as a guide to how they work, and let your own validation scheme decide whether they help.
 
 ### [The Hundred-Page Machine Learning Book](https://www.themlbook.com/)
 
@@ -208,14 +216,6 @@ The best *map* of the territory: ~140 pages covering supervised and unsupervised
 The definitive 'just enough' calculus document, and the answer to 'what part of vector calculus is actually load-bearing.' It explicitly scopes itself — 'We assume no math knowledge beyond what you learned in calculus 1' — and covers exactly the gap between scalar derivatives and the Jacobians/chain rules that backprop needs, ending with the gradient of an actual neural network loss. Critically, the authors themselves tell you **when** to read it: after you're already familiar with training neural networks, not before. That single sentence from Jeremy Howard is the strongest primary-source evidence for the top-down ordering in this whole domain.
 
 > **Worth knowing.** Undated page with content frozen at 2018.
-
-### [The state of Tabular Foundation Models (2026) — Mindful Modeler](https://mindfulmodeler.substack.com/p/the-state-of-tabular-foundation-models)
-
-*Christoph Molnar* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1 hour
-
-The clearest plain-English field survey of where tabular ML actually stands right now, from someone with no vendor stake. Molnar's timeline: 2021-22 prior-data fitted networks as proof of concept; 2024-25 the acceleration (TabICL, TabPFN v2, TabDPT); 2026 maturity where 'SOTA changes every couple of months or weeks.' His current personal pick is TabICL v2 for speed, performance and being fully open-source, and he flags a real risk that the field drifts closed-source via commercial licensing (e.g. RealTabPFN). Read this plus the TabArena leaderboard (tabarena.ai, which now redirects to a Hugging Face Space) rather than trusting any static blog ranking.
-
-> **Worth knowing.** Opinion/newsletter writing, not peer-reviewed or benchmarked, and its named-model pick (TabICL v2) is a snapshot of a fast-moving area that will date quickly.
 
 ### [Why do tree-based models still outperform deep learning on typical tabular data? (NeurIPS 2022 Datasets & Benchmarks)](https://openreview.net/forum?id=Fp7__phQszn)
 

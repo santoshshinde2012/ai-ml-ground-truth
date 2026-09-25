@@ -62,6 +62,11 @@ substantially cheaper for work that can wait. Routing easy requests to a smaller
 confidence check often does more than any of it. These figures are provider-specific and they move,
 so check the current pricing pages rather than trusting a number in any document, including this one.
 
+Reasoning models add one more dial. They think in extra tokens before they answer, mostly hidden
+from you, and those tokens are billed as output and take up context. The major providers now let you
+set an effort level on each request. Treat it like model choice: start at low effort, and raise it only
+where your evaluations show it helps. You build those evaluations later in this chapter.
+
 **Context engineering.** The context window is a budget you allocate, not a bucket you fill. Order it
 so the stable parts (system prompt, tool definitions, examples) come first and can be cached, and the
 dynamic parts (retrieved documents, history) come after. The harder problems are all about time:
@@ -128,6 +133,13 @@ versioned specification with a formal deprecation policy. Learn it from the spec
 changelog rather than from tutorials: the 2026-07-28 release moved to a stateless core, and most
 2025 tutorials teach the session model it removed.
 
+**Agent skills** are a smaller idea worth knowing next to MCP. A skill is a folder holding a
+`SKILL.md` file of instructions, plus optional scripts and reference files. The agent reads only each
+skill's name and description at first, and loads the rest when a task calls for it. That is context
+engineering in a reusable form. The format began at Anthropic, is now an
+[open standard](https://agentskills.io/home), and coding agents from several vendors support it.
+Writing one skill for a task you repeat is a quick way to see how loading on demand saves context.
+
 **Fine-tuning, considered fourth.** The order that works is a good prompt, then examples, then
 retrieval, and only then fine-tuning. It is the right tool for style and format consistency, for
 moving work to a smaller and cheaper model, and for narrow domain tasks. It is the wrong tool for
@@ -142,7 +154,7 @@ All 35 resources for this chapter, with notes on each, are in **[resources/](res
 The ones to begin with:
 
 - [Deep Dive into LLMs like ChatGPT](https://www.youtube.com/watch?v=7xTGNNLPyMI) — Andrej Karpathy. A free video, 4 hours. Watch it in week 23 for the map.
-- [Anthropic Courses (API fundamentals, prompting, evaluations, tool use)](https://github.com/anthropics/courses) — Anthropic education team. A free course, 12-18 hours.
+- [Building with the Claude API (Claude Academy)](https://academy.claude.com/courses/building-with-the-claude-api) — Anthropic education team. A free course, 9 hours.
 - [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/) — Hamel Husain. A free article, 1 hour. Then the Evals FAQ by the same authors.
 - [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — Erik Schluntz & Barry Zhang. A free article, 1 hour.
 

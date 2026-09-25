@@ -23,7 +23,7 @@ This is the single best answer to 'how much maths do I actually need before writ
 
 *Suraj Subramanian, Seth Juarez, Cassie Breviu, Dmitry Soshnikov & Ari Bornstein* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 8-12 hours
 
-The 8-part official path (Tensors, Datasets/DataLoaders, Transforms, Build Model, Autograd, Optimization Loop, Save/Load) using FashionMNIST. Non-negotiable: this is where you learn the idioms of the framework everyone actually uses, and how to read the docs when Stack Overflow fails. Every section opens in Colab. Do it in week 15, straight after the autograd exercise — or, if you took the fast.ai-first route, right after lesson 3 — so you can see what fastai is abstracting away. Docs currently track PyTorch 2.13.
+The 8-part official path (Tensors, Datasets/DataLoaders, Transforms, Build Model, Autograd, Optimization Loop, Save/Load) using FashionMNIST. Non-negotiable: this is where you learn the idioms of the framework everyone actually uses, and how to read the docs when Stack Overflow fails. Every section opens in Colab. Do it in week 15, straight after the autograd exercise — or, if you took the fast.ai-first route, right after lesson 3 — so you can see what fastai is abstracting away. Docs currently track PyTorch 2.14.
 
 ### [CS231n course notes (Neural Networks + Convolutional Neural Networks modules)](https://cs231n.github.io/)
 
@@ -37,7 +37,7 @@ Still, in 2026, the clearest written treatment of backprop-as-computational-grap
 
 *Aston Zhang, Zachary C. Lipton, Mu Li & Alexander J. Smola* &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&nbsp; 60-100 hours
 
-The best 'math + code in the same cell' book: every concept appears as prose, equation, and a runnable implementation, with parallel PyTorch, JAX, TensorFlow and NumPy/MXNet versions — so you can literally diff how the same model looks in each framework, which settles the 'which framework' question empirically. Adopted at 500+ universities. Use it as the bottom-up spine if you hate fast.ai's top-down style, or as a per-topic supplement (its optimisation and CNN chapters are excellent). Note: the last tagged release is 1.0.3 (August 2024), so its coverage of 2025–2026 LLM practice is thin; the fundamentals chapters are unaffected and still excellent.
+The best 'math + code in the same cell' book: every concept appears as prose, equation, and a runnable implementation, with parallel PyTorch, JAX, TensorFlow and NumPy/MXNet versions — so you can literally diff how the same model looks in each framework, which settles the 'which framework' question empirically. Adopted at 500+ universities. Use it as the bottom-up spine if you hate fast.ai's top-down style, or as a per-topic supplement (its optimisation and CNN chapters are excellent). Note: the last tagged release is 1.0.3 (August 2023), so its coverage of 2025–2026 LLM practice is thin; the fundamentals chapters are unaffected and still excellent.
 
 > **Worth knowing.** Author affiliations are as of the 2023 publication and are now out of date. Follow the PyTorch code path; the MXNet one is obsolete.
 
@@ -55,7 +55,7 @@ Included here as the primary source for the entire 'just enough math' position, 
 
 The book behind the course, released in full as runnable notebooks. Read chapter N after watching lesson N — the book contains the derivations and 'further research' questions the video skims. Chapter 4 ('MNIST basics'), where you build SGD from scratch, is the bridge to Karpathy. Note: the prettified web edition at fastai.github.io/fastbook2e only shows 6 of 20 chapters in full — use the GitHub notebooks, which are complete and free.
 
-> **Worth knowing.** A 2020 book whose last commit is two years old: the fastai-specific APIs and environment pins are what rot, so expect dependency-resolution pain on a fresh install. The top-down pedagogy still holds up.
+> **Worth knowing.** A 2020 book that is only lightly maintained: the fastai-specific APIs and environment pins are what age, so expect some dependency pain on a fresh install. Chapter 2's image search now uses SerpAPI, since the Bing API it relied on was retired; you need a free key, and the free plan allows 250 searches a month. The top-down pedagogy still holds up.
 
 ### [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY)
 
@@ -123,11 +123,19 @@ The best single bridge from classical ML to deep learning in one PyTorch-native 
 
 > **Worth knowing.** 2022 content, substantially superseded on current tooling by Géron's December 2025 Scikit-Learn and PyTorch book; the runnable code lives in the rasbt/machine-learning-book GitHub repo.
 
+### [microgpt](https://karpathy.github.io/2026/02/12/microgpt/)
+
+*Andrej Karpathy* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-5 hours
+
+A single file of about 200 lines of plain Python, with no libraries, that trains a small GPT and samples from it. The tokeniser, autograd engine, model, Adam optimiser and training loop all sit in one place. Read it after the build-a-GPT lecture as a review of the whole chapter: if you can follow every line, you understand the full algorithm.
+
+> **Worth knowing.** It trains on a list of names with scalar autograd in pure Python, so it is for reading and understanding, not for training anything useful.
+
 ### [MIT 6.S191: Introduction to Deep Learning (2026 edition)](https://introtodeeplearning.com/)
 
 *Alexander Amini & Ava Amini* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 15-25 hours
 
-The best short on-ramp in the field: 9 fast, well-produced lectures covering sequence modelling, CNNs, generative modelling, RL, LLMs, AI ethics and parallel training, all re-recorded and open-sourced each January — the 2026 edition is already public. Labs are Colab notebooks (repo carries both TensorFlow and PyTorch material). Use it as a one-week orientation *before* committing 3 months to fast.ai or Karpathy: it gives you the map of the territory cheaply. Not deep enough to be your main course.
+The best short on-ramp in the field: 9 fast, well-produced lectures covering sequence modelling, CNNs, generative modelling, RL, LLMs, AI ethics, AI for science and parallel training. The 2026 edition was taught at MIT in January and released publicly week by week from March to May; it is now complete. Labs are Colab notebooks (repo carries both TensorFlow and PyTorch material). Use it as a one-week orientation *before* committing 3 months to fast.ai or Karpathy: it gives you the map of the territory cheaply. Not deep enough to be your main course.
 
 ### [NYU Deep Learning (DS-GA 1008), Spring 2021 edition](https://atcold.github.io/NYU-DLSP21/)
 
@@ -157,17 +165,17 @@ Where to get the current syllabus, slides (PDFs are public, e.g. the 2026 lectur
 
 *François Fleuret* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-6 hours
 
-A ~160-page phone-readable PDF (500,000+ downloads in its first year) that does something no other resource here does: it shows you how little maths you actually need, in one sitting, at correct professional density. Fleuret explicitly limits himself 'to the background necessary to understand a few important models' — tensor shapes, the chain rule, gradient descent, cross-entropy, and the layer zoo — rather than being exhaustive. Read it in a weekend after Karpathy lecture 1 as a sanity check on scope: if you can follow this book, your maths is sufficient to proceed, and any remaining gaps can be closed just-in-time. Written for readers with a STEM background, so it is terse, not gentle.
+A phone-readable PDF of about 190 pages, updated to version 1.3 in May 2026, that does something no other resource here does: it shows you how little maths you actually need, in one sitting, at correct professional density. Fleuret explicitly limits himself 'to the background necessary to understand a few important models' — tensor shapes, the chain rule, gradient descent, cross-entropy, and the layer zoo — rather than being exhaustive. Read it in a weekend after Karpathy lecture 1 as a sanity check on scope: if you can follow this book, your maths is sufficient to proceed, and any remaining gaps can be closed just-in-time. Written for readers with a STEM background, so it is terse, not gentle.
 
-> **Worth knowing.** A compressed deep-learning primer that assumes linear algebra, calculus and probability rather than teaching them.
+> **Worth knowing.** A compressed deep-learning primer that assumes linear algebra, calculus and probability rather than teaching them. The PDF is free; the author says copies sold on Amazon are unauthorised, and his own paperback is on lulu.com.
 
-### [UMich EECS 498-007 / 598-005: Deep Learning for Computer Vision](https://web.eecs.umich.edu/~justincj/teaching/eecs498/FA2020/)
+### [UMich EECS 498-007 / 598-005: Deep Learning for Computer Vision (lecture videos)](https://www.youtube.com/playlist?list=PL5-TkQAfAZFbzxjBHtzdVCWE0Zbhomg7r)
 
-*Justin Johnson* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
+*Justin Johnson* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
 
-Johnson re-taught CS231n at Michigan with the full lecture set publicly posted on YouTube (playlist: youtube.com/playlist?list=PL5-TkQAfAZFbzxjBHtzdVCWE0Zbhomg7r), including the excellent 'Backpropagation', 'Training Neural Networks I/II', and 'Convolutional Networks' lectures. This is effectively a complete public-video CS231n, at greater depth than the single 2025 Stanford playlist. Best single video source for CNNs and training dynamics if you prefer a lecturer to a book.
+Johnson re-taught CS231n at Michigan with the full lecture set publicly posted on YouTube, including the excellent 'Backpropagation', 'Training Neural Networks I/II', and 'Convolutional Networks' lectures. This is effectively a complete public-video CS231n, at greater depth than the single 2025 Stanford playlist. Best single video source for CNNs and training dynamics if you prefer a lecturer to a book.
 
-> **Worth knowing.** The host has a broken TLS certificate chain, so some browsers warn on the URL, and the Fall 2020 material is six years stale. The YouTube lecture playlist is the more reliable route in.
+> **Worth knowing.** The course website on the Michigan server no longer loads, so the YouTube lecture playlist is the way in. The lectures were recorded in Fall 2019; use them for CNNs and training dynamics rather than current practice.
 
 ## Keep for reference
 
@@ -185,7 +193,7 @@ Published 2016 and, by the authors' own statement, only minor corrections since.
 
 *Kaggle* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
 
-Kaggle is the clear answer for a learner with no money. Kaggle gives a visible, predictable weekly quota (one P100 16GB or two T4s, plus TPU access) rather than Colab's undisclosed, demand-dependent allocation that can silently drop you to CPU at peak times. Two extra advantages for a beginner: datasets are already mounted (no download bandwidth cost) and public notebooks let you read how strong practitioners structure real training code. Practical rule: prototype in Colab because it starts faster, run anything that matters on Kaggle because the quota is honest. Colab free (T4, ~15–30 GPU-hours/week depending on demand) is the fallback, not the plan.
+Kaggle is the clear answer for a learner with no money. Kaggle gives a visible, predictable weekly quota (one P100 16GB or two T4s, plus TPU access) rather than Colab's undisclosed, demand-dependent allocation that can silently drop you to CPU at peak times. Two extra advantages for a beginner: datasets are already mounted (no download bandwidth cost) and public notebooks let you read how strong practitioners structure real training code. Practical rule: prototype in Colab because it starts faster, run anything that matters on Kaggle because the quota is honest. Colab's free tier (a T4 when one is available, with limits Google does not publish) is the fallback, not the plan.
 
 > **Worth knowing.** Kaggle changes its weekly GPU/TPU allowance, so treat any printed hours figure as approximate and check the current limits.
 
@@ -193,17 +201,17 @@ Kaggle is the clear answer for a learner with no money. Kaggle gives a visible, 
 
 *Lightning AI* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; varies
 
-The best free option when Kaggle's 9-hour session cap starts hurting: a persistent VS Code-style cloud dev environment with SSH and CLI, so your work survives between sessions (Colab and Kaggle both wipe state). Step 2 on the no-money compute ladder. Check the student program if you have a .edu address.
+The best free option when Kaggle's 12-hour session cap starts hurting: a persistent VS Code-style cloud dev environment with SSH and CLI, so your work survives between sessions (Colab and Kaggle both wipe state). Step 2 on the no-money compute ladder. Check the student program if you have a .edu address.
 
-> **Worth knowing.** The free-tier allowance and terms change; check the pricing page before planning around them.
+> **Worth knowing.** The free tier gives up to 30 credits to start (about 75 T4 hours), then pay-as-you-go, and a free Studio must be restarted every four hours. Terms change, so read the pricing page before planning around it.
 
 ### [LLM101n syllabus (archived) + fast.ai/Eureka Labs status check](https://github.com/karpathy/LLM101n)
 
 *Andrej Karpathy / Eureka Labs* &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20 hours
 
-Include this only so you do not waste time chasing it. The repo was archived on 1 August 2024 and contains a README and an image — no lessons, no code. The 17-chapter syllabus (bigram LM, transformers, tokenisation, optimisation, distributed training, inference, finetuning, deployment, multimodal) is still the best free curriculum *outline* in existence and is worth reading as a checklist of what you should eventually know. But with Karpathy at Anthropic since May 2026 and Eureka Labs paused, do not wait for the course: nanochat plus Raschka's books cover the same ground today.
+Include this only so you do not waste time chasing it. The repo was archived on 1 August 2024 and contains a README and an image — no lessons, no code. The 17-chapter syllabus (bigram LM, transformers, tokenisation, optimisation, distributed training, inference, finetuning, deployment, multimodal) is still the best free curriculum *outline* in existence and is worth reading as a checklist of what you should eventually know. Karpathy joined Anthropic in May 2026 and says he plans to return to education work in time. Do not wait for the course: microgpt, nanochat and Raschka's books cover the same ground today.
 
-> **Worth knowing.** Teaches nothing: an archived 17-chapter syllabus for a course that was never shipped. Historical interest only — Karpathy's nanochat is the material that actually exists.
+> **Worth knowing.** Teaches nothing: an archived 17-chapter syllabus for a course that was never shipped. Historical interest only — Karpathy's microgpt and nanochat are what actually exists.
 
 ### [Modal — serverless GPU with a standing free credit allowance](https://modal.com/pricing)
 

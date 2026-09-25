@@ -361,18 +361,27 @@ daily. In the same survey, 46% said they actively distrusted the accuracy of the
 who trusted it, 45% said debugging AI-written code took longer than writing it themselves, and 20%
 reported **reduced confidence in their own problem-solving**.
 
-The concern for a learner is specific: an assistant removes the effort of recall, and that effort is
-what makes something stick. A suggestion that works well is a simple two-mode rule.
+There is now a small controlled experiment as well. In a randomised trial
+[published by Anthropic](https://www.anthropic.com/research/AI-assistance-coding-skills) in January
+2026, 52 developers, mostly junior, learned an unfamiliar Python library with or without an AI
+assistant. The assistant group was not reliably faster, and scored 50% against 67% on a quiz taken
+straight afterwards. The widest gap was on debugging. The developers who kept their understanding
+used the assistant to ask questions and explain code, not only to write it.
 
-| Assistant off | Assistant on |
+The concern for a learner is specific: an assistant removes the effort of recall, and that effort is
+what makes something stick. A rule that fits the evidence so far has two modes: do first attempts
+yourself, and when you ask for help, ask for an explanation rather than the fix.
+
+| Assistant off | Assistant on, mostly to explain |
 |---|---|
 | The build-it-yourself exercise in each chapter | Reviewing code you have already written |
-| Your first attempt at anything | Explaining an error, after you have tried yourself |
-| The "before you move on" questions | Unfamiliar library surfaces and documentation |
-| | Debugging, and generating test data |
+| Your first attempt at anything, including a new library or a bug | Explaining an error or an unfamiliar library, after you have tried yourself |
+| The "before you move on" questions | Documentation lookups and generating test data |
 
-This is a reasonable compromise rather than a proven one. Adjust it if you find something that works
-better for you.
+This is a reasonable compromise rather than a proven one. The trial is a single, small study that
+measured understanding only straight after the task, and its authors expect the effect to be
+stronger with coding agents that write whole features. Adjust the rule if you find something that
+works better for you.
 
 One thing worth taking seriously either way: only put code in your portfolio that you could talk
 through line by line. Interviewers increasingly ask.
@@ -459,6 +468,7 @@ None of these are character flaws; most are design problems with the material av
 | Reaching for a framework before writing the loop | You never learn the loop, and cannot debug it |
 | An agent where a workflow would do | Non-deterministic, harder to evaluate, and more expensive |
 | Fine-tuning to add facts | Facts belong in retrieval, where they can be updated and cited |
+| Choosing a model by its leaderboard score | Public benchmarks leak into training data. OpenAI stopped reporting SWE-bench Verified in February 2026 partly for that reason. Your own gold set is the test that counts |
 | Kubernetes as a study project | Months of detour with little portfolio payoff at this point |
 | "The customers table" as a data version | It changed yesterday |
 
@@ -490,8 +500,8 @@ genuinely disagree, and where stating both sides is more impressive than picking
 | **Is retrieval being replaced by long context?** | Very large context windows plus agentic search make pipelines unnecessary | At real corpus size retrieval is far cheaper, and long context degrades in the middle | Routing by query complexity. The boundary keeps moving, so confident claims either way are over-claiming. |
 | **Agents or workflows?** | Models improved enough that agentic loops now win on open-ended tasks | Most systems need clear steps and measurable outcomes | Workflow-first is safer for a portfolio, but be ready to defend it |
 | **Can you trust a model-based judge?** | Ready-made metric suites let you start measuring immediately | Judges are useful only after error analysis has told you what to measure, and must be checked against human labels | Derive criteria from your own failures, then validate the judge |
-| **Have tabular foundation models replaced boosted trees?** | They now win convincingly on smaller datasets | Cost, memory, deployment maturity, interpretability and licensing all still favour trees at scale | Describe the regime, not the slogan. This is moving quickly. |
-| **Should learners use AI assistants?** | Refusing trains you for a job that no longer exists | The assistant removes the recall effort that produces durable learning | The two-mode rule above, offered as a reasonable compromise rather than a proven one |
+| **Have tabular foundation models replaced boosted trees?** | They now lead on small and medium datasets, and vendor reports claim gains up to a million rows | A mid-2026 benchmark of earlier models still favoured trees on temporal, grouped, large and wide data, and cost, latency, interpretability and licensing still favour trees in production | Describe the regime, not the slogan. This is moving quickly. |
+| **Should learners use AI assistants?** | Refusing trains you for a job that no longer exists | The assistant removes the recall effort that produces durable learning | The two-mode rule above. A small 2026 randomised trial supports keeping first attempts your own, though one study does not settle it |
 | **Did AI cause the junior hiring squeeze?** | Postings in AI-exposed roles led the decline and are leading the recovery, which looks cyclical | Employment for the youngest developers fell sharply, and most of the growth in postings was senior | Seniority-biased change: the door is open and narrower than it was. Either way the response is the same. |
 | **Is Kubernetes required?** | Job descriptions ask for it constantly | Serverless platforms let you ship real systems without it, and the hours are better spent elsewhere | Docker deeply, Kubernetes on the job. That is a side, and worth knowing you are taking it. |
 
@@ -519,3 +529,22 @@ If something here has drifted out of date, that is the field doing what it does.
 the source, adjust, and keep going. If you find a broken link or a claim that no longer holds, an
 issue or a pull request on this repository is very welcome; corrections from readers are how a book
 like this stays useful.
+
+### What changed in the September 2026 revision
+
+For readers already partway through, these are the changes worth knowing:
+
+- **Setup.** Python 3.14 in the setup commands, and a note on uv's new default project layout
+  ([Chapter 1](01-getting-oriented/README.md)).
+- **AI assistants.** A 2026 randomised trial on learning with an assistant, and a two-mode rule
+  adjusted to fit it ([above](#assistants)).
+- **Short new sections.** Reasoning-effort costs and agent skills
+  ([Chapter 5](05-language-models/README.md)), regulation as part of production
+  ([Chapter 6](06-production/README.md)), and a security reference for the AI Engineer branch
+  ([Chapter 7](07-specialisation/README.md)).
+- **Tabular models.** A more careful picture of tabular foundation models against boosted trees
+  ([Chapter 3](03-core-machine-learning/README.md)).
+- **The job search.** Newer hiring and pay data, and interviews that now include an AI assistant
+  ([Chapter 8](08-finding-the-work/README.md)).
+- **Resources.** Chapter 5 now points to Anthropic's free Claude Academy course, one course website
+  no longer loads, and many notes were refreshed for new versions, prices and owners.

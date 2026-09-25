@@ -15,7 +15,7 @@ The resources on the main path for this chapter, in the order the chapter uses t
 
 *Charlie Marsh* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2-4 hours
 
-The clear answer to the 2026 environment question. One Rust binary that replaces pip, pip-tools, pipx, poetry, pyenv, twine and virtualenv, installs Python interpreters itself, and resolves 10-100x faster than pip. For a beginner this collapses the single biggest early-quitting hazard — 'I spent a weekend and still can't install pandas' — into four commands: `uv python install 3.13`, `uv init`, `uv add pandas numpy jupyterlab`, `uv run`. Read Getting Started + the Projects guide only; skip workspaces. Two honest caveats: uv has not hit 1.0 (0.11.x as of 2026), and it does not replace conda for CUDA/GDAL/compiled scientific stacks.
+The clear answer to the 2026 environment question. One Rust binary that replaces pip, pip-tools, pipx, poetry, pyenv, twine and virtualenv, installs Python interpreters itself, and resolves 10-100x faster than pip. For a beginner this collapses the single biggest early-quitting hazard — 'I spent a weekend and still can't install pandas' — into four commands: `uv python install 3.14`, `uv init`, `uv add pandas numpy jupyterlab`, `uv run`. Read Getting Started + the Projects guide only; skip workspaces. Two honest caveats: uv has not hit 1.0 (0.12.x as of September 2026), and it does not replace conda for CUDA/GDAL/compiled scientific stacks.
 
 > **Worth knowing.** The docs still brand uv as backed by Astral with no mention of the OpenAI agreement, so post-deal governance and stewardship are not yet reflected there.
 
@@ -43,7 +43,7 @@ Written by the person who created pandas, free in full on his own site, and the 
 
 *pandas core development team* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 8-15 hours
 
-Currently documents pandas 3.0.5 — the **only** beginner-facing pandas material guaranteed to be correct for Copy-on-Write and PyArrow-backed string dtype. Ten task-shaped tutorials ('How do I select a subset of a DataFrame?', 'How to combine data from multiple tables'), plus comparison guides from SQL, Excel and R that are the fastest bridge if you already think in spreadsheets. Use this as the version-of-record to sanity-check anything you read in an older book or blog post. Read it after McKinney's chapters, not instead of them — the docs teach the API, McKinney teaches the judgment.
+Currently documents pandas 3.0.6 — the **only** beginner-facing pandas material guaranteed to be correct for Copy-on-Write and PyArrow-backed string dtype. Ten task-shaped tutorials ('How do I select a subset of a DataFrame?', 'How to combine data from multiple tables'), plus comparison guides from SQL, Excel and R that are the fastest bridge if you already think in spreadsheets. Use this as the version-of-record to sanity-check anything you read in an older book or blog post. Read it after McKinney's chapters, not instead of them — the docs teach the API, McKinney teaches the judgment.
 
 > **Worth knowing.** These docs track pandas 3.x, so any pre-3.0 pandas tutorial found elsewhere — including the Python Data Science Handbook later in this list — teaches idioms 3.0 has changed or removed.
 
@@ -51,7 +51,7 @@ Currently documents pandas 3.0.5 — the **only** beginner-facing pandas materia
 
 *Anonymous maintainer* &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-6 hours
 
-18 lessons plus intermediate topics, all in-browser with a live query engine and no signup, no email wall, no upsell. It is the fastest way to go from zero SQL to writing joins and aggregates in one afternoon, which is why it survives despite being the only resource here without an identifiable expert author (last copyright refresh 2024). Do lessons 1-13 (SELECT through multi-table joins and aggregates) in one sitting, then move to a real engine.
+18 lessons plus intermediate topics, all in-browser with a live query engine and no signup, no email wall, no upsell. It is the fastest way to go from zero SQL to writing joins and aggregates in one afternoon, which is why it survives despite being the only resource here without an identifiable expert author (last copyright refresh 2024). Do lessons 1-13 (SELECT through joins and aggregates, then a first INSERT) in one sitting, then move to a real engine.
 
 > **Worth knowing.** Stale (2024 copyright, no visible maintenance) and anonymous. Window functions, CTEs and analytic SQL are thin to absent — a 60-minute on-ramp, not sufficient SQL preparation for an AI/ML data role.
 
@@ -151,7 +151,7 @@ Polars is now a mainstream production dataframe library and worth knowing — bu
 
 *Charles R. Severance* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 50-70 hours
 
-The gentlest on-ramp for someone who has never programmed and is intimidated. Free autograder, gradebook, and discussion forums directly on py4e.com with no Coursera paywall — that free autograder is the reason to use py4e.com rather than the Coursera mirror. Book last updated Jan 2024 to Python 3.12, Twitter API chapters removed, databases chapter rewritten. Pick this OR CS50P, never both — they overlap ~80%. Caveat: its 'data' framing is web scraping, XML/JSON and raw SQLite, not NumPy/pandas, so it does not actually shorten your path to ML; it is a confidence-builder.
+The gentlest on-ramp for someone who has never programmed and is intimidated. Free autograder, gradebook, and discussion forums directly on py4e.com with no Coursera paywall — that free autograder is the reason to use py4e.com rather than the Coursera mirror. Book last updated Jan 2024 to Python 3.12, Twitter API chapters removed, databases chapter rewritten. Pick this or CS50P, never both — they overlap ~80%. Caveat: its 'data' framing is web scraping, XML/JSON and raw SQLite, not NumPy/pandas, so it does not actually shorten your path to ML; it is a confidence-builder.
 
 > **Worth knowing.** Stops at basic Python plus web scraping and databases, with no numpy, pandas or ML — a prerequisite rather than a data-foundations course. Pair it with something else.
 
@@ -159,7 +159,7 @@ The gentlest on-ramp for someone who has never programmed and is intimidated. Fr
 
 *Anish Athalye, Jon Gjengset & Jose Javier Gonzalez Ortiz* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
 
-Fills the exact gap that sinks self-taught ML beginners: shell fluency, editors, version control, debugging and profiling, data wrangling with command-line tools. MIT re-taught it in January 2026 and materially updated it — new lectures on packaging/shipping code, code quality, and agentic coding, with AI tooling folded into every lecture rather than quarantined into one. That 2026 refresh makes it one of the few genuinely current free CS courses. Do the Shell, Command-line Environment, Version Control (Git) and Debugging lectures at minimum; each is ~1 hour of video plus exercises.
+Fills the exact gap that sinks self-taught ML beginners: shell fluency, editors, version control, debugging and profiling. The older lecture on data wrangling with command-line tools is not in the 2026 syllabus, but it is still on the site under topics from previous years. MIT re-taught the course in January 2026 and materially updated it — new lectures on packaging/shipping code, code quality, and agentic coding, with AI tooling folded into every lecture rather than quarantined into one. That 2026 refresh makes it one of the few genuinely current free CS courses. Do the Shell, Command-line Environment, Version Control (Git) and Debugging lectures at minimum; each is ~1 hour of video plus exercises.
 
 ### [Think Python, 3rd edition (2024)](https://allendowney.github.io/ThinkPython/)
 
@@ -175,7 +175,7 @@ Not for reading end to end. Useful to have when you need to look something up.
 
 *Google Research* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 1 hour
 
-Still the correct day-one surface: zero install, pandas/NumPy/scikit-learn/PyTorch preinstalled, shareable links, and free NVIDIA T4 access when you later need a GPU. Use it for your first 2-4 weeks so that environment problems cannot make you quit, then deliberately move to a local uv + VS Code setup, because building and debugging your own environment is itself a required job skill. 2026 free-tier reality check: GPU is never guaranteed, quotas fluctuate (roughly 15-30 GPU-hours/week), sessions cap around 12 hours, and idle timeouts are aggressive — fine for learning, unusable for anything long-running.
+Still the correct day-one surface: zero install, pandas/NumPy/scikit-learn/PyTorch preinstalled, shareable links, and free NVIDIA T4 access when you later need a GPU. Use it for your first 2-4 weeks so that environment problems cannot make you quit, then deliberately move to a local uv + VS Code setup, because building and debugging your own environment is itself a required job skill. 2026 free-tier reality check: GPU is never guaranteed, and Google does not publish the usage limits, which change over time. Sessions run for at most 12 hours and idle timeouts are aggressive — fine for learning, unusable for anything long-running.
 
 > **Worth knowing.** A tool, not a learning resource. Free-tier GPU access is best-effort and heavily throttled — expect disconnects and "no GPU available" on any nontrivial training run.
 

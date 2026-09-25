@@ -24,9 +24,9 @@ The correct entry point to Kaggle in 2026, and the one to use **instead** of Tit
 
 *scikit-learn core maintainers* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-4 hours
 
-Read this **before** you plan an open-source-contribution path, because it is refreshingly honest and contradicts most career advice. The maintainers state they rarely use the 'good first issue' label because such issues 'often prove more complex than originally anticipated', and that contributing code 'generally requires advanced skills, and it may not be the best place to begin if you are new to open source contribution.' They point newcomers instead at bug triage, reviewing others' PRs, and documentation, and look at 'Easy', 'help wanted' and 'Needs Investigation' labels.
+Read this **before** you plan an open-source-contribution path, because it is refreshingly honest and contradicts most career advice. The maintainers state they rarely use the 'good first issue' label because such issues 'often prove more complex than originally anticipated', and that contributing code 'generally requires advanced skills, and it may not be the best place to begin if you are new to open source contribution.' They point newcomers instead at reproducing and investigating reported issues, reviewing others' PRs, and documentation, then suggest a small first pull request in an area you already know as a user.
 
-> **Worth knowing.** The project has explicitly hardened against low-effort and AI-assisted contributions: an LLM-generated PR will be closed and can burn goodwill. Read the guide, start with issue triage and docs, and expect a high bar.
+> **Worth knowing.** The project's Automated Contributions Policy allows AI-assisted work only if you have reviewed, understood and tested every change. You must also say in the PR description that you used AI tools. Fully automated issues or PRs may be closed, and the account behind them can be blocked. Work done for a paid bounty platform must be disclosed too. Start with issue triage and docs, and expect a high bar.
 
 ### [PyTorch good-first-issue queue](https://github.com/pytorch/pytorch/contribute)
 
@@ -43,7 +43,15 @@ systems you instrument yourself. The plan is a full, careful re-read of the stro
 [Chapter 5](../../05-language-models/resources/README.md) and
 [Chapter 6](../../06-production/resources/README.md) resources: the Anthropic engineering blog's
 agent sequence end to end, *12-Factor Agents*, and Husain and Shankar's evals material applied to
-your own traces.
+your own traces. For the security week, one reference is worth having in full:
+
+### [OWASP Top 10 for LLM Applications 2026](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/)
+
+*OWASP GenAI Security Project* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-4 hours
+
+The shared vocabulary for what goes wrong in a language-model application, from prompt injection to excessive agency. Read it in week 4 of the Branch A plan, next to your injection cases, and turn two or three of its attack scenarios into tests for your own system. If your capstone is an agent, the companion Top 10 for Agentic Applications covers tools, memory and delegated authority.
+
+> **Worth knowing.** It lists risks; it does not fix them. Prompt injection still has no complete defence, so least privilege and human approval for risky actions carry most of the weight.
 
 ## Branch B — ML Engineer depth
 
@@ -79,28 +87,30 @@ your capstone — an experiment write-up with a sensitivity analysis is exactly 
 
 *Nicholas Huntington-Klein* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free online &nbsp;·&nbsp; 25-40 hours
 
-A gentler complement to the Mixtape: research design and identification first, regression mechanics
+A gentler complement to Cunningham's book: research design and identification first, regression mechanics
 second. Part 1 uses causal diagrams to make confounding and identification intuitive; Part 2 covers
 implementation with controls, matching and regression discontinuity. The free Bookdown version stays
-on theeffectbook.net; a print edition exists if you prefer paper. Best for someone who finds the
-Mixtape's pace fast, or who needs to explain a design choice to a non-technical stakeholder in a
+on theeffectbook.net; a print edition exists if you prefer paper. Best for someone who finds
+Cunningham's pace fast, or who needs to explain a design choice to a non-technical stakeholder in a
 decision memo — which is most of the Data Scientist job.
 
 > **Worth knowing.** Examples lean econometric. The `causaldata` package (R, Stata, Python) holds
 > the book's datasets if you want to run the code alongside the prose.
 
-### [Causal Inference: The Mixtape (2nd edition, online)](https://mixtape.scunning.com/)
+### [Causal Inference: The Remix (online edition)](https://mixtape.scunning.com/)
 
 *Scott Cunningham* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Free online &nbsp;·&nbsp; 30-50 hours
 
 The most approachable free introduction to causal inference for social-science-style questions.
 Cunningham walks difference-in-differences, matching, regression discontinuity, instrumental
-variables and sensitivity analysis with plain language and worked examples in R and Stata. The
+variables and synthetic control with plain language and worked examples in R and Stata. The
 online second edition is still being polished — expect typos — but it is readable now and costs
 nothing. Use it when your capstone needs a causal claim, not just a correlation with a good p-value.
 
-> **Worth knowing.** The 2nd-edition web version is explicitly a work-in-progress. Code is in R/Stata,
-> not Python — translate the ideas, not the syntax, unless your capstone is in R.
+> **Worth knowing.** The second edition of *The Mixtape* came out in print in August 2026 under a new
+> name, *The Remix*, with fuller chapters on difference-in-differences and synthetic control. The free
+> web version is still marked as a work in progress. Code is in R and Stata, not Python — translate
+> the ideas, not the syntax, unless your capstone is in R.
 
 ## Optional depth
 
@@ -148,7 +158,7 @@ A first-person account of the real requirements and timeline: Competitions Grand
 
 Transformers is the friendliest large ML repo culturally — the contributing guide explicitly maintains 'Good First Issue' and the harder 'Good Second Issue' lists, and the norm is to comment claiming the issue before you start. The good-first-issue list is often empty — these queues drain within hours. The practical tactic is to watch the repo, filter issues by the label directly, and move fast; or contribute to the surrounding ecosystem (datasets, diffusers, accelerate, evaluate, the HF course repos) where the queues are less contested. Documentation fixes are the highest-success-rate first contribution.
 
-> **Worth knowing.** The good-first-issue queue is often empty, so it may deliver nothing as a starting point — read CONTRIBUTING.md and filter the issue tracker yourself.
+> **Worth knowing.** The good-first-issue queue is often empty, so read CONTRIBUTING.md and filter the issue tracker yourself. The maintainers also ask first-time contributors not to use code agents to create issues or PRs, and agent-written PRs will probably be closed without review.
 
 ### [The 2025 AI Engineering Reading List](https://www.latent.space/p/2025-papers)
 

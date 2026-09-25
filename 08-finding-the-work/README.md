@@ -66,14 +66,18 @@ What the system should not be used for.
 On open source: it is a genuinely good path and slower than the internet suggests. The open-source
 entries in [Chapter 7's resources](../07-specialisation/resources/README.md) cover the mechanics and
 the honest odds. The tactic that works best is to contribute the fix for a bug you hit while
-building your own project.
+building your own project. Projects have also started setting rules for AI help: scikit-learn asks
+you to say when you used AI tools, and Hugging Face Transformers may close agent-written pull
+requests without review. Write and understand your first contribution yourself.
 
 ## The interview loop
 
 A recruiter screen, a technical screen, sometimes a take-home, then four to six rounds mixing coding,
 machine learning fundamentals, a systems design round and behavioural conversations. Two current
 notes: the coding bar in ML loops has risen close to general software engineering, and some companies
-now run a round where you debug model-generated code while being observed.
+now build an AI assistant into the coding round. Meta, for one, says on its hiring page that candidates
+are expected to use it. Practise reading, debugging and extending existing code with an assistant, and
+explaining what you accepted and why.
 
 Have three stories ready and practise them out loud, at ninety seconds each:
 
@@ -141,7 +145,7 @@ update models underneath you, and your evaluation suite is what tells you.
 
 ## Resources
 
-All 10 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 11 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 

@@ -19,13 +19,13 @@ The single best first artefact in the entire domain. 3h31m, general-audience but
 
 > **Worth knowing.** Pair it with a 2026 reasoning/RL source: the post-training section is the part that has aged.
 
-### [Anthropic Courses (API fundamentals, real-world prompting, prompt evaluations, tool use)](https://github.com/anthropics/courses)
+### [Building with the Claude API (Claude Academy)](https://academy.claude.com/courses/building-with-the-claude-api)
 
-*Anthropic education team* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 12-18 hours
+*Anthropic education team* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 9 hours
 
-Five sequenced free courses. The two that matter most and that beginners skip: 'prompt evaluations' (writing production evals) and 'tool use' — tool use is the primitive that agents, MCP, structured output and RAG are all built on, so learn it directly from the provider before touching any framework. Pair with the Claude Cookbooks repo (github.com/anthropics/claude-cookbooks) for runnable recipes.
+The provider's own course, in seven parts: API basics, prompting and prompt evaluation, tool use, retrieval, MCP, Claude Code and computer use, and agents and workflows. Give the most care to the prompt-evaluation and tool-use lessons. Tool use is what agents, MCP, structured output and retrieval are all built on, so learn it here before any framework. Pair it with the Claude Cookbooks (github.com/anthropics/claude-cookbooks) for runnable recipes.
 
-> **Worth knowing.** The notebooks still default to Claude 3 Haiku, which may no longer be callable — swap in a current model string. The prompting techniques, not the model choices, are what has aged well.
+> **Worth knowing.** Anthropic archived its older GitHub courses repository in September 2026, and this course covers the same ground and more. It is written around Claude, the exercises need an Anthropic API key, and you sign in to save progress.
 
 ### [Claude prompt engineering docs and best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview)
 
@@ -59,11 +59,11 @@ The origin post (Mar 2024) that defined the now-standard three-level framework: 
 
 > **Worth knowing.** 2024 post, partly superseded by Husain's own later free email course, which formalises the Analyze–Measure–Improve lifecycle. Read this first as the foundation, then the newer course.
 
-### [LLM Evals: Everything You Need to Know (Evals FAQ)](https://hamel.dev/blog/posts/evals-faq/)
+### [AI Evals: Everything You Need to Know (Evals FAQ)](https://hamel.dev/blog/posts/evals-faq/)
 
 *Hamel Husain & Shreya Shankar* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-6 hours
 
-Last updated 18 July 2026 and the most useful free document in applied LLM work. Distilled from teaching 700+ practitioners. The load-bearing claims a beginner must absorb: error analysis (manually reading 20–50 traces, open coding then axial coding) comes **before** any eval infrastructure; use binary pass/fail not 1–5 scales; appoint one domain expert as benevolent dictator; build a custom annotation viewer rather than adopting a generic eval platform; and expect evals to be 60–80% of your effort, not a testing afterthought. Covers RAG, agentic, multi-turn and document-processing evals specifically.
+Revised in September 2026 and the most useful free document in applied LLM work. Distilled from teaching more than 5,000 engineers and product managers. The load-bearing claims a beginner must absorb: error analysis (manually reading 20–50 traces, open coding then axial coding) comes **before** any eval infrastructure; use binary pass/fail not 1–5 scales; appoint one domain expert as benevolent dictator; build a custom annotation viewer rather than adopting a generic eval platform; and expect evals to be 60–80% of your effort, not a testing afterthought. Covers RAG, agentic, multi-turn and document-processing evals specifically.
 
 ### [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)
 
@@ -81,7 +81,7 @@ The reference taxonomy the whole industry now uses: workflows (prompt chaining, 
 
 ### [Model Context Protocol — official docs](https://modelcontextprotocol.io/docs/getting-started/intro)
 
-*Anthropic and the MCP open-source maintainer group* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
+*MCP maintainers, Agentic AI Foundation (Linux Foundation)* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
 
 MCP is now a genuine cross-vendor standard — supported by Claude, ChatGPT, VS Code, Cursor and others — so it is one of the few 2026 'hot' skills that is safe to invest in. Learn it from the spec site, not from tutorials, because the 2026-07-28 release changed the fundamentals: stateless protocol core, server-minted handles instead of sessions, multi-round-trip requests, header-based routing, cacheable list results, hardened authorisation, and a formal extensions framework.
 
@@ -95,7 +95,7 @@ Read this specifically to avoid learning MCP wrong. Almost every MCP tutorial pu
 
 *Anthropic engineering and applied AI teams* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1-2 hours
 
-The highest signal-to-noise industry feed for agent builders in 2026. Key entries to read in order: 'Building effective agents' (Dec 2024), 'How we built our multi-agent research system' (Jun 2025), 'Effective context engineering' (Sep 2025), 'Code execution with MCP: building more efficient agents' (Nov 2025), 'Demystifying evals for AI agents' (Jan 2026), 'Harness design for long-running application development' (Mar 2026), 'Scaling managed agents: decoupling the brain from the hands' (Apr 2026). That sequence is effectively a free graduate course in agent engineering.
+The highest signal-to-noise industry feed for agent builders in 2026. Key entries to read in order: 'Building effective agents' (Dec 2024), 'How we built our multi-agent research system' (Jun 2025), 'Effective context engineering' (Sep 2025), 'Code execution with MCP: building more efficient agents' (Nov 2025), 'Demystifying evals for AI agents' (Jan 2026), 'Harness design for long-running application development' (Mar 2026), 'Scaling managed agents: decoupling the brain from the hands' (Apr 2026), 'How we contain Claude across products' (May 2026). That sequence is effectively a free graduate course in agent engineering.
 
 > **Worth knowing.** A rolling blog index rather than a stable reference — specific essays drift down the feed over time.
 
@@ -121,7 +121,7 @@ The best single map of the AI-Engineer job as a *discipline*: evaluation methodo
 
 *Hamel Husain & Shreya Shankar* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 30-40 hours
 
-The most respected paid course in applied LLM engineering, 700+ alumni. Listed here mainly so you can make an informed decision: for a beginner, the free FAQ and blog posts contain most of the intellectual content, and the premium you pay is for cohort accountability and office hours. Do the free writing first; only pay if your employer is funding it or you're already shipping an AI product that's failing.
+The most respected paid course in applied LLM engineering; its authors say they have refined it with more than 5,000 engineers and product managers. The current syllabus centres on building and evaluating agents. Listed here mainly so you can make an informed decision: for a beginner, the free FAQ and blog posts contain most of the intellectual content, and the premium you pay is for cohort accountability and office hours. Do the free writing first; only pay if your employer is funding it or you're already shipping an AI product that's failing.
 
 > **Worth knowing.** $4,200 cohort course — by far the most expensive item here. The same instructors' free 17-part email course covers the same Analyze–Measure–Improve lifecycle.
 
@@ -263,13 +263,13 @@ Runnable reference implementations straight from the provider, browsable at deve
 
 *Simon Willison* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2 hours
 
-The best daily 'what actually happened and does it actually work' feed, written by a working engineer who tests claims rather than repeating press releases. His annual reviews (Dec 2023/2024/2025) and 'LLM predictions for 2026' (simonwillison.net/2026/Jan/8/llm-predictions-for-2026/) are the fastest way to compress a year. His 2026 predictions worth internalising: RL-trained reasoning models now produce work experts rely on; sandboxing finally maturing; and a major coding-agent security incident is likely because people run these with excessive permissions. Use his llm CLI to experiment cheaply across providers.
+The best daily 'what actually happened and does it actually work' feed, written by a working engineer who tests claims rather than repeating press releases. His annual reviews (Dec 2023/2024/2025) and 'LLM predictions for 2026' (simonwillison.net/2026/Jan/8/llm-predictions-for-2026/) are the fastest way to compress a year. His 2026 predictions worth internalising: it will become undeniable that LLMs write good code, thanks to reasoning models trained with RL on code; and sandboxing will finally be solved. He also expects a serious coding-agent security incident, because many people run these agents with near-root permissions. Use his llm CLI to experiment cheaply across providers.
 
 ### [Unsloth — fine-tuning docs and notebooks](https://unsloth.ai/docs)
 
 *Daniel & Michael Han* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-20 hours
 
-The lowest-friction way to actually run LoRA/QLoRA in 2026, and the practical answer to 'do I need an H100'. Free-tier Colab handles a 7–8B QLoRA; 4-bit base + LoRA adapter puts a 70B in ~48GB instead of ~140GB at 1–2% quality cost. Their model directory doubles as a useful census of the current open-weight frontier (Qwen3.8, DeepSeek V4, Kimi K3, Gemma 4, GLM-5.2, Meta Muse). Sensible starting hyperparameters: r=16, alpha=16, all-linear target modules. Alternatives: HF TRL (most standard/portable) and Axolotl (YAML-driven pipelines).
+The lowest-friction way to actually run LoRA/QLoRA in 2026, and the practical answer to 'do I need an H100'. Free-tier Colab handles a 7–8B QLoRA; 4-bit base + LoRA adapter puts a 70B in ~48GB instead of ~140GB at 1–2% quality cost. Their model directory doubles as a useful census of the current open-weight frontier (in September 2026: Qwen3.8, DeepSeek V4, Kimi K3, Gemma 4, GLM-5.3, Meta Muse Glimmer). Sensible starting hyperparameters: r=16, alpha=16, all-linear target modules. Alternatives: HF TRL (most standard/portable) and Axolotl (YAML-driven pipelines).
 
 ---
 

@@ -47,7 +47,7 @@ Worth your time if the chapter left you wanting more, or if this is where you wa
 
 *Stack Overflow research team* &nbsp;·&nbsp; Dataset &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1 hour
 
-The full breakdowns behind the numbers quoted in the introduction — trust, debugging time, confidence — plus the cuts that matter for a learner: 39.5% of people learning to code use AI daily, and 33% use it mainly to learn new concepts. These numbers are the basis for the two-mode assistant rule in the introduction.
+The full breakdowns behind the numbers quoted in the introduction — trust, debugging time, confidence — plus the cuts that matter for a learner: 39.5% of people learning to code use AI daily, and 33% use it mainly to learn new concepts. These numbers, together with the 2026 trial described there, are the basis for the two-mode assistant rule in the introduction.
 
 > **Worth knowing.** 2025 data — check whether a 2026 edition has landed before relying on it as current. Respondent counts vary by question rather than matching the headline survey total.
 
@@ -78,6 +78,14 @@ The definitive dropout dataset and the reason this book is designed around compl
 *Stanford Institute for Human-Centered AI* &nbsp;·&nbsp; Paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2 hours
 
 The most citable, methodologically serious source for labour-market claims — academic, annual, open access, and it does not sell anything (unlike bootcamp/vendor 'reports'). Employment for software developers aged 22–25 fell nearly 20% from 2024; one-third of organisations expect AI to reduce headcount within a year; measured productivity gains of 26% in software development; yet large-scale job losses have not shown up in aggregate employment data. Full chapter list: R&D, Technical Performance, Responsible AI, Economy, Science, Medicine, Education, Policy, Public Opinion. When you want a labour-market claim you can check, start here rather than with social-media commentary.
+
+### [The Labor Market Is Tilting Toward Seniority](https://hiringlab.indeed.com/2026/07/23/the-labor-market-is-tilting-toward-seniority/)
+
+*Felix Aidala & Sneha Puri, Indeed Hiring Lab* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; under an hour
+
+A second Indeed Hiring Lab piece that pairs well with the Gallacher article. In Q1 2026, senior roles made up 69.3% of US software development postings on Indeed, and entry-level roles just 4.5%. Across all US postings, senior-level postings rose 14.7% in the year to May 2026, while entry-level postings fell 7.5%. Senior roles are still only about 14% of all postings. Read it to see why this book asks you to build evidence that makes you look less like a junior.
+
+> **Worth knowing.** It counts US postings on one job site, not hires, so it shows demand rather than who actually gets the jobs. The authors also weigh causes other than AI, such as remote work and interest rates.
 
 ---
 

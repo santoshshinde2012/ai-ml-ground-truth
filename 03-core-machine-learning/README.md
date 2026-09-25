@@ -98,8 +98,11 @@ tree is the answer.
 
 One nuance worth carrying: the familiar line that tree ensembles always beat deep learning on
 tabular data was well supported through about 2024, and is now more qualified. Tabular foundation
-models have become genuinely competitive on smaller datasets. Tree ensembles remain the safe
-production default at scale and wherever interpretability, latency or licensing matter. Describing
+models now lead on small and medium datasets where rows are independent of one another. A June 2026
+benchmark, [BeyondArena](https://arxiv.org/abs/2606.30410), found trees and other models trained on each dataset
+still ahead on temporal, grouped, large and wide data. Newer vendor releases claim to narrow that gap; test
+the claim with this chapter's split design rather than taking it on trust. Tree ensembles remain
+the safe production default at scale and wherever interpretability, latency or licensing matter. Describing
 the regime rather than the slogan is the better answer in an interview, and this area is moving
 quickly enough that it is worth checking before you quote it.
 

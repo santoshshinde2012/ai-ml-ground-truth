@@ -164,6 +164,13 @@ another model in a portfolio, because very few people have one.
 - **Secrets never go in the image.** Pass them in at run time as environment variables or from the
   platform's secret store, keep a `.env.example` with the names but no values, and check that
   `.dockerignore` and `.gitignore` both exclude the real file.
+- **Regulation is now part of production.** If your system is offered to people in the EU,
+  [the AI Act](https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai) is likely
+  to apply to it. Its transparency rules, such as telling people when they are dealing with an AI,
+  apply from August 2026. The stricter rules for high-risk uses, such as hiring, education and
+  critical infrastructure, start on 2 December 2027, after a 2026 amendment moved them back. You do
+  not need to be a lawyer. Your model card should simply say whether the system could fall into a
+  high-risk use, and why.
 
 ---
 

@@ -58,7 +58,7 @@ demonstrates, so the projects in this book are built to produce evidence of them
   pipx and poetry, and it installs Python itself. Four commands get you a working project:
 
   ```bash
-  uv python install 3.13
+  uv python install 3.14
   uv init my-learning-repo
   cd my-learning-repo
   uv add pandas numpy jupyterlab
@@ -67,6 +67,12 @@ demonstrates, so the projects in this book are built to produce evidence of them
   Run code with `uv run python script.py` or `uv run jupyter lab`. Hand someone `pyproject.toml`
   and `uv.lock` to reproduce your environment. uv is still pre-1.0, and it does not replace conda
   for CUDA or heavy compiled scientific stacks.
+
+  Two details trip people up. Since uv 0.12, `uv init` creates a small package under `src/`, which
+  suits the tested cleaning functions you write in Chapter 2; add `--no-package` if you want the
+  older single-file layout. And for the Python version, pick the newest one that PyTorch, the
+  deep-learning library you meet in Chapter 4, has ready-built packages for. In September 2026
+  that is 3.14.
 - **pandas 3.0 changed some defaults.** Copy-on-Write is now the only mode, so chained assignment
   raises an error rather than a warning, and text columns get a real string dtype instead of
   `object`. This makes a useful test of any tutorial: if it teaches `inplace=True`, works around
@@ -98,7 +104,7 @@ hours.
 
 ## Resources
 
-All 9 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
+All 10 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**.
 
 The ones to begin with:
 

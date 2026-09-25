@@ -35,7 +35,7 @@ The cheapest, most universal CI/CD you can demonstrate, and free for public repo
 
 *Modal* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 6-10 hours
 
-The cheapest realistic deployment target for a student in 2026. $30/month free covers roughly 187 hours of T4 or 27 hours of A10G, plus CPU web endpoints, cron jobs and autoscaling. The examples gallery is a working library: 'Deploy an OpenAI-compatible LLM service with vLLM', batched Whisper transcription, LoRA finetuning, Slackbots. Because it scales to zero, an idle demo costs nothing. Limitations to know: no custom domains and 1-day log retention on Starter.
+The cheapest realistic deployment target for a student in 2026. $30 a month of free compute covers roughly 50 hours of T4 or 27 hours of A10 at the GPU rate alone; CPU and memory are billed on top. It also covers CPU web endpoints, cron jobs and autoscaling. The examples gallery is a working library: 'Deploy an OpenAI-compatible LLM service with vLLM', batched Whisper transcription, LoRA finetuning, Slackbots. Because it scales to zero, an idle demo costs nothing. Limitations to know: no custom domains and 1-day log retention on Starter.
 
 > **Worth knowing.** This URL is examples only; pricing lives at modal.com/pricing, which is the load-bearing half if you are deciding whether you can afford GPU time. Vendor documentation, not a course — it teaches Modal, not portable deployment skills.
 
@@ -43,7 +43,7 @@ The cheapest realistic deployment target for a student in 2026. $30/month free c
 
 *vLLM project* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 5-8 hours
 
-89k stars and under very active development — the de facto open-model inference engine. The two things to learn: offline batched inference with the LLM class, and `vllm serve` producing an OpenAI-compatible /v1/chat/completions endpoint, which lets you swap a paid API for a self-hosted model without changing client code. Understanding PagedAttention and continuous batching well enough to explain why throughput improves is a strong interview signal. Requires Linux + GPU — do not try this on a Mac.
+89k stars and under very active development — the de facto open-model inference engine. The two things to learn: offline batched inference with the LLM class, and `vllm serve` producing an OpenAI-compatible /v1/chat/completions endpoint, which lets you swap a paid API for a self-hosted model without changing client code. Understanding PagedAttention and continuous batching well enough to explain why throughput improves is a strong interview signal. It is built for Linux with a GPU. On an Apple Silicon Mac, the community vLLM-Metal plugin can run `vllm serve` with small MLX models. That is enough to learn the API, but not to measure throughput.
 
 > **Worth knowing.** The /en/latest/ docs track the development preview rather than the shipped release; /en/stable/ matches the version you have installed.
 
@@ -99,7 +99,7 @@ Worth your time if the chapter left you wanting more, or if this is where you wa
 
 8.8k stars, pushed August 2026. The Python-first, least-Kubernetes-flavoured way to package a model into a reproducible service with adaptive batching, model composition and one-command containerisation. Worth 5-8 hours as the 'nicer developer experience' comparison point against a hand-rolled FastAPI + Dockerfile — being able to argue why you chose one over the other is more valuable than knowing either in depth. Lower priority than FastAPI and vLLM.
 
-> **Worth knowing.** Vendor docs with a commercial funnel — much of the scaling material routes to the paid BentoCloud product.
+> **Worth knowing.** Vendor docs with a commercial funnel, and much of the scaling material routes to the paid BentoCloud product. BentoML joined Modular in February 2026. It stays Apache 2.0, and the team plans closer ties to Modular's compute stack.
 
 ### [DeepLearning.AI short courses: LLMOps, and Evaluating & Debugging Generative AI](https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/)
 
@@ -129,7 +129,7 @@ Free, web-readable, and the deployment/production sections are more honest about
 
 *Alexey Grigorev, with Will Russell and Timur Kamaliev* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 60-80 hours
 
-The 2026 edition (cohort started 8 June 2026, materials pushed as recently as July 2026) was restructured around what actually matters now: agentic RAG, vector search, orchestration (Kestra), a dedicated evaluation module, a monitoring module, best practices, plus a data-ingestion workshop with dlt and a capstone. This is the free course closest to what a 2026 'AI engineer, junior' job description asks for. Total API spend is only ~$1-5. Do this second, after Made With ML or MLOps Zoomcamp.
+The 2026 live cohort ran from June to September 2026, and the course is now self-paced, with materials pushed as recently as September 2026. That edition was restructured around what actually matters now: agentic RAG, vector search, orchestration (Kestra), a dedicated evaluation module, a monitoring module, best practices, plus a data-ingestion workshop with dlt and a capstone. This is the free course closest to what a 2026 'AI engineer, junior' job description asks for. Total API spend is only ~$1-5. Do this second, after Made With ML or MLOps Zoomcamp.
 
 ### [Machine Learning System Design Interview](https://www.amazon.com/Machine-Learning-System-Design-Interview/dp/1736049127)
 
@@ -137,7 +137,7 @@ The 2026 edition (cohort started 8 June 2026, materials pushed as recently as Ju
 
 ~280 pages, 211 diagrams, a 7-step framework and 10 worked ML system design problems (video recommendation, ad click prediction, visual search, harmful-content detection etc.). This is interview-shaped rather than job-shaped, and that is exactly why it earns a place: ML system design rounds are where junior candidates with good projects still fail. Use it as drilling material **after** *Designing Machine Learning Systems*, not instead of it — Huyen teaches you to think, Aminian/Xu teach you to perform under 45 minutes of pressure.
 
-> **Worth knowing.** Three-year-old interview prep. Strong on classical ML system design, but it predates the GenAI and LLM topics that now make up half a modern interview loop.
+> **Worth knowing.** Three-year-old interview prep. Strong on classical ML system design, but it predates the GenAI and LLM topics that now make up half a modern interview loop. The companion book, *Generative AI System Design Interview* by Ali Aminian and Hao Sheng (2024), covers generative AI system design.
 
 ### [Made With ML — MLOps Course](https://madewithml.com/courses/mlops/)
 
@@ -169,7 +169,7 @@ The most complete free hands-on classical-MLOps curriculum: 6 modules + a graded
 
 43.5k stars, pushed daily. The right tool once you need to **compose** models — multi-model pipelines, typed inter-service calls, autoscaling on queue depth — rather than serve one. Correct sequencing for a beginner: FastAPI or vLLM for a single model; Ray Serve only when you actually have branching or multiple models. Made With ML uses Ray throughout, so you will meet it there anyway. Learning it 'because it's on a roadmap' before you have a composition problem is wasted time.
 
-> **Worth knowing.** The /en/latest/ path is the nightly development documentation and can describe APIs that do not exist in your installed release — use the stable, versioned docs instead.
+> **Worth knowing.** The /en/latest/ path follows the newest Ray release, and /en/master/ is the development build. If you have pinned an older Ray, pick its version from the docs menu so the APIs match.
 
 ### [Weights & Biases free courses (Effective MLOps, Model CI/CD, LLM Apps: Evaluation, RAG++)](https://wandb.ai/site/courses/)
 
@@ -189,7 +189,7 @@ Not for reading end to end. Useful to have when you need to look something up.
 
 15.8k stars and still actively pushed (August 2026). The mental model is what matters: version tiny pointer files in Git, keep the actual data in object storage, and link each model artefact to its exact training data, params and pipeline. That lineage story answers 'how would you reproduce a model from three months ago?'. Many teams get 80% of the benefit from immutable, date-partitioned paths in S3 plus MLflow artefact logging.
 
-> **Worth knowing.** The project has changed owners — treeverse/dvc is the current canonical repo — which is worth weighing as a stability consideration before adopting DVC.
+> **Worth knowing.** Treeverse, the company behind lakeFS, took over DVC from Iterative in November 2025, and treeverse/dvc is now the canonical repository. dvc.org presents DVC for small data science projects and points larger data platforms to lakeFS.
 
 ### [Feast — the open source feature store (docs)](https://docs.feast.dev/)
 
@@ -209,9 +209,9 @@ Included specifically as a **reality check**, because most 2023-2024 tutorials a
 
 ### [Langfuse — open-source LLM observability (docs + pricing)](https://langfuse.com/pricing)
 
-*Marc Klingen, Max Deichmann & Clemens Rawert* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 4-6 hours
+*Langfuse team at ClickHouse (founded by Marc Klingen, Max Deichmann & Clemens Rawert)* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 4-6 hours
 
-For a student this is the best free LLM-tracing option by a wide margin: 33k stars, MIT license, pushed daily, OpenTelemetry-based so it is framework-agnostic, and the hosted free tier (50k observations/mo) is 10x LangSmith's free tier (5k traces/mo). Self-hosting is real but needs Postgres + ClickHouse + Redis + S3, so use the cloud Hobby tier for a portfolio project and mention you know the self-host topology. Instrument your RAG project with this on day one — In an interview, 'I looked at 100 real traces' is one of the strongest sentences you can say.
+For a student this is the best free LLM-tracing option by a wide margin: 35k stars, MIT licence for the core, pushed daily, and OpenTelemetry-based so it is framework-agnostic. The hosted Hobby tier includes 50k units a month, and every trace, observation and score counts as one unit. LangSmith's free tier is 5k traces a month, so compare the two by how many spans your traces carry. Self-hosting is real but needs Postgres + ClickHouse + Redis + S3, so use the cloud Hobby tier for a portfolio project and mention you know the self-host topology. Instrument your RAG project with this on day one. In an interview, 'I looked at 100 real traces' is one of the strongest sentences you can say.
 
 > **Worth knowing.** Pricing pages change without notice, so the figures may already be out of date — and Langfuse can be self-hosted for free, which a pricing page alone does not make obvious.
 

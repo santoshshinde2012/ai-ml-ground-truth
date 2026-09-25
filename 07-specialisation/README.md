@@ -58,7 +58,7 @@ you already have.
 | 1 | Re-read [Chapter 5](../05-language-models/resources/README.md) eval resources; instrument one live trace end to end | Pick capstone; write README with success metric |
 | 2 | Anthropic agent sequence + [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) | Ship roughest version; collect 50 traces |
 | 3 | Husain and Shankar evals course applied to your traces | Build trajectory judge; check against your labels |
-| 4 | Guardrails, injection cases, least-privilege tools | Fix top failure mode; re-measure |
+| 4 | Guardrails, injection cases from the OWASP Top 10, least-privilege tools | Fix top failure mode; re-measure |
 | 5 | Cost and latency table from [Chapter 6](../06-production/README.md) | Harden deploy; add kill switch |
 | 6 | Write interview stories from the capstone | Polish README; publish write-up |
 
@@ -118,7 +118,7 @@ One honest caveat: **experimentation and causal inference use references that si
 of this book's heaviest curation**, so vet whatever you pick with particular care. The annotated
 list is in [resources/](resources/README.md) under **Branch C — Data Scientist depth**: Kohavi,
 Tang and Xu on trustworthy online experiments (companion site at experimentguide.com), Cunningham's
-*Causal Inference: The Mixtape*, and Huntington-Klein's *The Effect*, both free online.
+*Causal Inference: The Remix* (the second edition of *The Mixtape*), and Huntington-Klein's *The Effect*, both free online.
 
 **Capstone, pick one:** a full experiment analysis with a causal claim and a sensitivity analysis; a
 metric system for a real product, with a decision memo; or a data engineering project with no machine
@@ -132,7 +132,7 @@ case. A dashboard makes a weak capstone; a memo that leads to a decision makes a
 | Week | Depth (about 7 h) | Capstone (about 5 h) |
 |---|---|---|
 | 1 | [experimentguide.com](https://www.experimentguide.com/) companion materials; power and peeking | Pick capstone question; write one-page memo outline |
-| 2 | *Mixtape* or *The Effect* Part 1 — identification and diagrams | SQL + point-in-time query for your dataset |
+| 2 | *The Remix* or *The Effect* Part 1 — identification and diagrams | SQL + point-in-time query for your dataset |
 | 3 | Continue causal text; one method applied to a public dataset | First analysis draft with explicit limitations |
 | 4 | Sensitivity analysis on your main claim | Revise memo; cut every chart that does not move a decision |
 | 5 | [Chapter 2](../02-data-foundations/README.md) SQL drills or DataLemur if interviews are near | Practise live SQL screen out loud |
@@ -140,12 +140,12 @@ case. A dashboard makes a weak capstone; a memo that leads to a decision makes a
 
 ## Resources
 
-All 14 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**,
+All 15 resources for this chapter, with notes on each, are in **[resources/](resources/README.md)**,
 grouped by branch.
 
 The ones to begin with depend on the branch you chose:
 
-- **Branch A** — re-read the "Start here" lists of [Chapter 5](../05-language-models/resources/README.md) and [Chapter 6](../06-production/resources/README.md) in full, then [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy. Free, 3-5 hours.
+- **Branch A** — re-read the "Start here" lists of [Chapter 5](../05-language-models/resources/README.md) and [Chapter 6](../06-production/resources/README.md) in full, then [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy. Free, 3-5 hours. For the security week, the [OWASP Top 10 for LLM Applications](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/) — OWASP GenAI Security Project. Free, 3-4 hours.
 - **Branch B** — [Stanford CS336: Language Modelling from Scratch](https://cs336.stanford.edu/) — Percy Liang & Tatsunori Hashimoto. A free course; 40-60 hours for Assignment 1 alone.
 - **Branch C** — [Trustworthy Online Controlled Experiments (companion site)](https://www.experimentguide.com/) — Ron Kohavi, Diane Tang & Ya Xu. Free companion materials to a paid book, 20-30 hours. Then [The Effect](https://theeffectbook.net/) — Nicholas Huntington-Klein. A free book, 25-40 hours.
 - **Any branch** — [Kaggle Playground Series](https://www.kaggle.com/competitions?searchQuery=playground+series) — Kaggle competitions team. A free practice ground, 10-25 hours per entry, for validation-design reps between capstone sessions.
