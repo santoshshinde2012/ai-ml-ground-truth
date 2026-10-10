@@ -1,275 +1,524 @@
 # Resources — Chapter 5: Language models and AI engineering
 
-Everything referenced in [the chapter](../README.md), grouped by how central it is, with a short
-note on what each one is for.
+Everything referenced in [the chapter](../README.md), grouped by purpose. **50 resources** are
+listed; this is a catalogue, not a requirement to complete them all. The main chapter uses selected
+lessons and readings within its 100-hour budget.
 
-Prices and free tiers change often, so check a resource's own page before you plan around one.
+Hours below are suggested study budgets, not guaranteed video runtimes or vendor estimates. “Free”
+describes access to the material; API calls, hosted notebooks, hardware and certificates may have
+separate charges. Check current availability, prices and model/SDK versions before use.
+
+**Browse:** [Start here](#start-here) &nbsp;·&nbsp;
+[Targeted research and implementation references](#targeted-research-and-implementation-references)
+&nbsp;·&nbsp; [Optional depth](#optional-depth) &nbsp;·&nbsp;
+[Keep for reference](#keep-for-reference)
 
 ---
 
 ## Start here
 
-The resources on the main path for this chapter, in the order the chapter uses them. If you only do a few things, do these.
+Use the first API, context and evaluation readings to build the baseline. MCP is an optional week-30
+branch. Read vendor examples as implementations to test, not neutral comparisons.
 
 ### [Deep Dive into LLMs like ChatGPT](https://www.youtube.com/watch?v=7xTGNNLPyMI)
 
-*Andrej Karpathy* &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4 hours
+_Andrej Karpathy_ &nbsp;·&nbsp; Video &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 4 hours
 
-The single best first artefact in the entire domain. 3h31m, general-audience but technically honest, and it is the only free resource that walks the entire training stack in one sitting: pretraining data, tokenisation, the transformer, SFT, RLHF, RLVR, plus mental models for hallucination, tool use and 'why the model can't count letters'. Watch this before touching any code — it gives you the map that makes everything else legible. Beats DeepLearning.AI intros because it explains mechanism, not API surface.
-
-> **Worth knowing.** Pair it with a 2026 reasoning/RL source: the post-training section is the part that has aged.
+A broad introduction to tokenisation, model training, post-training and model behaviour. Useful for
+connecting the API to what the model learned. Watch selected sections alongside the chapter
+exercises; a conceptual overview does not establish the reliability of a particular model or explain
+every later post-training technique.
 
 ### [Building with the Claude API (Claude Academy)](https://academy.claude.com/courses/building-with-the-claude-api)
 
-*Anthropic education team* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 9 hours
+_Anthropic education team_ &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free material &nbsp;·&nbsp; about 9
+hours
 
-The provider's own course, in seven parts: API basics, prompting and prompt evaluation, tool use, retrieval, MCP, Claude Code and computer use, and agents and workflows. Give the most care to the prompt-evaluation and tool-use lessons. Tool use is what agents, MCP, structured output and retrieval are all built on, so learn it here before any framework. Pair it with the Claude Cookbooks (github.com/anthropics/claude-cookbooks) for runnable recipes.
+Provider-authored lessons on API requests, prompting/evaluation, tools, retrieval and agent
+integrations. Select request contracts, prompt evaluation and tool use for weeks 23-24. Exercises
+may require an API key and paid usage. Cross-check executable examples against current docs rather
+than assuming a course's model IDs or MCP revision match your installed client.
 
-> **Worth knowing.** Anthropic archived its older GitHub courses repository in September 2026, and this course covers the same ground and more. It is written around Claude, the exercises need an Anthropic API key, and you sign in to save progress.
+### [Claude prompt engineering docs](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview)
 
-### [Claude prompt engineering docs and best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview)
+_Anthropic documentation team_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2–3
+hours
 
-*Anthropic documentation team* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3 hours
-
-The living reference, kept current per model generation — clarity, examples/multishot, XML structuring, role prompting, extended thinking, prompt chaining, long-context handling. Crucially it opens by telling you not to prompt-engineer until you have success criteria and a way to test empirically, which is the correct ordering that most prompt courses invert. Pair with claude.com/blog/best-practices-for-prompt-engineering for provider-agnostic craft.
-
-> **Worth knowing.** The overview page is now mostly a signpost; the actual model-current guidance lives in the Claude prompting best-practices pages.
+A signpost to model-specific guidance on clarity, examples, structure and context handling. Begin
+with explicit success criteria and an evaluation, then test the techniques relevant to your failure
+cases. Reasoning and effort recommendations depend on the current model and endpoint; older notebook
+prompting instructions are not automatically applicable.
 
 ### [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 
-*Anthropic Applied AI team* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1 hour
+_Anthropic Applied AI team_ &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 1 hour
 
-The clearest statement of the field's central 2026 shift from prompt engineering to context engineering, i.e. curating the whole token budget (system prompt, tools, examples, history, retrieved docs, compaction) rather than wordsmithing one prompt. If you only read one industry post about how the job changed, read this one. It reframes RAG, memory and tool design as one problem.
-
-> **Worth knowing.** Vendor-authored: an Anthropic engineering post framed around Claude-family agent patterns. Useful and honest, but read it alongside a non-vendor source rather than as neutral guidance.
+The September 2025 essay connects instructions, tools, sources, history, compaction and memory. Use
+it to plan a context budget and test what summaries preserve. Vendor experience with Claude agents
+motivates its patterns; compare those patterns with your own tasks and the long-context research
+below.
 
 ### [Patterns for Building LLM-based Systems & Products](https://eugeneyan.com/writing/llm-patterns/)
 
-*Eugene Yan* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-4 hours
+_Eugene Yan_ &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2–3 hours
 
-Seven durable patterns — evals, RAG, fine-tuning, caching, guardrails, defensive UX, collect user feedback — each with the research behind it and the failure mode it addresses. The best free 'system design for LLM apps' reference, and unusually well-cited. His start-here page (eugeneyan.com/start-here/) is the guided entry point; 'Patterns for Building Cybersecurity Evals' (21 Jun 2026) is a good recent worked example of domain-specific eval design.
-
-> **Worth knowing.** Strong on evals, RAG, fine-tuning, caching and guardrails as patterns, but every named model and leaderboard reference is 2023-vintage. Read it for the taxonomy, not the recommendations.
+A useful 2023 taxonomy of evaluation, retrieval, tuning, caching, guardrails, defensive interfaces
+and feedback, with links to its evidence. Read for architecture choices and failure modes. Check
+current primary documentation before adopting its named models, costs or implementation examples.
 
 ### [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/)
 
-*Hamel Husain* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1 hour
+_Hamel Husain_ &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 1 hour
 
-The origin post (Mar 2024) that defined the now-standard three-level framework: L1 cheap assertion-style unit tests run constantly, L2 human + LLM-judge review of traces with a custom viewer, L3 A/B tests for mature products. Read this first, then the FAQ. Also see hamel.dev/notes/llm/ai-product-engineering/ for the broader notes.
-
-> **Worth knowing.** 2024 post, partly superseded by Husain's own later free email course, which formalises the Analyze–Measure–Improve lifecycle. Read this first as the foundation, then the newer course.
+The 2024 article introduces assertions, human/model review and product experiments as different
+evaluation layers. Use it to start inspecting traces rather than buying tooling before defining the
+task. Pair it with independent release data and agent final-state checks from this chapter.
 
 ### [AI Evals: Everything You Need to Know (Evals FAQ)](https://hamel.dev/blog/posts/evals-faq/)
 
-*Hamel Husain & Shreya Shankar* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-6 hours
+_Hamel Husain & Shreya Shankar_ &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3–5 hours
 
-Revised in September 2026 and the most useful free document in applied LLM work. Distilled from teaching more than 5,000 engineers and product managers. The load-bearing claims a beginner must absorb: error analysis (manually reading 20–50 traces, open coding then axial coding) comes **before** any eval infrastructure; use binary pass/fail not 1–5 scales; appoint one domain expert as benevolent dictator; build a custom annotation viewer rather than adopting a generic eval platform; and expect evals to be 60–80% of your effort, not a testing afterthought. Covers RAG, agentic, multi-turn and document-processing evals specifically.
+Published and revised in September 2026. Detailed practitioner guidance on error analysis, rubrics,
+annotation interfaces and judge validation across retrieval, agent and document tasks. Read selected
+sections after you have development failures. Its workflow preferences and effort estimates are
+advice from the authors' experience, not measured requirements for every project; use a defined
+graded rubric where the requirement genuinely has degrees.
 
 ### [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)
 
-*Erik Schluntz & Barry Zhang* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1 hour
+_Erik Schluntz & Barry Zhang_ &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 1 hour
 
-The reference taxonomy the whole industry now uses: workflows (prompt chaining, routing, parallelisation, orchestrator-workers, evaluator-optimiser) versus true agents. Its core finding is the most useful anti-hype sentence a beginner can internalise: the most successful implementations used simple composable patterns, not complex frameworks. Published Dec 2024 and still the correct starting frame; read it alongside the newer harness-design posts.
-
-> **Worth knowing.** Nearly two years old and flagged as partly superseded by its own publisher. Valuable for the conceptual taxonomy — workflows vs agents, routing, orchestrator-workers, evaluator-optimiser — but its tooling advice is not current.
+The December 2024 workflow/agent taxonomy: chaining, routing, parallelisation, orchestrator-workers
+and evaluator-optimiser. Use it to justify a fixed workflow or a bounded agent. It describes
+Anthropic's observations; it does not prove that frameworks or multi-agent systems are always better
+or worse. Pair with the 2026 reliability and evaluation papers below.
 
 ### [12-Factor Agents](https://github.com/humanlayer/12-factor-agents)
 
-*Dex Horthy* &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-5 hours
+_Dex Horthy and contributors_ &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2–4 hours
 
-25.4k stars, and the most useful anti-framework antidote for beginners. Twelve concrete principles, among them: own your prompts, own your context window, own your control flow, tools are just structured outputs, unify execution and business state, launch/pause/resume, contact humans with tool calls, compact errors into context, small focused agents, make your agent a stateless reducer. Read it right after you get frustrated by your first framework abstraction; it will explain why.
+Opinionated principles about owning prompts, context and control flow; pause/resume; business state;
+errors and focused agents. Useful for comparing an explicit loop with a framework. Turn each
+relevant principle into an application requirement and a failure test. Repository popularity is not
+evidence of runtime reliability.
 
 ### [Model Context Protocol — official docs](https://modelcontextprotocol.io/docs/getting-started/intro)
 
-*MCP maintainers, Agentic AI Foundation (Linux Foundation)* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-15 hours
+_MCP maintainers_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 6–10 hours
 
-MCP is now a genuine cross-vendor standard — supported by Claude, ChatGPT, VS Code, Cursor and others — so it is one of the few 2026 'hot' skills that is safe to invest in. Learn it from the spec site, not from tutorials, because the 2026-07-28 release changed the fundamentals: stateless protocol core, server-minted handles instead of sessions, multi-round-trip requests, header-based routing, cacheable list results, hardened authorisation, and a formal extensions framework.
+The canonical starting point for tools, resources, transport and authorization. Identify the spec
+revision and SDK versions implemented on both sides before building. Study discovery, schemas,
+errors, cancellation and permissions for one read-only integration. The protocol standardises
+interaction; it does not authorize users or guarantee safe tools.
 
 ### [MCP 2026-07-28 specification changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
 
-*MCP specification maintainers* &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2 hours
+_MCP specification maintainers_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1–2
+hours
 
-Read this specifically to avoid learning MCP wrong. Almost every MCP tutorial published in 2025 teaches the stateful session model that 2026-07-28 removed. The changelog also documents the new feature lifecycle policy (Active, Deprecated, Removed — minimum 12 months between deprecation and removal), which is the signal that MCP is now stable enough to build a career skill on. Context: blog.modelcontextprotocol.io/posts/2026-07-28/ and the 2026 roadmap post.
+Explains the stateless core, removed initialization/protocol sessions, multi-round-trip requests and
+feature lifecycle. Roots, sampling and logging are deprecated, not immediately removed. Earlier
+tutorials can still describe an earlier deployed revision correctly. Read alongside client/server
+compatibility tests; a transport retry is not a business idempotency guarantee.
 
 ### [Anthropic Engineering blog](https://www.anthropic.com/engineering)
 
-*Anthropic engineering and applied AI teams* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1-2 hours
+_Anthropic engineering teams_ &nbsp;·&nbsp; Article index &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1–2 hours
 
-The highest signal-to-noise industry feed for agent builders in 2026. Key entries to read in order: 'Building effective agents' (Dec 2024), 'How we built our multi-agent research system' (Jun 2025), 'Effective context engineering' (Sep 2025), 'Code execution with MCP: building more efficient agents' (Nov 2025), 'Demystifying evals for AI agents' (Jan 2026), 'Harness design for long-running application development' (Mar 2026), 'Scaling managed agents: decoupling the brain from the hands' (Apr 2026), 'How we contain Claude across products' (May 2026). That sequence is effectively a free graduate course in agent engineering.
+Use individual essays for particular design questions rather than reading the rolling index as a
+curriculum. The context and evaluation essays are linked directly in this catalogue. Separate vendor
+case studies from independently measured results, and check the model, tool permissions, budget and
+task used before transferring a recommendation.
 
-> **Worth knowing.** A rolling blog index rather than a stable reference — specific essays drift down the feed over time.
+## Targeted research and implementation references
+
+These sources explain specific decisions in the chapter. Read the linked abstract or relevant
+documentation section first; full-paper study is optional. Dates indicate the evidence's period, not
+a promise that its tested models remain current.
+
+### [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
+
+_Anthropic engineering team_ &nbsp;·&nbsp; Article, January 2026 &nbsp;·&nbsp; Free &nbsp;·&nbsp;
+1–2 hours
+
+Task, trial, grader, transcript and harness design, including deterministic and model-based grading
+and repeatability. The useful distinction is between an agent's answer and what happened in the
+environment. Select these sections for week 26. This is a vendor engineering account, so validate
+graders and release criteria on your application's cases.
+
+### [Eval awareness in Claude Opus 4.6's BrowseComp performance](https://www.anthropic.com/engineering/eval-awareness-browsecomp)
+
+_Anthropic_ &nbsp;·&nbsp; Investigation, March 2026 &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 1 hour
+
+Documents leaked public answers and answer-key discovery in a web-enabled evaluation. It
+distinguishes runtime contamination from training contamination. Use it to design answer-key
+isolation, source audits and fresh private tests; the observed rates are specific to its model,
+benchmark, budgets and agent configurations.
+
+### [Towards a Science of AI Agent Reliability](https://proceedings.mlr.press/v306/rabanser26a.html)
+
+_Stephan Rabanser and coauthors_ &nbsp;·&nbsp; Peer-reviewed ICML 2026 paper &nbsp;·&nbsp; Free
+&nbsp;·&nbsp; 2–3 hours
+
+A framework covering consistency, robustness, predictability and safety with explicit reliability
+metrics. Its model/benchmark results motivate repeated trials, perturbations and error-severity
+reporting rather than a single average. Choose a few metrics meaningful for your task; do not copy a
+complete benchmark profile into a small learner project without a reason.
+
+### [When Linguistic and Internal Confidence Diverge in Large Language Models](https://arxiv.org/abs/2608.28382)
+
+_Hefan Zhang and coauthors_ &nbsp;·&nbsp; August 2026 preprint, revised 4 September; authors report
+EMNLP Findings acceptance &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1–2 hours of optional reading
+
+Separates association, numerical agreement and calibration of reported confidence. Its open-model
+experiments motivate checking confidence against task correctness before routing or abstention;
+logit and semantic-entropy measures are proxies too. Compare accepted-answer error against coverage
+and cost on independent cases. A useful ranking signal is not automatically a correctness
+probability, and these experiments do not establish calibration for your current provider model.
+
+### [Mid-Harness: Scaling Actions Between Model and Harness for Terminal Agents](https://arxiv.org/abs/2609.39982)
+
+_Minki Kang and coauthors_ &nbsp;·&nbsp; Preprint, 30 September 2026 &nbsp;·&nbsp; Free
+&nbsp;·&nbsp; 1–2 hours
+
+Studies sampling and verifying candidate actions before execution. Its terminal-agent experiments
+show why verifier strength matters when allocating extra inference compute. Treat the results as
+recent experimental evidence, not a production recipe. Compare against a bounded baseline at the
+same overall budget; verification cannot replace permission checks or safe execution.
+
+### [Retrieval Augmented Generation or Long-Context LLMs?](https://aclanthology.org/2024.emnlp-industry.66/)
+
+_Zhuowan Li and coauthors_ &nbsp;·&nbsp; EMNLP Industry 2024 paper &nbsp;·&nbsp; Free &nbsp;·&nbsp;
+1–2 hours
+
+Compares retrieval and long context and introduces a hybrid routing method. Read the quality/cost
+trade-off and experimental setup to design your own comparison. Its tested models and tasks are from
+2024; neither approach is universally superior, and current models need a new evaluation on the same
+permitted corpus and query families.
+
+### [NoLiMa: Long-Context Evaluation Beyond Literal Matching](https://arxiv.org/abs/2502.05167)
+
+_Ali Modarressi and coauthors_ &nbsp;·&nbsp; ICML 2025 paper &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1–2
+hours
+
+Tests long-context retrieval where matching words do not give away the answer. Use it to add
+paraphrases and indirect evidence to your context tests. It exposes a limitation of easy needle
+evaluations; it does not determine a universal safe context length for later models or your domain.
+
+### [MMTEB: Massive Multilingual Text Embedding Benchmark](https://arxiv.org/abs/2502.13595)
+
+_Kenneth Enevoldsen and coauthors_ &nbsp;·&nbsp; Research paper, 2025 &nbsp;·&nbsp; Free
+&nbsp;·&nbsp; 1–2 hours
+
+Broadens embedding evaluation across tasks and languages. Useful for narrowing a candidate list by
+language and task rather than treating one English retrieval leaderboard as universal. Finish
+selection using domain-labelled retrieval queries, query/document prefixes, serving latency,
+embedding/index size and permitted model use.
+
+### [AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352)
+
+_Edoardo Debenedetti and coauthors_ &nbsp;·&nbsp; Research paper, 2024 &nbsp;·&nbsp; Free
+&nbsp;·&nbsp; 1–2 hours
+
+A tool-agent environment for studying malicious instructions in otherwise useful external data. Use
+its threat model to build harmless injection tests and check both task success and unwanted effects.
+A benchmark defence result does not establish complete protection for another tool environment;
+application permissions and isolation remain necessary.
+
+### [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://arxiv.org/abs/2501.12948)
+
+_DeepSeek-AI_ &nbsp;·&nbsp; Research paper, 2025 &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2–3 hours
+
+Primary evidence on reasoning-oriented RL, staged post-training and distillation in the paper's
+setting. Read to distinguish supervised examples, preference training, verifiable rewards and
+distillation. These results do not imply RL is the best next step for a document assistant; your
+reward validity, data, compute budget and held-out task outcomes govern that decision.
+
+### [TRL — GRPO trainer documentation](https://huggingface.co/docs/trl/grpo_trainer)
+
+_Hugging Face TRL contributors_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2–4
+hours
+
+The executable reference for reward functions, configuration, generation and training metrics. For
+an optional bounded task, inspect reward correctness and gaming before running training. Pin the
+library version and distinguish optimization reward from independent quality, safety and deployment
+cost. It is a reference, not a mandatory experiment in the 100-hour chapter.
+
+### [Sentence Transformers — retrieve and rerank](https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html)
+
+_Sentence Transformers contributors_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp;
+1–2 hours
+
+A practical two-stage example: retrieve candidates, then score query-document pairs with a
+cross-encoder. Compare relevance gain against added latency and cost. The reranker cannot recover a
+relevant source excluded by retrieval or access filtering; evaluate candidate coverage separately
+from final ordering.
+
+### [MCP — official security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)
+
+_MCP specification maintainers_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1–2
+hours
+
+Reference for token audience, authorization, confused-deputy/token-passthrough risks, redirect
+validation, SSRF and scope management. Apply the controls relevant to your transport and deployment.
+Inspect permissions at the resource/action boundary; protocol interoperability and a successful
+connection do not grant business authorization.
+
+### [Claude pricing and prompt-cache documentation](https://platform.claude.com/docs/en/about-claude/pricing)
+
+_Anthropic documentation team_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 1
+hour
+
+Use the current pricing page with
+[cache behaviour](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) to model
+input/output, cache writes/reads, batch and tool charges. Then measure actual usage, hit rates and
+retries. Rates and features vary by model and endpoint; a cached-input discount is not a discount on
+every component of a request. Check
+[thinking usage and billing](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost):
+thinking-token details are part of the output total, rather than an additional token bill.
 
 ## Optional depth
 
-Worth your time if the chapter left you wanting more, or if this is where you want to specialise.
+Choose one branch after the application works. Full courses and books below extend the schedule;
+their study budgets are not included in the chapter's 100 hours.
 
-### [a smol course (post-training)](https://huggingface.co/learn/smol-course/en/unit0/1)
+### [a smol course — post-training](https://huggingface.co/learn/smol-course/en/unit0/1)
 
-*Ben Burtenshaw* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 25-35 hours
+_Hugging Face education team_ &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free material &nbsp;·&nbsp; 20–35
+hours
 
-The cheapest legitimate route into supervised fine-tuning and preference alignment. Units: instruction tuning, evaluation, preference alignment (DPO and friends), vision-language models, and — still marked forthcoming — RL and synthetic data. Built on TRL/PEFT/transformers, ~3–4h per unit, free certification. This is the practical counterpart to CS336's theory-heavy alignment lectures, and it's how you learn DPO without renting a cluster.
-
-> **Worth knowing.** The RL and synthetic-data units — the post-training core — are still marked forthcoming on a two-year-old schedule, and four of seven units are SFT, eval, DPO and VLM basics. It does not cover modern post-training.
+Hands-on instruction tuning, evaluation, preference alignment and vision-language examples using the
+Hugging Face training ecosystem. Check the live unit list: the introduction still lists RL and
+synthetic-data units as forthcoming. The release months have no year there, so do not infer
+availability from an old schedule. Use current TRL docs for a specific RL experiment.
 
 ### [AI Engineering: Building Applications with Foundation Models](https://huyenchip.com/books/)
 
-*Chip Huyen* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 25-35 hours
+_Chip Huyen_ &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 25–35 hours
 
-The best single map of the AI-Engineer job as a *discipline*: evaluation methodology, dataset engineering, RAG vs agents, inference optimisation, and product architecture. Deliberately light on code, heavy on decision frameworks, and notably less hype-driven than the flood of 'agentic AI' books. Honest caveat repeated across reviews: the breadth means several topics are surface-level, and being a 2024-written book it predates the 2026 agent-harness/MCP consolidation — pair it with Anthropic's engineering blog for the current layer.
+An architectural view of evaluation, datasets, retrieval, tuning, inference and product choices.
+Useful for connecting this chapter to production. A book's examples are a snapshot; verify live tool
+interfaces and prices in their documentation. Select the chapters answering your current design
+question rather than reading another complete survey before shipping.
 
-### [AI Evals for Engineers & Product Managers (cohort course)](https://maven.com/parlance-labs/evals)
+### [AI Evals for Engineers & Product Managers](https://maven.com/parlance-labs/evals)
 
-*Hamel Husain & Shreya Shankar* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 30-40 hours
+_Hamel Husain & Shreya Shankar_ &nbsp;·&nbsp; Cohort course &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 30–40
+hours
 
-The most respected paid course in applied LLM engineering; its authors say they have refined it with more than 5,000 engineers and product managers. The current syllabus centres on building and evaluating agents. Listed here mainly so you can make an informed decision: for a beginner, the free FAQ and blog posts contain most of the intellectual content, and the premium you pay is for cohort accountability and office hours. Do the free writing first; only pay if your employer is funding it or you're already shipping an AI product that's failing.
-
-> **Worth knowing.** $4,200 cohort course — by far the most expensive item here. The same instructors' free 17-part email course covers the same Analyze–Measure–Improve lifecycle.
+An optional structured route with instructor feedback and cohort exercises. Check the current
+syllabus, dates, price and access terms on the course page. Read the instructors' free FAQ first and
+decide whether feedback/accountability adds enough value for your situation; the roadmap does not
+require purchasing a course.
 
 ### [Anthropic's Interactive Prompt Engineering Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial)
 
-*Anthropic applied AI / education team* &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&nbsp; 6-9 hours
+_Anthropic education team_ &nbsp;·&nbsp; Interactive repository &nbsp;·&nbsp; Free material
+&nbsp;·&nbsp; 5–8 hours
 
-9 chapters plus an advanced appendix, with an executable playground at the bottom of every lesson so you see the delta from each change immediately. It is written by the lab that trained the model, and it teaches structure — XML delimiters, examples, thinking, chaining — rather than incantations.
-
-> **Worth knowing.** Every model ID in the notebooks needs updating before the code runs, and several Claude-3-era techniques are no longer best practice. The pedagogy transfers; pair it with current Anthropic prompt-engineering docs.
+Exercises on instruction clarity, examples and structure. Check notebook model IDs, dependencies and
+API availability before running. Compare historical techniques with the current prompting docs;
+retain an exercise only when its change improves your measured task. Executable API practice may
+incur charges.
 
 ### [Build a Large Language Model (From Scratch)](https://www.manning.com/books/build-a-large-language-model-from-scratch)
 
-*Sebastian Raschka, PhD* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 40-60 hours
+_Sebastian Raschka_ &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 40–60 hours
 
-The best paced, most complete text version of what Karpathy does on video. Where the book earns its money over free alternatives: it explains *why* each design choice exists at a beginner-appropriate speed, and the free companion repo has been kept current far beyond the book — it now includes standalone from-scratch implementations of Llama 3.2, Qwen3 dense + MoE, Qwen3.5, Gemma 3 and Gemma 4, and Olmo 3. If you buy one LLM book for the 'how does it work' half, buy this.
+Step-by-step transformer implementation, training and tuning for readers wanting the mechanisms
+underneath the API. The [companion repository](https://github.com/rasbt/LLMs-from-scratch) can be
+used independently. Treat optional architecture implementations as additional study, not a reason to
+delay the application chapter or a verified list of the newest model releases.
 
 ### [Build a Reasoning Model (From Scratch)](https://www.manning.com/books/build-a-reasoning-model-from-scratch)
 
-*Sebastian Raschka, PhD* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 35-50 hours
+_Sebastian Raschka_ &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 35–50 hours
 
-Published 11 August 2026 — the newest serious book in the domain and the one that closes the biggest gap in every older curriculum. Starts from a pretrained LLM and builds evaluation harnesses, inference-time scaling (best-of-n, verifiers), reinforcement learning (RLVR-style), and distillation. This is exactly the post-o1/DeepSeek-R1 material that every 2024-era roadmap is missing. Free code at github.com/rasbt/reasoning-from-scratch.
-
-> **Worth knowing.** Paid, and "from scratch" here presumes comfort with PyTorch and transformer internals — a sequel in spirit to his Build a Large Language Model (From Scratch). Not a starting point.
+The publisher lists **June 2026** publication. Covers reasoning evaluation, inference-time
+techniques, reinforcement learning and distillation. The
+[free code](https://github.com/rasbt/reasoning-from-scratch) supports practical study. Requires
+PyTorch and transformer familiarity; this is an optional post-training branch, not an additional
+prerequisite for building a reliable API-backed application.
 
 ### [Hands-On Large Language Models](https://www.llm-book.com/)
 
-*Jay Alammar & Maarten Grootendorst* &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 25-35 hours
+_Jay Alammar & Maarten Grootendorst_ &nbsp;·&nbsp; Book &nbsp;·&nbsp; Paid &nbsp;·&nbsp; 25–35 hours
 
-The best *illustrated* practitioner book — nearly 300 custom diagrams. Covers tokens/embeddings, transformer internals, prompt engineering, semantic search, RAG, multimodal, and fine-tuning, all runnable. It is the visual complement to Chip Huyen's more architectural AI Engineering. Code is free at github.com/handsOnLLM/Hands-On-Large-Language-Models — run the notebooks even if you don't buy it.
-
-> **Worth knowing.** A solid 2024 visual introduction to the concepts, but treat its applied and tooling chapters as dated.
+A visual practical introduction to embeddings, transformers, search, retrieval and tuning. The
+[notebooks](https://github.com/HandsOnLLM/Hands-On-Large-Language-Models) are public. Use the
+illustrations for concepts; update dependencies and model choices before reproducing applied
+examples. Complement it with current evaluation and security references.
 
 ### [Hugging Face Agents Course](https://huggingface.co/learn/agents-course)
 
-*Ben Burtenshaw & Sergio Paniego* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 25-40 hours
+_Hugging Face education team_ &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free material &nbsp;·&nbsp; 25–40
+hours
 
-Free, certificate-bearing, and structured as an intro, then smolagents, LangGraph, LlamaIndex, observability & evals, and a capstone. Its real value in 2026 is comparative: it makes you build the same agent three ways so you can form your own opinion in the framework-vs-raw-SDK debate rather than inheriting one. Repo: github.com/huggingface/agents-course.
+Agent foundations and examples using smolagents, LangGraph and LlamaIndex, followed by practical
+tasks. Useful for examining different execution/persistence abstractions after writing a bounded
+loop. It is not a controlled comparison proving which framework suits your task; make that
+comparison using identical cases, tool permissions and budgets.
 
-### [Hugging Face Context Course (context engineering for code agents)](https://huggingface.co/learn/context-course)
+### [Hugging Face Context Course](https://huggingface.co/learn/context-course)
 
-*Ben Burtenshaw & Atin Kumar Singh, with Claude Code sections by Maya Nielan and Ryan Whitehead* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 12-20 hours
+_Hugging Face and contributing instructors_ &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free material
+&nbsp;·&nbsp; 12–20 hours
 
-The most 2026-current free course on this list and the one nobody's roadmap mentions yet. Six units — onboarding, agent skills, MCP servers, plugins, sub-agents, lifecycle hooks — capped by building a minimal agent loop from scratch. This is the actual day-job of an AI engineer in 2026 — structuring knowledge so an agent finds the right thing at the right time. Do the final 'minimal agent loop from scratch' unit even if you skip everything else.
+Coding-agent context practice involving skills, tool integrations and agent execution. Choose the
+sections matching your environment and check version-specific instructions before running them. Test
+retrieval, memory and compaction against task constraints. Coding-agent examples do not replace
+application access checks or a reliability evaluation.
 
 ### [Hugging Face LLM Course](https://huggingface.co/learn/llm-course/chapter1/1)
 
-*Hugging Face education team* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 70-90 hours
+_Hugging Face education team_ &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free material &nbsp;·&nbsp; 70–90
+hours
 
-The best free hands-on bridge between theory and the actual ecosystem you'll be paid to use. 12 chapters: transformers library, datasets, tokenizers, fine-tuning, Gradio demos, classic NLP tasks, then chapters 10–12 on modern fine-tuning, dataset curation and reasoning models. Ad-free, no signup wall. Do chapters 1–4 early; chapters 10–12 only after you've shipped something.
+A substantial route through Transformers, datasets, tokenizers, fine-tuning and later reasoning
+topics. Chapters 1–4 provide library foundations; choose advanced units when pursuing open-weight
+training. Completing the whole course is a separate study branch, not part of this chapter's
+100-hour application path.
 
 ### [Hugging Face MCP Course](https://huggingface.co/learn/mcp-course/en/unit0/introduction)
 
-*Ben Burtenshaw & Alex Notov* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 15-25 hours
+_Hugging Face and MCP contributors_ &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free material &nbsp;·&nbsp;
+15–25 hours
 
-The best free structured path into MCP, and it's co-authored with the people who own the spec. Units: fundamentals and architecture, an end-to-end use case, a deployed use case, and bonus units (including Tiny Agents). Free certification. Cross-check anything you build against the current spec, because MCP moved to a stateless core in 2026-07-28.
+A guided protocol introduction with practical integrations. Check which revision the exercise
+client/server implement. Session and initialization examples can be correct for older revisions; the
+2026-07-28 changelog identifies removed versus deprecated features. Do not mix lifecycle
+instructions from different revisions without compatibility testing.
 
-> **Worth knowing.** Predates the 2026-07-28 MCP spec: what it teaches about sessions, the initialize handshake, roots, sampling and logging has since been removed or deprecated.
+### [Lil'Log — research archive](https://lilianweng.github.io/archives/)
 
-### [Lil'Log — Scaling Laws, Carefully (Jun 2026) and Harness Engineering for Self-Improvement (Jul 2026)](https://lilianweng.github.io/archives/)
+_Lilian Weng_ &nbsp;·&nbsp; Research surveys &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2–4 hours
 
-*Lilian Weng* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4 hours
-
-Her two 2026 posts are the current frontier, not the 2023 agent post everyone still links. 'Harness Engineering for Self-Improvement' (4 Jul 2026) is directly about the 2026 shift toward the harness — feedback loops where the system improves its own training/deployment pipeline. Also read 'Why We Think' (May 2025) for the reasoning-model era and 'Extrinsic Hallucinations in LLMs' (2024), still the best treatment of hallucination.
-
-> **Worth knowing.** The linked archive index drifts as new posts appear. Dense research-survey writing aimed at ML researchers — the two posts are 25–31 minute reads and belong in an advanced tier, not a beginner one.
+Use the archive to find a survey for a concrete question, then follow its primary papers.
+[Harness Engineering for Self-Improvement (July 2026)](https://lilianweng.github.io/posts/2026-07-04-harness/)
+is relevant to feedback and evaluation loops. These are research surveys, often denser than the main
+path; experimental self-improvement techniques need independent validation.
 
 ### [LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/)
 
-*Lilian Weng* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2 hours
+_Lilian Weng_ &nbsp;·&nbsp; Article, 2023 &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1–2 hours
 
-The post that gave the field its vocabulary: planning, memory, tool use, reflection. A caution for 2026: the specific techniques (ReAct, Reflexion, MRKL, early AutoGPT-style scaffolds) are dated and partly superseded by native tool-calling, RLVR-trained reasoning models and MCP. Read it for the conceptual decomposition, then get current practice from Anthropic's harness-design posts. Recognising this post's age is itself a useful 2026 skill.
+Planning, memory, tool use and reflection provide a useful conceptual decomposition. The named
+systems and techniques are historical examples. Compare them with your bounded workflow and current
+tool APIs; age alone does not prove a technique is obsolete or that a later protocol solves its
+reliability problems.
 
-> **Worth knowing.** A 2023 post: the conceptual taxonomy is still useful, but the examples are historical and not how agents are built now.
+### [LLMs-from-scratch — companion repository](https://github.com/rasbt/LLMs-from-scratch)
 
-### [LLMs-from-scratch (companion repo)](https://github.com/rasbt/LLMs-from-scratch)
+_Sebastian Raschka and contributors_ &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free &nbsp;·&nbsp; 20–30
+hours
 
-*Sebastian Raschka, PhD* &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free &nbsp;·&nbsp; 30 hours
+Executable model-building lessons and optional architecture examples. Read attention, positional
+representations and normalization alongside a working implementation. Check each example's
+dependencies and scope. Pick one architecture to understand deeply rather than treating a rapidly
+changing model directory or star count as a course completion target.
 
-103k stars, and usable entirely without buying the book. The bonus directory is the real 2026 asset: reading a from-scratch Qwen3 MoE or Gemma 4 implementation next to a from-scratch GPT-2 is the fastest way to see what actually changed in architectures (RoPE, GQA, RMSNorm, SwiGLU, MoE routing, sliding-window attention).
+### [The Annotated Transformer — source and notebook](https://github.com/harvardnlp/annotated-transformer)
 
-> **Worth knowing.** A reasoning-model sequel covers the newer follow-on material.
+_Alexander Rush and contributors_ &nbsp;·&nbsp; Interactive repository &nbsp;·&nbsp; Free
+&nbsp;·&nbsp; 4–6 hours
 
-### [The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)
-
-*Alexander 'Sasha' Rush* &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&nbsp; 4-6 hours
-
-Line-by-line PyTorch implementation interleaved with the paper text — the bridge from mathematical notation to running code. The 2022 community refresh modernised the PyTorch. Note: like the paper, it implements the original encoder-decoder architecture, so treat it as a companion to the paper rather than a template for building a modern decoder-only LLM. Source: github.com/harvardnlp/annotated-transformer.
-
-> **Worth knowing.** Four-year-old code implementing a nine-year-old architecture. Instructive as history, but not how a 2026 LLM is built — pair it with a decoder-only from-scratch implementation such as nanochat.
+An annotated implementation of the original encoder-decoder Transformer, connecting equations with
+PyTorch. The repository provides the notebook source if the hosted article is unavailable. Use it
+for attention and training mechanics; it is not a complete template for every modern decoder-only or
+multimodal architecture.
 
 ### [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)
 
-*Jay Alammar* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1 hour
+_Jay Alammar_ &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 1 hour
 
-Still the best 90-minute visual on-ramp to attention, used in courses at Stanford, MIT, Harvard, Princeton and CMU. Note: it describes the original 2017 encoder-decoder Transformer, not a 2026 decoder-only LLM — no RoPE, no GQA, no MoE, no KV cache, learned absolute position embeddings. Read it for intuition, then get the modern deltas from Raschka's repo or CS336 Lecture 3/4. Alammar himself notes the updated/expanded treatment is now in his book.
-
-> **Worth knowing.** Eight years old and architecturally dated where it now matters: modern LLMs are decoder-only with RoPE/GQA. Still the best first picture of attention; follow it with the author's updated Chapter 3.
+A visual introduction to attention and the original encoder-decoder architecture. Follow with a
+modern implementation for positional representations, grouped-query attention, cache behaviour or
+mixture-of-experts where your chosen model uses them. Modern architectures differ; none of those
+mechanisms is mandatory in every language model.
 
 ## Keep for reference
 
-Not for reading end to end. Useful to have when you need to look something up.
+Look these up when a specific task needs them rather than reading each one end to end.
 
-### [Ahead of AI (newsletter/archive)](https://magazine.sebastianraschka.com/archive)
+### [Ahead of AI — newsletter/archive](https://magazine.sebastianraschka.com/archive)
 
-*Sebastian Raschka, PhD* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free tier &nbsp;·&nbsp; 2 hours
+_Sebastian Raschka_ &nbsp;·&nbsp; Articles &nbsp;·&nbsp; Free/paid access varies &nbsp;·&nbsp; 1–2
+hours
 
-The best 'keep current without drowning' subscription for architecture-level readers. His annual architecture-comparison posts and pieces like 'Controlling Reasoning Effort in LLMs' (18 Jul 2026, covering the GPT-5.6 family's reasoning-effort settings and the RLVR lineage from o1 and DeepSeek-R1) are the fastest way to understand what actually changed this quarter. Use this instead of Twitter/X for architecture news.
+Architecture and training explanations that link to underlying work. Select a topic relevant to your
+experiment and verify model/release facts against the primary paper or model card. An archive is a
+moving index, not a reproducible source for an unspecified “latest best model”.
 
-### [DeepLearning.AI Short Courses](https://www.deeplearning.ai/courses)
+### [DeepLearning.AI Short Courses](https://www.deeplearning.ai/short-courses/)
 
-*DeepLearning.AI, with Andrew Ng and instructors from OpenAI, Anthropic, LangChain, Hugging Face, Microsoft, Pinecone, NVIDIA and 30+ partners* &nbsp;·&nbsp; Course &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1-2 hours
+_DeepLearning.AI and partner instructors_ &nbsp;·&nbsp; Courses &nbsp;·&nbsp; Access terms vary
+&nbsp;·&nbsp; 1–3 hours each
 
-Best used surgically, not sequentially. Each is 1–2 hours, taught by a practitioner from the vendor whose tool it covers — which is both the strength (authoritative, current) and the weakness (each is effectively a guided tour of one company's SDK). Worth doing: 'Evaluating AI Agents' (trajectory evaluation, not just final answers), and the MCP and agent-memory courses. Not a substitute for building: treat these as 90-minute orientations before you write your own version.
+Short introductions to individual tools and methods. Select a relevant evaluation, retrieval or
+deployment course before its exercise, not the entire catalogue. Check current access terms and SDK
+versions; course access, duration and syllabus vary. Use the live course page when deciding whether
+it fits your schedule and budget.
 
 ### [llama.cpp](https://github.com/ggml-org/llama.cpp)
 
-*Georgi Gerganov and contributors* &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free &nbsp;·&nbsp; 5-15 hours
+_Georgi Gerganov and contributors_ &nbsp;·&nbsp; Inference repository &nbsp;·&nbsp; Free
+&nbsp;·&nbsp; 5–15 hours
 
-The C/C++ inference engine underneath most of the local-AI ecosystem — Ollama and LM Studio are both built on its ggml tensor library. Worth going one level down from Ollama once you care about inference cost: this is where you learn what quantisation formats (Q4_K_M vs Q8), KV cache size, batching and context length actually do to memory and throughput. Those are the same levers that determine your API bill at scale.
+Useful for understanding quantisation, batching, context/KV-cache memory and hardware-specific
+inference. Benchmark the actual model, quantisation, context and concurrency you intend to serve.
+Include hardware and operating costs in comparisons with an API; a local inference lever is not
+automatically a saving in a provider's token-priced bill.
 
 ### [Ollama](https://ollama.com/)
 
-*Ollama team* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3-5 hours
+_Ollama team_ &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Local software free; cloud terms vary &nbsp;·&nbsp;
+2–4 hours
 
-The fastest path to running models locally, which matters for beginners for three reasons: zero marginal cost while you iterate, no data leaving your machine, and it forces you to confront quantisation and VRAM tradeoffs. 100+ quantised models available. Rule of thumb from 2026 guides: a modern AVX2 CPU with 16GB RAM runs an 8B model at Q4 comfortably. Use Ollama for convenience; drop to llama.cpp directly when you need control over build flags, quantisation and sampling.
-
-> **Worth knowing.** Ollama has expanded into a paid cloud product, so "run models locally for free" is no longer the whole story.
+A convenient local model runtime with cloud features as well. The official
+[FAQ](https://docs.ollama.com/faq) distinguishes local and cloud processing and documents local-only
+configuration. Verify the endpoint, web-search/tools and logging path before claiming data stays
+local. RAM/VRAM needs depend on weights, quantisation, context and concurrency; measure on your
+machine rather than promising that a model size always runs comfortably.
 
 ### [OpenAI Cookbook](https://github.com/openai/openai-cookbook)
 
-*OpenAI developer relations and community contributors* &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-20 hours
+_OpenAI and community contributors_ &nbsp;·&nbsp; Repository &nbsp;·&nbsp; Free material
+&nbsp;·&nbsp; 3–8 hours
 
-Runnable reference implementations straight from the provider, browsable at developers.openai.com/cookbook. Use it as a lookup, not a curriculum — grep for the pattern you need (structured outputs, embeddings, agents SDK, evals). 2026 additions lean heavily agentic, e.g. 'Building Governed AI Agents: A Practical Guide to Agentic Scaffolding' (Feb 2026). Reading both the OpenAI cookbook and Anthropic's cookbooks teaches you which parts of your knowledge are portable versus vendor-specific.
-
-> **Worth knowing.** Single-vendor: every recipe assumes the OpenAI API. Valuable as executable patterns, but they need translating for any other provider.
+Provider-maintained executable examples for selected API patterns and evaluation methods. Use the
+recipe matching the task, then verify its dependencies, supported model and current endpoint.
+Identify portable design ideas separately from provider-specific interfaces and charges. Reading a
+recipe does not require adopting its entire application architecture.
 
 ### [Simon Willison's blog](https://simonwillison.net/)
 
-*Simon Willison* &nbsp;·&nbsp; Article &nbsp;·&nbsp; Free &nbsp;·&nbsp; 2 hours
+_Simon Willison_ &nbsp;·&nbsp; Articles and experiments &nbsp;·&nbsp; Free &nbsp;·&nbsp; 1–2 hours
 
-The best daily 'what actually happened and does it actually work' feed, written by a working engineer who tests claims rather than repeating press releases. His annual reviews (Dec 2023/2024/2025) and 'LLM predictions for 2026' (simonwillison.net/2026/Jan/8/llm-predictions-for-2026/) are the fastest way to compress a year. His 2026 predictions worth internalising: it will become undeniable that LLMs write good code, thanks to reasoning models trained with RL on code; and sandboxing will finally be solved. He also expects a serious coding-agent security incident, because many people run these agents with near-root permissions. Use his llm CLI to experiment cheaply across providers.
+Hands-on reports about model tools, local experiments and security. Useful for finding a concrete
+experiment or failure case to reproduce. Distinguish tested behaviour, commentary and predictions; a
+forecast about sandboxing or coding capability is not evidence that a security boundary is solved.
 
 ### [Unsloth — fine-tuning docs and notebooks](https://unsloth.ai/docs)
 
-*Daniel & Michael Han* &nbsp;·&nbsp; Tool &nbsp;·&nbsp; Free &nbsp;·&nbsp; 10-20 hours
+_Unsloth team_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free material &nbsp;·&nbsp; 6–12 hours
 
-The lowest-friction way to actually run LoRA/QLoRA in 2026, and the practical answer to 'do I need an H100'. Free-tier Colab handles a 7–8B QLoRA; 4-bit base + LoRA adapter puts a 70B in ~48GB instead of ~140GB at 1–2% quality cost. Their model directory doubles as a useful census of the current open-weight frontier (in September 2026: Qwen3.8, DeepSeek V4, Kimi K3, Gemma 4, GLM-5.3, Meta Muse Glimmer). Sensible starting hyperparameters: r=16, alpha=16, all-linear target modules. Alternatives: HF TRL (most standard/portable) and Axolotl (YAML-driven pipelines).
+A practical option for adapter/quantised training with supported notebooks. Check the current
+model-specific requirements, licence, sequence length, batch and GPU availability before budgeting.
+There is no universal free-Colab guarantee, memory figure or fixed quality loss for QLoRA. Compare
+adapters against the untuned model on independent cases and include serving costs.
+
+### [OWASP — Prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)
+
+_OWASP GenAI Security Project_ &nbsp;·&nbsp; Reference &nbsp;·&nbsp; Free &nbsp;·&nbsp; about 1 hour
+
+Read before attaching private retrieval or write-capable tools. Use the threat model to test hostile
+retrieved instructions, cross-user access and unauthorized effects with harmless data. Combine
+prompt-level defences with application permissions and isolation; a model instruction alone cannot
+enforce authorization. Pair with Anthropic's
+[August 2026 evaluation-containment incident account](https://www.anthropic.com/news/improving-alignment-security-efforts).
+Use fake credentials and verify network boundaries in the learner harness. Its vendor-reported cyber
+evaluation incidents motivate testing containment; they are not a controlled estimate of failure in
+ordinary application deployments.
 
 ---
 
