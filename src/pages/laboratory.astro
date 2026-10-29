@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import ConceptLab from '../components/ConceptLab.astro';
+import { bookHref } from '../lib/book.mjs';
+const labs = [
+  ['broadcasting', '02-data-foundations', 'Data foundations'],
+  ['timeline', '02-data-foundations', 'Historical data'],
+  ['validation', '03-core-machine-learning', 'Validation'],
+  ['gradients', '04-deep-learning', 'Deep learning'],
+  ['retrieval', '05-language-models', 'Language models'],
+  ['evaluation', '06-production', 'Release decisions'],
+  ['pricing', '09-business-machine-learning/price-recommendation', 'Pricing'],
+  ['retention', '09-business-machine-learning/churn', 'Retention'],
+];
+---
+
+<Base
+  title="The interactive laboratory"
+  description="Eight small experiments for understanding data, models, evaluations and business decisions."
+>
+  <main class="laboratory-main page-width" id="main">
+    <header class="section-heading">
+      <div>
+        <span class="eyebrow">OBSERVE · PREDICT · TRY · EXPLAIN</span>
+        <h1>
+          The field
+          <br />
+          <em>laboratory.</em>
+        </h1>
+      </div>
+      <p>
+        Small experiments. Visible assumptions.
+        <br />
+        All examples are illustrative and run on your device.
+      </p>
+    </header>
+    <nav class="lab-index-nav" aria-label="Choose an experiment">
+      {labs.map(([kind, , label], i) => (
+        <a href={`#${kind}`}>
+          <span>{String(i + 1).padStart(2, '0')}</span>
+          {label} ↘
+        </a>
+      ))}
+    </nav>
+    <div class="laboratory-grid">
+      {labs.map(([kind, slug, label]) => (
+        <div id={kind} class="lab-entry">
+          <ConceptLab kind={kind} />
+          <a class="text-link lab-chapter-link" href={bookHref(slug)}>
+            Continue with {label.toLowerCase()} ↗
+          </a>
+        </div>
+      ))}
+    </div>
+    <div class="lab-local-note">
+      <h2>Now make it reproducible.</h2>
+      <p>
+        The Python reference project includes synthetic records, a model comparison, policy
+        decisions, filled reports and meaningful failure checks. It runs without an API key.
+      </p>
+      <a class="button button-dark" href={bookHref('reference-lab')}>
+        Open the reference project <span>↗</span>
+      </a>
+    </div>
+  </main>
+</Base>

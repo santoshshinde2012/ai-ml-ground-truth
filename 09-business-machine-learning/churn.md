@@ -30,6 +30,13 @@ The hours cover a reproducible prototype and a written experiment plan. A retent
 customers, permission to operate the campaign, enough observations and time for outcomes to mature;
 those cannot be completed by spending another afternoon on a public CSV.
 
+The schedule assumes prepared histories, the earlier environment and a reused delivery boundary;
+reconstructing source data or building a new CRM integration needs its own budget. Read the
+[causal primer](causal-primer.md), complete the fixed-horizon baseline, and add survival or
+treatment-effect modelling when the question and evidence require it. The
+[reference lab](../labs/README.md) supplies a reproducible synthetic fallback, with simulated
+outcomes explicitly separated from real campaign evidence.
+
 | Session | Hours | Do this                                                                                           | Done when                                                                                                  |
 | ------- | ----- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | 1       | 3     | Define customer, eligibility, event, prediction horizon, action and economic objective            | Another person can label five example customers from your contract                                         |
@@ -432,7 +439,8 @@ horizons before testing on the final future cohort.
 Survival handles observation limits; it does not turn observational customer histories into
 retention experiments.
 
-### A current survival foundation-model challenger
+<details>
+<summary id="a-current-survival-foundation-model-challenger">Optional research: a survival foundation-model challenger</summary>
 
 [SurvPFN](https://arxiv.org/abs/2606.04564), revised June 2026 and accepted to the ICML 2026
 Foundation Models for Structured Data workshop, uses a NanoTabPFN-style architecture pretrained on
@@ -446,6 +454,8 @@ the same landmarks and future cohorts. Report horizon calibration, IPCW metrics,
 runtime and licence constraints. Test censoring and feature patterns unlike its prior. This is
 optional depth after the 25-hour prototype; survival prediction still does not identify retention
 treatment effects.
+
+</details>
 
 ## 7. Risk is not the expected effect of an offer
 

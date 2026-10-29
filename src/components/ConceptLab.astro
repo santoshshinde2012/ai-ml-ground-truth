@@ -1,0 +1,601 @@
+---
+interface Props {
+  kind: string;
+}
+const { kind } = Astro.props;
+const labs: Record<
+  string,
+  { n: string; title: string; question: string; summary: string; labels: string[] }
+> = {
+  broadcasting: {
+    n: '01',
+    title: 'Shapes tell the story',
+    question: 'Predict the output shape before you reveal the expansion.',
+    summary:
+      'A (3, 1) column plus a (3,) row broadcasts to a (3, 3) grid. Dimensions are compared from the right; each pair must match or include a 1.',
+    labels: ['(3, 1)', '(3,)', '(3, 3)'],
+  },
+  timeline: {
+    n: '02',
+    title: 'What did we know then?',
+    question: 'Move the decision clock. An event can exist before your system knows about it.',
+    summary:
+      'At decision day 5, the day-2 purchase that arrived on day 7 is unavailable. Historical features need both event time and availability time.',
+    labels: ['Event happens', 'Record arrives', 'Decision happens'],
+  },
+  validation: {
+    n: '03',
+    title: 'Choose the right boundary',
+    question: 'The same records can answer three different deployment questions.',
+    summary:
+      'Random splitting can mix repeated customers and future records. A chronological split tests later activity; a group split tests unseen customers.',
+    labels: ['Random split', 'Time split', 'Group split'],
+  },
+  gradients: {
+    n: '04',
+    title: 'One node. Two paths.',
+    question: 'A reused node receives gradient contributions from every path.',
+    summary:
+      'For a = x × x and y = a + a, x = 3 gives y = 18 and dy/dx = 12. Overwriting a reused node’s gradient can incorrectly produce 6.',
+    labels: ['x = 3', 'a = x × x', 'y = a + a'],
+  },
+  retrieval: {
+    n: '05',
+    title: 'Find the right evidence',
+    question: 'A relevant document can still be the wrong source to use.',
+    summary:
+      'For a customer refund question, retrieve the current public 30-day policy. Exclude the retired 14-day policy and the restricted internal exception note.',
+    labels: ['Query', 'Permitted sources', 'Supported answer'],
+  },
+  evaluation: {
+    n: '06',
+    title: 'Is the improvement convincing?',
+    question: 'Compare paired outcomes, then inspect how much evidence the difference carries.',
+    summary:
+      'On 50 illustrative cases, 40 baseline passes and 42 candidate passes give a four-percentage-point difference. A paired bootstrap interval includes zero; defer a superiority claim.',
+    labels: ['50 shared cases', '40 → 42 passes', 'Uncertainty matters'],
+  },
+  pricing: {
+    n: '07',
+    title: 'Find the profit, not the price',
+    question: 'Explore a toy demand curve with a cost and inventory constraint.',
+    summary:
+      'In this invented model, deterministic demand is max(0, 130 − 0.65 × price), cost is ₹55, and contribution is (price − cost) × min(demand, stock). For uncertain demand, use the distribution of min(demand, stock); capping the mean is generally incorrect. This is not an estimated causal demand curve.',
+    labels: ['Price', 'Demand & stock', 'Contribution'],
+  },
+  retention: {
+    n: '08',
+    title: 'Risk is not saveability',
+    question: 'Who should receive the next retention contact?',
+    summary:
+      'For these six invented customers, selecting the highest churn risks produces less incremental value than selecting estimated treatment benefit. Expected incremental contribution is uplift × ₹180 − ₹20 per contact; the estimates are illustrative, not identified from observed risk.',
+    labels: ['Churn risk', 'Treatment benefit', 'Contact decision'],
+  },
+};
+const lab = labs[kind] || labs.validation;
+const supportedKind = labs[kind] ? kind : 'validation';
+const scriptUrl = `${import.meta.env.BASE_URL}scripts/concept-lab.js`;
+---
+
+<section class="concept-lab" data-lab={supportedKind} aria-label={lab.title}>
+  <header class="lab-heading">
+    <span class="lab-index">
+      FIELD NOTE {lab.n} <span aria-hidden="true">↗</span>
+    </span>
+    <h2>{lab.title}</h2>
+    <p>{lab.question}</p>
+  </header>
+
+  <div class="lab-controls" aria-label="Explore this example">
+    {supportedKind === 'broadcasting' && (
+      <>
+        <div class="lab-buttons" role="group" aria-label="Input shapes">
+          <button type="button" data-pair="column" aria-pressed="true">
+            Column + row
+          </button>
+          <button type="button" data-pair="rows" aria-pressed="false">
+            Rows + row
+          </button>
+          <button type="button" data-pair="mismatch" aria-pressed="false">
+            Mismatch
+          </button>
+        </div>
+        <button type="button" class="lab-action" data-reveal>
+          Reveal expansion <span aria-hidden="true">→</span>
+        </button>
+      </>
+    )}
+    {supportedKind === 'timeline' && (
+      <label class="lab-range">
+        Decision day <output data-clock-value>5</output>
+        <input type="range" min="1" max="10" value="5" step="1" data-clock />
+      </label>
+    )}
+    {supportedKind === 'validation' && (
+      <div class="lab-buttons" role="group" aria-label="Validation scheme">
+        <button type="button" data-split="random" aria-pressed="true">
+          Random
+        </button>
+        <button type="button" data-split="time" aria-pressed="false">
+          Chronological
+        </button>
+        <button type="button" data-split="group" aria-pressed="false">
+          By customer
+        </button>
+      </div>
+    )}
+    {supportedKind === 'gradients' && (
+      <>
+        <label class="lab-range">
+          Input x <output data-x-value>3</output>
+          <input type="range" min="1" max="5" value="3" step="1" data-x />
+        </label>
+        <div class="lab-buttons" role="group" aria-label="Gradient update rule">
+          <button type="button" data-gradient="add" aria-pressed="true">
+            Accumulate
+          </button>
+          <button type="button" data-gradient="overwrite" aria-pressed="false">
+            Overwrite (bug)
+          </button>
+        </div>
+      </>
+    )}
+    {supportedKind === 'retrieval' && (
+      <>
+        <label class="lab-select">
+          Question
+          <select data-query>
+            <option value="refund">What is the refund window?</option>
+            <option value="shipping">When will my order ship?</option>
+          </select>
+        </label>
+        <label class="lab-check">
+          <input type="checkbox" checked data-filter /> Apply access &amp; version filters
+        </label>
+      </>
+    )}
+    {supportedKind === 'evaluation' && (
+      <div class="lab-buttons" role="group" aria-label="Candidate evaluation result">
+        <button type="button" data-candidate="small" aria-pressed="true">
+          Small change
+        </button>
+        <button type="button" data-candidate="clear" aria-pressed="false">
+          Stronger evidence
+        </button>
+        <button type="button" data-candidate="regress" aria-pressed="false">
+          Regression
+        </button>
+      </div>
+    )}
+    {supportedKind === 'pricing' && (
+      <>
+        <label class="lab-range">
+          Price <output data-price-value>₹120</output>
+          <input type="range" min="80" max="160" value="120" step="1" data-price />
+        </label>
+        <label class="lab-select">
+          Inventory
+          <select data-stock>
+            <option value="20">20 units</option>
+            <option value="60" selected>
+              60 units
+            </option>
+            <option value="120">120 units</option>
+          </select>
+        </label>
+      </>
+    )}
+    {supportedKind === 'retention' && (
+      <>
+        <div class="lab-buttons" role="group" aria-label="Contact policy">
+          <button type="button" data-policy="risk" aria-pressed="true">
+            Highest risk
+          </button>
+          <button type="button" data-policy="benefit" aria-pressed="false">
+            Incremental value
+          </button>
+        </div>
+        <label class="lab-select">
+          Contact budget
+          <select data-budget>
+            <option value="2" selected>
+              Up to 2 customers
+            </option>
+            <option value="3">Up to 3 customers</option>
+            <option value="4">Up to 4 customers</option>
+          </select>
+        </label>
+      </>
+    )}
+  </div>
+
+  <div
+    class="lab-stage"
+    data-stage
+    tabindex="0"
+    role="region"
+    aria-label="Interactive diagram; scroll horizontally on a small screen"
+  >
+    <svg viewBox="0 0 640 150" role="img" aria-label={lab.summary}>
+      <path d="M110 74H530" class="lab-path" />
+      {lab.labels.map((label, i) => (
+        <g transform={`translate(${110 + i * 210},74)`}>
+          <circle r="22" class:list={['lab-node', { 'lab-node-active': i === 2 }]} />
+          <text
+            text-anchor="middle"
+            y="5"
+            class:list={['lab-node-number', { 'lab-on-accent': i === 2 }]}
+          >
+            {i + 1}
+          </text>
+          <text text-anchor="middle" y="49" class="lab-svg-label">
+            {label}
+          </text>
+        </g>
+      ))}
+    </svg>
+  </div>
+  <p class="lab-result" data-result role="status" aria-live="polite" aria-atomic="true">
+    {lab.summary}
+  </p>
+  <p class="lab-footnote">
+    Illustrative, deterministic example.{' '}
+    <span class="lab-nojs">Enable JavaScript to explore the controls.</span>
+    <span class="lab-js">Change an input to inspect the result.</span>
+    <span class="lab-scrollhint"> The diagram scrolls horizontally.</span>
+  </p>
+  <p class="lab-print-summary">Static reference: {lab.summary}</p>
+</section>
+<script src={scriptUrl} is:inline defer></script>
+
+<style>
+  .concept-lab {
+    --lab-ink: var(--ink, #1b302e);
+    --lab-paper: var(--paper, #f7f4ed);
+    --lab-accent: var(--accent, #a3d45c);
+    --lab-muted: var(--muted, #65716b);
+    --lab-line: var(--line, #d8ded2);
+    --lab-soft: var(--surface, #eeefe6);
+    --lab-warn: #9a4f24;
+    color: var(--lab-ink);
+    background: var(--lab-paper);
+    border: 1px solid var(--lab-line);
+    border-radius: 5px;
+    padding: clamp(20px, 4vw, 36px);
+    margin: 36px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-lab::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--lab-accent);
+  }
+  .lab-heading {
+    margin-bottom: 24px;
+  }
+  .lab-index {
+    font: 600 10px/1.4 var(--font-mono, monospace);
+    letter-spacing: 0.13em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--lab-muted);
+  }
+  .lab-index span {
+    font-size: 20px;
+    color: var(--lab-ink);
+  }
+  .lab-heading h2 {
+    font: 500 clamp(23px, 3vw, 30px)/1.2 var(--font-heading, Georgia, serif);
+    letter-spacing: -0.035em;
+    margin: 10px 0 !important;
+    color: var(--lab-ink);
+  }
+  .lab-heading p {
+    font: 400 14px/1.6 var(--font-sans, system-ui, sans-serif);
+    max-width: 54ch;
+    margin: 0 !important;
+    color: var(--lab-muted);
+  }
+  .lab-controls {
+    display: none;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 0 0 22px;
+    font: 400 12px/1.5 var(--font-sans, system-ui, sans-serif);
+  }
+  .is-enhanced .lab-controls {
+    display: flex;
+  }
+  .lab-buttons {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--lab-soft);
+    border-radius: 4px;
+    flex-wrap: wrap;
+  }
+  .lab-buttons button,
+  .lab-action {
+    font: 500 12px/1.4 var(--font-sans, system-ui, sans-serif);
+    border: 1px solid transparent;
+    border-radius: 3px;
+    min-height: 44px;
+    padding: 8px 12px;
+    color: var(--lab-ink);
+    background: transparent;
+    cursor: pointer;
+  }
+  .lab-buttons button[aria-pressed='true'] {
+    background: var(--lab-ink);
+    color: var(--lab-paper);
+  }
+  .lab-action {
+    background: var(--lab-accent);
+    color: #183126;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  .lab-stage:focus-visible {
+    outline: 2px solid var(--lab-ink);
+    outline-offset: 3px;
+  }
+  button:hover {
+    filter: brightness(0.93);
+  }
+  .lab-range {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    min-width: 170px;
+    flex: 1;
+    max-width: 300px;
+    gap: 8px 20px;
+  }
+  .lab-range output {
+    font-family: var(--font-mono, monospace);
+    font-weight: 500;
+  }
+  .lab-range input {
+    grid-column: 1/-1;
+    width: 100%;
+    height: 22px;
+    accent-color: var(--lab-ink);
+    cursor: pointer;
+  }
+  .lab-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .lab-select select {
+    font: inherit;
+    color: var(--lab-ink);
+    border: 1px solid var(--lab-line);
+    background: var(--lab-paper);
+    padding: 9px 27px 9px 10px;
+    border-radius: 3px;
+    max-width: 100%;
+    min-height: 44px;
+  }
+  .lab-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .lab-check input {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--lab-ink);
+  }
+  .lab-stage {
+    width: 100%;
+    padding: 8px 0 4px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .lab-stage :global(svg) {
+    display: block;
+    width: 100%;
+    min-width: 640px;
+    height: auto;
+    overflow: visible;
+  }
+  .lab-stage :global(text) {
+    font-family: var(--font-sans, system-ui, sans-serif);
+    fill: var(--lab-ink);
+    font-size: 12px;
+  }
+  .lab-stage :global(.lab-svg-label) {
+    font-size: 12px;
+    fill: var(--lab-muted);
+  }
+  .lab-stage :global(.lab-svg-small) {
+    font-size: 11px;
+    fill: var(--lab-muted);
+  }
+  .lab-stage :global(.lab-svg-mono) {
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+  }
+  .lab-stage :global(.lab-path) {
+    fill: none;
+    stroke: var(--lab-line);
+    stroke-width: 1.5;
+  }
+  .lab-stage :global(.lab-strong-path) {
+    fill: none;
+    stroke: var(--lab-ink);
+    stroke-width: 1.5;
+  }
+  .lab-stage :global(.lab-node) {
+    fill: var(--lab-soft);
+    stroke: var(--lab-line);
+    stroke-width: 1;
+  }
+  .lab-stage :global(.lab-node-active) {
+    fill: var(--lab-accent);
+    stroke: none;
+  }
+  .lab-stage :global(.lab-fill) {
+    fill: var(--lab-ink);
+  }
+  .lab-stage :global(.lab-soft-fill) {
+    fill: var(--lab-soft);
+  }
+  .lab-stage :global(.lab-accent-fill) {
+    fill: var(--lab-accent);
+  }
+  .lab-stage :global(.lab-warn-fill) {
+    fill: var(--lab-warn);
+  }
+  .lab-stage :global(.lab-muted-fill) {
+    fill: var(--lab-line);
+  }
+  .lab-stage :global(.lab-light-text) {
+    fill: var(--lab-paper);
+  }
+  .lab-stage :global(.lab-accent-text) {
+    fill: var(--lab-ink);
+    font-weight: 600;
+  }
+  .lab-stage :global(.lab-on-accent) {
+    fill: #1b302e;
+  }
+  .lab-stage :global(.lab-dashed) {
+    stroke-dasharray: 4 5;
+  }
+  .lab-stage :global(.lab-fade) {
+    opacity: 0.35;
+  }
+  .lab-stage :global(.lab-transition) {
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+  .lab-stage :global(.lab-gradient-flow) {
+    fill: none;
+    stroke: var(--lab-ink);
+    stroke-width: 2;
+    stroke-dasharray: 4 10;
+    animation: gradient-flow 1.2s linear 1;
+  }
+  @keyframes gradient-flow {
+    from {
+      stroke-dashoffset: 56;
+      opacity: 0.2;
+    }
+    to {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+  }
+  .lab-result {
+    font: 400 13px/1.7 var(--font-sans, system-ui, sans-serif);
+    margin: 16px 0 0 !important;
+    padding-top: 16px;
+    border-top: 1px solid var(--lab-line);
+    min-height: 44px;
+    color: var(--lab-ink);
+  }
+  .lab-footnote {
+    font: 400 11px/1.6 var(--font-mono, monospace);
+    color: var(--lab-muted);
+    margin: 10px 0 0 !important;
+  }
+  .lab-js,
+  .lab-print-summary,
+  .lab-scrollhint {
+    display: none;
+  }
+  .is-enhanced .lab-nojs {
+    display: none;
+  }
+  .is-enhanced .lab-js {
+    display: inline;
+  }
+  :global([data-theme='dark']) .concept-lab {
+    --lab-warn: #e3aa80;
+  }
+  .lab-stage :global(.lab-card) {
+    fill: var(--lab-paper);
+    stroke: var(--lab-line);
+    stroke-width: 1;
+  }
+  @media (max-width: 560px) {
+    .lab-controls {
+      align-items: stretch;
+    }
+    .lab-buttons {
+      width: 100%;
+    }
+    .lab-buttons button {
+      flex: 1;
+      padding-inline: 8px;
+    }
+    .lab-range {
+      max-width: none;
+      min-width: 140px;
+    }
+    .lab-select {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .lab-heading p {
+      font-size: 13px;
+    }
+    .lab-stage {
+      padding-bottom: 8px;
+    }
+    .lab-result {
+      font-size: 12px;
+    }
+    .lab-scrollhint {
+      display: inline;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lab-stage :global(*) {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+  @media print {
+    .concept-lab {
+      break-inside: avoid;
+      background: transparent;
+      border-color: #aaa;
+      padding: 18px;
+    }
+    .lab-controls,
+    .lab-footnote,
+    .lab-result,
+    .lab-stage {
+      display: none !important;
+    }
+    .lab-print-summary {
+      display: block;
+      font: 12px/1.6 sans-serif;
+    }
+    .lab-heading {
+      margin-bottom: 8px;
+    }
+    .lab-heading h2 {
+      font-size: 20px;
+    }
+    .concept-lab::before {
+      display: none;
+    }
+  }
+</style>

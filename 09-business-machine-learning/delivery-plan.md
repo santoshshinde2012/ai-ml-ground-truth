@@ -8,6 +8,11 @@ and a reviewable production proposal. Implement the relevant gates; complete the
 gate only when a real experiment has run. The 15 shared hours assume a small project and reuse of
 the [Chapter 6](../06-production/README.md) deployment work.
 
+Use the [causal primer](causal-primer.md) to write the estimand before selecting a policy estimator.
+For a prepared starting point, see the [reference lab](../labs/README.md). Its synthetic assumptions
+make the mechanics inspectable; they do not establish a live business effect or eliminate the
+integration work required by these completion gates.
+
 **In this plan:** [Decision brief](#1-define-the-decision-and-economics) &nbsp;·&nbsp;
 [Data contract](#2-create-the-data-and-label-contract) &nbsp;·&nbsp;
 [Policy evidence](#4-evaluate-an-action-policy-honestly) &nbsp;·&nbsp;

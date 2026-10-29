@@ -1,0 +1,146 @@
+---
+import '@fontsource-variable/dm-sans';
+import '@fontsource-variable/newsreader';
+import 'katex/dist/katex.min.css';
+import '../styles/global.css';
+import { repository, edition } from '../lib/catalog.mjs';
+import { homeHref, bookHref, basePath } from '../lib/book.mjs';
+interface Props {
+  title?: string;
+  description?: string;
+  reader?: boolean;
+  canonical?: string;
+}
+const {
+  title = 'A working developer’s path into AI',
+  description = 'An illustrated engineering field guide to data, machine learning, language models and defensible decisions. By Santosh Shinde.',
+  reader = false,
+  canonical,
+} = Astro.props;
+const base = basePath();
+const canonicalURL = new URL(canonical || Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f7f4ed" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Santosh Shinde" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${title} · Ground Truth`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={new URL(`${base}/cover.png`, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link
+      rel="alternate"
+      type="application/epub+zip"
+      title="Ground Truth EPUB"
+      href={`${base}/downloads/ground-truth.epub`}
+    />
+    <title>{title} · Ground Truth</title>
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('ground-truth-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+  </head>
+  <body class:list={[reader && 'is-reader']}>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <header class="site-header" data-pagefind-ignore>
+      <a class="wordmark" href={homeHref()} aria-label="Ground Truth home">
+        <svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true">
+          <path
+            d="M4 4h20v20H4zM4 14h20M14 4v20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+          />
+          <circle cx="14" cy="14" r="4" fill="currentColor" />
+        </svg>
+        <span>
+          Ground Truth<span class="wordmark-dot">.</span>
+        </span>
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href={`${homeHref()}#contents`}>The book</a>
+        <a href={`${base}/laboratory/`}>Laboratory</a>
+        <a href={bookHref('reference-lab')}>Code & data</a>
+      </nav>
+      <div class="header-actions">
+        <button class="search-trigger" type="button" aria-label="Search the book" data-open-search>
+          <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+            <circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path d="m12 12 5 5" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+          <span>Search</span>
+          <kbd>/</kbd>
+        </button>
+        <button
+          class="icon-button"
+          type="button"
+          data-theme-toggle
+          aria-label="Change color theme"
+          title="Change color theme"
+        >
+          <span aria-hidden="true">◐</span>
+        </button>
+        <a class="github-link" href={repository} aria-label="Source on GitHub">
+          GitHub ↗
+        </a>
+      </div>
+    </header>
+    <slot />
+    <footer class="site-footer" data-pagefind-ignore>
+      <div>
+        <a class="footer-title" href={homeHref()}>
+          Ground Truth.
+        </a>
+        <p>
+          Written by Santosh Shinde.
+          <br />
+          Built to be questioned, practiced and improved.
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href={bookHref('reader-guide')}>About this book</a>
+        <a href={bookHref('publishing')}>Contribute & publish</a>
+        <a href={`${base}/sources/`}>Source inventory</a>
+        <a href={`${base}/print/`}>Print edition</a>
+        <a href={`${base}/downloads/ground-truth.epub`} download>
+          Download EPUB ↓
+        </a>
+        <a href={`${repository}/blob/main/LICENSE`}>MIT license</a>
+      </div>
+      <p class="edition">
+        Edition {edition}
+        <br />
+        Open source. Always a work in progress.
+      </p>
+    </footer>
+    <dialog class="search-dialog" id="book-search" aria-labelledby="search-title">
+      <div class="search-heading">
+        <h2 id="search-title">Find your next idea</h2>
+        <button class="icon-button" type="button" data-close-search aria-label="Close search">
+          ×
+        </button>
+      </div>
+      <div id="search-results">
+        <p>Loading local search…</p>
+      </div>
+      <p class="search-hint">Search is generated from this edition. No account required.</p>
+    </dialog>
+    <script>
+      import '../scripts/reader.js';
+    </script>
+  </body>
+</html>

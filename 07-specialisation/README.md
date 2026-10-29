@@ -23,6 +23,18 @@ round.
 
 Do one branch. The shared path you have finished is what makes the other two accessible later.
 
+Use three levels of depth so the lists below do not imply mastery of every topic:
+
+| Branch | Implement in the bounded capstone | Explain using your results | Recognize and defer unless required |
+| --- | --- | --- | --- |
+| AI Engineer | One bounded workflow, checked tool boundary and independent evaluation | A failure taxonomy, judge limitations, recovery and operating cost | Multi-agent coordination or advanced memory without a measured need |
+| ML Engineer | One reproducible data/model/serving path with a load test and rollback | Bottlenecks, feature consistency and compatible release artifacts | Distributed training, custom kernels and post-training beyond the chosen project |
+| Data Scientist | One randomized analysis or a justified observational design, with uncertainty and a decision memo | Assignment, estimand, missing outcomes, sensitivity and limits | The full catalog of causal estimators; select one design before its estimator |
+
+The hour allowance assumes the earlier project and environment work. Record actual time and narrow
+the capstone when integration or data acquisition consumes the budget. Evidence of one completed
+system is the completion target; familiarity with every listed research direction is not.
+
 [Chapter 8: Finding the work](../08-finding-the-work/README.md) should already be running alongside
 this chapter. If it is not open yet, open it today.
 

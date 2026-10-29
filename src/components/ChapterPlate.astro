@@ -1,0 +1,218 @@
+---
+interface Props {
+  chapter: number | string;
+  compact?: boolean;
+}
+const { chapter, compact = false } = Astro.props;
+const number = Number(chapter) || 1;
+const captions = [
+  'Find your coordinates',
+  'Give the data a shape',
+  'Draw an honest boundary',
+  'Follow every gradient',
+  'Ground every answer',
+  'Keep the system accountable',
+  'Choose where to go deep',
+  'Show the evidence',
+  'Turn evidence into action',
+];
+const caption = captions[Math.max(0, Math.min(8, number - 1))];
+const accents = [
+  '#accc76',
+  '#86b7a6',
+  '#a8b7d5',
+  '#c4abd0',
+  '#d0b47d',
+  '#94b5c1',
+  '#b8be83',
+  '#c4ae94',
+  '#a1c97e',
+];
+const accent = accents[(number - 1) % accents.length];
+const patternId = `plate-grid-${number}${compact ? '-compact' : ''}`;
+---
+
+<figure class:list={['chapter-plate', { compact }]} style={`--plate-accent:${accent}`}>
+  <svg
+    viewBox="0 0 760 250"
+    role="img"
+    aria-label={`Chapter ${number}: ${caption}. An abstract data point travels through records, a model, a decision and a feedback loop.`}
+  >
+    <defs>
+      <pattern id={patternId} width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="1" cy="1" r=".7" fill="currentColor" opacity=".18" />
+      </pattern>
+    </defs>
+    <rect width="760" height="250" fill={`url(#${patternId})`} />
+    <path d="M86 126H222M289 126H405M459 126H582M638 126H711" class="plate-track" />
+    <path d="M610 157V207H255V161" class="plate-return" />
+    {[0, 1, 2].map((r) =>
+      [0, 1, 2].map((c) => (
+        <rect
+          x={48 + c * 17}
+          y={101 + r * 17}
+          width="11"
+          height="11"
+          rx="2"
+          class:list={['plate-cell', { 'plate-key': r === 1 && c === 1 }]}
+        />
+      )),
+    )}
+    <g transform="translate(255 126) rotate(45)">
+      <rect x="-30" y="-30" width="60" height="60" rx="3" class="plate-outline" />
+      <rect x="-11" y="-11" width="22" height="22" rx="2" class="plate-key" />
+    </g>
+    <g transform="translate(432 126)">
+      <circle r="30" class="plate-outline" />
+      <circle r="8" class="plate-key" />
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <circle
+          cx={Math.cos((i * Math.PI) / 3) * 48}
+          cy={Math.sin((i * Math.PI) / 3) * 48}
+          r="3"
+          class="plate-cell"
+        />
+      ))}
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <line
+          x1="0"
+          y1="0"
+          x2={Math.cos((i * Math.PI) / 3) * 48}
+          y2={Math.sin((i * Math.PI) / 3) * 48}
+          class="plate-spoke"
+        />
+      ))}
+    </g>
+    <g transform="translate(610 126)">
+      <rect x="-28" y="-28" width="56" height="56" rx="28" class="plate-key" />
+      <path d="m-10 1 7 7 15-17" class="plate-check" />
+    </g>
+    <circle cx={86 + ((number - 1) / 8) * 620} cy="126" r="5" class="plate-traveller" />
+    <text x="48" y="51" class="plate-label">
+      GROUND TRUTH / {String(number).padStart(2, '0')}
+    </text>
+    <text x="48" y="182" class="plate-caption">
+      DATA
+    </text>
+    <text x="255" y="182" text-anchor="middle" class="plate-caption">
+      STRUCTURE
+    </text>
+    <text x="432" y="198" text-anchor="middle" class="plate-caption">
+      MODEL
+    </text>
+    <text x="610" y="182" text-anchor="middle" class="plate-caption">
+      DECISION
+    </text>
+    <text x="708" y="51" text-anchor="end" class="plate-mark">
+      ↗
+    </text>
+  </svg>
+  <figcaption>
+    {caption}
+    <span>PLATE {String(number).padStart(2, '0')}</span>
+  </figcaption>
+</figure>
+<style>
+  .chapter-plate {
+    background: var(--surface, #eeefe6);
+    color: var(--ink, #1b302e);
+    margin: 30px 0 40px;
+    border: 1px solid var(--line, #d8ded2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .chapter-plate svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .plate-track {
+    stroke: currentColor;
+    stroke-width: 1;
+    fill: none;
+    opacity: 0.45;
+  }
+  .plate-return {
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-dasharray: 3 6;
+    fill: none;
+    opacity: 0.3;
+  }
+  .plate-cell {
+    fill: currentColor;
+    opacity: 0.6;
+  }
+  .plate-key {
+    fill: var(--plate-accent);
+  }
+  .plate-outline {
+    fill: var(--paper, #f7f4ed);
+    stroke: currentColor;
+    stroke-width: 1;
+  }
+  .plate-spoke {
+    stroke: currentColor;
+    stroke-width: 1;
+    opacity: 0.2;
+  }
+  .plate-check {
+    stroke: #1b302e;
+    stroke-width: 2;
+    fill: none;
+  }
+  .plate-traveller {
+    fill: var(--ink, #1b302e);
+    stroke: var(--surface, #eeefe6);
+    stroke-width: 3;
+  }
+  .plate-label,
+  .plate-caption {
+    fill: currentColor;
+    font: 10px var(--font-mono, monospace);
+    letter-spacing: 1.5px;
+  }
+  .plate-caption {
+    font-size: 9px;
+    opacity: 0.6;
+  }
+  .plate-mark {
+    font: 25px var(--font-sans, system-ui, sans-serif);
+    fill: currentColor;
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border-top: 1px solid var(--line, #d8ded2);
+    padding: 13px 20px;
+    font: 400 13px/1.5 var(--font-sans, system-ui, sans-serif);
+  }
+  figcaption span {
+    font: 10px var(--font-mono, monospace);
+    letter-spacing: 1px;
+    color: var(--muted, #65716b);
+  }
+  .compact {
+    margin: 0;
+  }
+  .compact figcaption {
+    display: none;
+  }
+  @media (max-width: 500px) {
+    figcaption {
+      padding: 12px 15px;
+      font-size: 12px;
+    }
+    .chapter-plate svg {
+      min-height: 145px;
+      object-fit: cover;
+    }
+  }
+  @media print {
+    .chapter-plate {
+      break-inside: avoid;
+    }
+  }
+</style>

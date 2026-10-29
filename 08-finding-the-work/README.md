@@ -214,7 +214,9 @@ The ones to begin with:
 
 - Your project case studies follow the outline above, including "what did not work."
 - You have said each of the three interview stories out loud at least twice.
-- Your tracker has at least ten rows and you know which conversion rate is weakest.
+- Your tracker distinguishes pending from resolved outcomes and records dates, role, location and
+  channel. With small counts, describe the uncertainty and seek specific feedback rather than
+  declaring one funnel stage definitively weakest.
 - You have checked pay expectations at **your** level and city, not the headline average.
 
 ---

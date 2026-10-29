@@ -9,7 +9,8 @@ score means something, pick a metric that maps to a real cost, compare against a
 and explain the result. The same discipline carries straight into evaluating language models later.
 You finish with a model served behind an API.
 
-**Use your Chapter 2 dataset.** Same repo or a fork — the story should connect.
+**Use your Chapter 2 dataset.** Same repo or a fork — the story should connect. Review the holdout
+reserved when you chose the supervised question; do not reshuffle it after inspecting the outcomes.
 
 **In this chapter:** [Plan](#your-eight-week-plan) &nbsp;·&nbsp; [Learn](#what-to-learn)
 &nbsp;·&nbsp; [Build](#what-to-build) &nbsp;·&nbsp; [Completion](#before-you-move-on) &nbsp;·&nbsp;
@@ -23,7 +24,7 @@ About ten hours a week. Follow the rows; do not skip the baseline or the README.
 
 | Week | Focus                   | Do this                                                                                                  | Done when                                                    |
 | ---- | ----------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| 6    | Problem + split         | Define prediction target; choose split (random / time / group); justify in writing                       | Split documented in README                                   |
+| 6    | Problem + split         | Review prediction target and reserved split (random / time / group); justify before fitting             | Split and prior exploration documented in README             |
 | 7    | Baseline + leakage      | Prior-probability baseline (`DummyClassifier`); deliberate preprocessing leakage, then fix with Pipeline | Before/after scores in README                                |
 | 8    | Logistic regression     | ISL or scikit-learn MOOC; metric tied to cost                                                            | Improves on baseline or explains why to retain it            |
 | 9    | Trees                   | Random forest + one boosted tree; SHAP on one wrong prediction                                           | Quality, calibration, runtime/memory and latency comparison  |
@@ -32,11 +33,17 @@ About ten hours a week. Follow the rows; do not skip the baseline or the README.
 | 12   | Polish                  | Confidence intervals; "what failed" section; load-test note                                              | README is the deliverable                                    |
 | 13   | Buffer                  | Re-build one model from empty file; rehearse interview story on leakage                                  | Can rebuild without tutorial                                 |
 
-The table uses classification as its example. For a numeric target, use `DummyRegressor`,
+The table uses **binary classification** as its first-project example. For a numeric target, use `DummyRegressor`,
 regularised linear regression, `RandomForestRegressor` and a boosted regressor. Replace the
 classification threshold exercise with error/interval analysis and a cost-based decision rule. The
 same split, holdout and API requirements apply. A justified negative result completes the
 comparison; do not search for a misleading split just to beat the baseline.
+
+For a first multiclass project, compare a class-prior baseline and report a confusion matrix and
+per-class precision/recall alongside the chosen aggregate. A binary cost threshold does not become a
+multiclass action rule: define the cost of each action/outcome pair and choose the lowest expected
+cost using suitable probabilities. Multilabel tasks also need an explicit label-level decision and
+evaluation design; keep those as a later extension if the basic workflow is new.
 
 In the existing uv project, start with `uv add scikit-learn`. Add the selected boosted-tree and SHAP
 packages when you reach Week 9, using their official installation guidance and committing the
@@ -60,6 +67,55 @@ Take an unfamiliar dataset, choose a validation scheme and defend it, choose a m
 a real cost, compare to a simple baseline, and explain in writing why each model helped or did not.
 
 ## What to learn
+
+### Worked lesson: a probability is not an action
+
+Four invented development cases have predicted event probabilities `[0.1, 0.4, 0.7, 0.9]` and true
+labels `[0, 1, 0, 1]`. A false positive costs 2 units and a false negative costs 8. Assume correct
+decisions have zero cost and there are no capacity constraints.
+
+At threshold 0.5, the last two cases are positive: one false positive and one false negative cost
+`2 + 8 = 10`. At threshold 0.2, the last three are positive: one false positive costs 2. The model
+has not changed; the action policy has.
+
+With calibrated probabilities and these costs, compare positive-action cost `2 × (1 - p)` with
+negative-action cost `8 × p`. Acting is cheaper when `p > 2 / (2 + 8) = 0.2`. Resolve ties with an
+explicit rule. This calculation assumes the error-cost formulation describes the decision; it does
+not identify a treatment benefit from a churn-risk score.
+
+```python
+probabilities = [0.1, 0.4, 0.7, 0.9]
+labels = [0, 1, 0, 1]
+
+def observed_cost(threshold, false_positive_cost=2, false_negative_cost=8):
+    return sum(false_positive_cost if p >= threshold and y == 0 else
+               false_negative_cost if p < threshold and y == 1 else 0
+               for p, y in zip(probabilities, labels))
+
+assert observed_cost(0.5) == 10
+assert observed_cost(0.2) == 2
+```
+
+**Try it yourself.** Reverse the costs: false positives cost 8 and false negatives cost 2. Derive
+the threshold and compute its observed cost. Is a four-case table enough to establish calibration?
+
+<details>
+<summary>Hint and explained answer</summary>
+
+Compare `8 × (1 - p)` with `2 × p`: the threshold is 0.8. Only the 0.9 case is positive, so the
+0.4 case is a false negative and total observed cost is 2. Four cases cannot establish reliable
+calibration or a production cost improvement. Use development data to set the rule, then evaluate
+the frozen model, calibrator and policy on independent data with appropriate uncertainty.
+
+</details>
+
+The [reference lab](../labs/README.md) supplies a reproducible baseline comparison. Write your
+expected result before running it, and explain any difference from the result you observe.
+
+### Core concepts and practical failure modes
+
+On a first pass, focus on the split, baseline, pipeline, metric and decision. The dated benchmark,
+advanced uncertainty and causal discussions below are optional depth after that baseline works.
 
 **The learning problem.** A model maps inputs to outputs, and a loss measures its errors. Many
 models optimise differentiable parameters with gradient-based methods; trees learn partitions and
@@ -193,7 +249,10 @@ scikit-learn's
 [causal interpretation example](https://scikit-learn.org/stable/auto_examples/inspection/plot_causal_interpretation.html)
 shows why predictive explanations can mislead about interventions.
 
-**What changed in tabular modelling in 2026.** Pretrained tabular models are serious challengers,
+<details>
+<summary>Optional research: tabular model comparisons in 2026</summary>
+
+Pretrained tabular models are serious challengers,
 especially on the small/medium IID benchmark settings where rows are independently sampled. The June
 [BeyondArena preprint](https://arxiv.org/abs/2606.30410) evaluated 142 datasets including time,
 group and scale challenges; it tested then-current versions, including TabPFN-2.6. The September
@@ -225,6 +284,8 @@ calibration gains under controlled resampling for TabPFN-v2, LoCalPFN and TabICL
 to check training-prior sensitivity, not proof that posterior adjustment fixes arbitrary feature
 drift or improves TabPFN-3.5. Label-shift corrections assume stable feature distributions within
 each class; representative held-out calibration remains the starting point.
+
+</details>
 
 **Regression and forecasting.** For a numeric target, compare a constant or seasonal baseline,
 regularised linear regression and a boosted regressor. Report MAE in business units, inspect errors

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+labs/output/
+public/lab-reference/
+public/downloads/
+public/sources.json
+public/cover.png
+.cache/
+test-results/
+playwright-report/

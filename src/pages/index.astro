@@ -1,0 +1,271 @@
+---
+import Base from '../layouts/Base.astro';
+import { chapters, edition } from '../lib/catalog.mjs';
+import { bookHref, basePath } from '../lib/book.mjs';
+const base = basePath();
+---
+
+<Base>
+  <main id="main">
+    <section class="hero page-width">
+      <div class="hero-topline">
+        <span class="eyebrow">
+          <span class="status-dot"></span> AN OPEN FIELD GUIDE FOR WORKING DEVELOPERS
+        </span>
+        <span class="edition-stamp">VOL. 01 / {edition}</span>
+      </div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>
+            Build the thing.
+            <br />
+            Understand <em>why.</em>
+          </h1>
+          <p class="hero-description">
+            A working developer’s path into AI and machine learning. From your first messy dataset
+            to systems—and decisions—you can defend.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-dark" href={bookHref('start-here')}>
+              Open the book <span>↗</span>
+            </a>
+            <a class="text-link" href="#contents">
+              Explore the chapters <span>↓</span>
+            </a>
+          </div>
+          <div class="hero-byline">
+            <span class="author-mark">SS</span>
+            <span>
+              Written by <strong>Santosh Shinde</strong>
+              <br />
+              <span class="muted">Read freely. Build deliberately.</span>
+            </span>
+          </div>
+        </div>
+        <div
+          class="hero-art"
+          aria-label="A data point travels from raw records through a model to a decision and an observed outcome"
+          role="img"
+        >
+          <svg viewBox="0 0 560 480" aria-hidden="true">
+            <defs>
+              <pattern id="dot-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <circle cx="1" cy="1" r=".8" fill="currentColor" opacity=".14" />
+              </pattern>
+              <marker
+                id="arrow"
+                viewBox="0 0 8 8"
+                refX="7"
+                refY="4"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto"
+              >
+                <path d="m1 1 5 3-5 3" fill="none" stroke="currentColor" />
+              </marker>
+            </defs>
+            <rect width="560" height="480" fill="url(#dot-grid)" />
+            <circle class="art-orbit" cx="286" cy="230" r="173" />
+            <circle class="art-orbit" cx="286" cy="230" r="119" />
+            <path
+              class="art-wire"
+              d="M87 144H185Q211 144 211 170V200M360 245H456V325M275 310V378H160V350"
+              marker-end="url(#arrow)"
+            />
+            <g class="art-data">
+              <rect x="30" y="68" width="143" height="113" rx="4" />
+              <text x="45" y="91" class="art-kicker">
+                01 / RAW MATERIAL
+              </text>
+              <path
+                d="M45 106H157M45 125H157M45 144H157M75 102V161M113 102V161"
+                class="art-table-line"
+              />
+              <circle cx="60" cy="115" r="3" />
+              <circle cx="96" cy="135" r="3" />
+              <circle cx="135" cy="154" r="3" />
+              <path d="m130 111 7 7m0-7-7 7" class="art-table-line" />
+            </g>
+            <g class="art-model">
+              <rect x="200" y="168" width="166" height="145" rx="4" />
+              <text x="217" y="193" class="art-kicker">
+                02 / LEARN A PATTERN
+              </text>
+              <path
+                d="m229 227 53 21 55-25m-108 4 53 50 55-54m-108 56 53-31 55 31m-108 0 53-2 55 2"
+                class="art-network"
+              />
+              <g class="art-neurons">
+                <circle cx="229" cy="227" r="7" />
+                <circle cx="229" cy="279" r="7" />
+                <circle cx="282" cy="248" r="9" />
+                <circle cx="282" cy="277" r="6" />
+                <circle cx="337" cy="223" r="7" />
+                <circle cx="337" cy="279" r="7" />
+              </g>
+            </g>
+            <g class="art-decision">
+              <path d="m455 286 66 53-66 53-66-53Z" />
+              <text x="455" y="333" text-anchor="middle" class="art-kicker">
+                03 / ACT
+              </text>
+              <text x="455" y="352" text-anchor="middle" class="art-small">
+                with constraints
+              </text>
+            </g>
+            <g class="art-outcome">
+              <rect x="78" y="350" width="154" height="75" rx="4" />
+              <text x="94" y="373" class="art-kicker">
+                04 / CHECK REALITY
+              </text>
+              <path d="m95 405 21-13 20 8 22-25 20 10 33-17" class="art-chart" />
+            </g>
+            <path class="art-return" d="M455 393V437H42V201" marker-end="url(#arrow)" />
+            <text x="285" y="456" text-anchor="middle" class="art-small">
+              Evidence closes the loop.
+            </text>
+            <circle class="art-traveller" cx="187" cy="144" r="5" />
+            <g class="art-note">
+              <path d="M402 95h95M402 102h62" />
+              <text x="402" y="84" class="art-small">
+                FOLLOW THE EVIDENCE
+              </text>
+            </g>
+          </svg>
+          <span class="art-caption">
+            FIG. 001 &nbsp; A PREDICTION IS THE BEGINNING OF A DECISION.
+          </span>
+        </div>
+      </div>
+      <div class="hero-facts">
+        <div>
+          <strong>09</strong>
+          <span>chapters, one coherent path</span>
+        </div>
+        <div>
+          <strong>08</strong>
+          <span>interactive field notes</span>
+        </div>
+        <div>
+          <strong>01</strong>
+          <span>project that grows with you</span>
+        </div>
+        <a href={`${base}/downloads/ground-truth.epub`} download>
+          Take the book offline <span>↓ EPUB</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="manifesto page-width">
+      <span class="eyebrow">THE IDEA BEHIND THE BOOK</span>
+      <div>
+        <h2>
+          Go from “it runs”
+          <br />
+          to <em>“here’s the evidence.”</em>
+        </h2>
+        <p>
+          You know how to ship software. The next step is learning what changes when a system learns
+          from data: how to choose a test, interpret a result, and know when to keep the simpler
+          approach.
+        </p>
+        <p>
+          Follow a practical sequence. Build something at every stage. Keep the decisions, the
+          failures and the uncertainty visible.
+        </p>
+        <a class="text-link" href={bookHref('reader-guide')}>
+          How to use this field guide <span>↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="contents-section" id="contents">
+      <div class="page-width">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">THE PATH, CHAPTER BY CHAPTER</span>
+            <h2>
+              One thread.
+              <br />
+              <em>A little deeper each time.</em>
+            </h2>
+          </div>
+          <p>
+            Eight core chapters. An applied business track.
+            <br />A clear next step when you need one.
+          </p>
+        </div>
+        <div class="chapter-list">
+          {chapters.map((ch) => (
+            <a class="chapter-row" href={bookHref(ch.dir)}>
+              <span class="chapter-row-number">{String(ch.number).padStart(2, '0')}</span>
+              <span class="chapter-row-copy">
+                <span class="eyebrow">{ch.part}</span>
+                <h3>{ch.title}</h3>
+                <p>{ch.description}</p>
+              </span>
+              <span class="chapter-row-time">
+                {ch.hours}
+                <small>{ch.weeks}</small>
+              </span>
+              <span class="chapter-row-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          ))}
+        </div>
+        <p class="schedule-note">
+          Practice budgets are planning estimates, assuming prior software experience. Job-search
+          work overlaps the production chapters.{' '}
+          <a href={bookHref('reader-guide') + '#time'}>See the full assumptions ↗</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="lab-invitation page-width">
+      <div class="lab-poster" aria-hidden="true">
+        <div class="poster-top">GROUND TRUTH / FIELD LABORATORY</div>
+        <div class="poster-equation">
+          <span>?</span>
+          <span>→</span>
+          <span>!</span>
+        </div>
+        <div class="poster-bottom">
+          <span>CHANGE AN INPUT.</span>
+          <span>WATCH YOUR ASSUMPTION.</span>
+        </div>
+      </div>
+      <div>
+        <span class="eyebrow">UNDERSTANDING IS SOMETHING YOU DO</span>
+        <h2>
+          Pull on a thread.
+          <br />
+          <em>See what changes.</em>
+        </h2>
+        <p>
+          Move a decision clock. Break a gradient. Change a price. Eight small experiments make the
+          important boundaries visible.
+        </p>
+        <a class="button button-dark" href={`${base}/laboratory/`}>
+          Enter the laboratory <span>↗</span>
+        </a>
+        <a class="text-link stacked-link" href={bookHref('reference-lab')}>
+          Or run the reference project locally →
+        </a>
+      </div>
+    </section>
+
+    <section class="closing-note page-width">
+      <span class="eyebrow">A NOTE FROM THE AUTHOR</span>
+      <blockquote>
+        “It builds the foundation in the right order, and it teaches you to think in systems.”
+      </blockquote>
+      <p>
+        Santosh Shinde <span>— developer, author, fellow learner</span>
+      </p>
+      <a class="text-link" href={bookHref('reader-guide') + '#a-note-from-the-author'}>
+        Read the author’s note ↗
+      </a>
+    </section>
+  </main>
+</Base>

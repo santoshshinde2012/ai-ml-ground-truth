@@ -32,6 +32,24 @@ About eight hours total. Do the days in order; skip nothing that ends in a commi
 
 Name the specific role you are working towards, and open a project without fighting your tools.
 
+## A quick entry check
+
+Try these without a tutorial; documentation is welcome. This is a way to choose preparation, not a
+timed admission test.
+
+1. Read a small CSV, validate that an amount is numeric, and return a useful error for a bad row.
+2. Write a function and a test, run them from a terminal, and explain the stack trace after an
+   intentional failure.
+3. Make a Git commit, inspect its diff, and restore one accidental change in a disposable repo.
+4. Explain why 12 events among 80 eligible cases is 15%, then identify what would make that
+   denominator inappropriate.
+
+If the first three are unfamiliar, use the programming resources below before counting the chapter
+budgets. If fractions or function notation feel rusty, keep a short maths-remediation list and work
+through the relevant examples alongside Chapters 2 and 3. You do not need a complete mathematics
+course before starting. The [reference lab](../labs/README.md) offers a small, no-API project for
+checking your local workflow.
+
 ## What to learn
 
 **Pick one target role.** The five common titles look similar from outside and lead to quite

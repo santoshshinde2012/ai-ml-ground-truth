@@ -1,0 +1,52 @@
+{
+  "name": "ground-truth-book",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "predev": "node scripts/prepare.mjs",
+    "dev": "astro dev --host 127.0.0.1",
+    "prebuild": "node scripts/prepare.mjs",
+    "build": "astro build && pagefind --site dist && node scripts/export-epub.mjs && python3 scripts/check-site.py",
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "astro check",
+    "test": "node --test tests/*.test.mjs && python3 -m unittest discover -s labs/tests -v",
+    "lab": "python3 labs/ground_truth_lab.py all --output labs/output",
+    "check:links": "python3 scripts/check-external-links.py"
+  },
+  "dependencies": {
+    "@astrojs/check": "0.9.12",
+    "@fontsource-variable/dm-sans": "5.3.0",
+    "@fontsource-variable/newsreader": "5.3.0",
+    "astro": "7.4.4",
+    "fflate": "0.8.3",
+    "github-slugger": "2.0.0",
+    "katex": "0.19.1",
+    "mermaid": "12.2.0",
+    "pagefind": "1.5.2",
+    "parse5": "7.3.0",
+    "rehype-katex": "7.0.1",
+    "rehype-raw": "7.0.0",
+    "rehype-stringify": "10.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-math": "6.0.0",
+    "remark-parse": "11.0.0",
+    "remark-rehype": "11.1.2",
+    "sharp": "0.35.5",
+    "shiki": "4.5.0",
+    "typescript": "6.0.3",
+    "unified": "11.0.5",
+    "unist-util-visit": "5.2.0"
+  },
+  "overrides": {
+    "katex": "$katex"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.2"
+  }
+}

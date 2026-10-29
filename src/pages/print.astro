@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import { getBook, bookHref, basePath, printContent, orderForEdition } from '../lib/book.mjs';
+import { edition } from '../lib/catalog.mjs';
+const docs = orderForEdition(await getBook());
+---
+
+<Base
+  title="Complete print edition"
+  description="A continuous reading and print edition of Ground Truth, with all chapters and resource notes."
+>
+  <main id="main" class="print-book">
+    <header class="print-title">
+      <span class="eyebrow">THE COMPLETE READING EDITION · {edition}</span>
+      <h1>
+        Ground Truth<span>.</span>
+      </h1>
+      <p>A working developer’s path into AI and machine learning.</p>
+      <p>By Santosh Shinde</p>
+      <div class="print-actions">
+        <button class="button button-dark" type="button" onclick="window.print()">
+          Print / save as PDF <span>↓</span>
+        </button>
+        <a href={`${basePath()}/downloads/ground-truth.epub`} download>
+          Download EPUB
+        </a>
+      </div>
+      <p class="print-explainer">
+        Use your browser’s print dialog to save a PDF. Interactive examples are explained in the
+        chapter text; explore their controls in the web laboratory.
+      </p>
+    </header>
+    <nav class="print-contents" aria-label="Print contents">
+      <h2>Contents</h2>
+      {docs.map((d) => (
+        <a href={`#print-${d.slug.replaceAll('/', '-')}`}>{d.title}</a>
+      ))}
+    </nav>
+    {docs.map((d) => (
+      <section class="print-chapter" id={`print-${d.slug.replaceAll('/', '-')}`}>
+        <div class="eyebrow">{d.category}</div>
+        <h1>{d.title}</h1>
+        <p class="print-source">
+          Web edition: <a href={bookHref(d.slug)}>{d.title}</a>
+        </p>
+        <article class="prose" set:html={printContent(d.html, d.slug)} />
+      </section>
+    ))}
+  </main>
+</Base>

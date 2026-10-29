@@ -29,6 +29,11 @@ Use the splitting and API discipline from [Chapter 3](../03-core-machine-learnin
 serving and monitoring discipline from [Chapter 6](../06-production/README.md). Real pricing
 experiments, approval processes and waiting for returns take additional calendar time.
 
+Read the [causal primer](causal-primer.md) first. The schedule assumes prepared opportunity data,
+the earlier environment and an existing API boundary. From-scratch data reconstruction or a new
+serving integration needs an additional setup budget. Complete the approved fixed-price baseline,
+supported demand comparison and constrained grid before the optional 2026 research extensions.
+
 | Time      | Focus                      | Build                                                               | Done when                                                             |
 | --------- | -------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | 3 hours   | Decision and data          | Price unit, horizon, cost definition, exposure and inventory checks | A data contract distinguishes zero demand, no exposure and stockout   |
@@ -358,7 +363,12 @@ underpowered, later overall lift is null, and positive subgroup findings are exp
 not validate a retail pricing reward. Compare against an approved fixed-price policy and confirm any
 proxy-driven policy with settled-profit experimental outcomes.
 
-### What the 2026 research adds
+<a id="what-the-2026-research-adds"></a>
+
+### Optional depth: what the 2026 research adds
+
+<details>
+<summary>Continuous-treatment models and stock-censored demand research</summary>
 
 **Pretrained continuous-treatment models.** The May 2026
 [CCPFN preprint, revised in July](https://arxiv.org/abs/2605.15133), studies in-context
@@ -397,6 +407,8 @@ A finite-inventory extension can compare a naive sales-as-demand fit, a justifie
 model and an inventory-aware exploration policy in a simulator. Vary stockouts and demand drift.
 Adapting its revenue objective to contribution is new work; the regret guarantee does not transfer
 automatically. These optional extensions need an exploration and loss budget before live use.
+
+</details>
 
 ## 4. Identify the price effect before optimizing it
 

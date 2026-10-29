@@ -37,7 +37,7 @@ full working days. Reuse the cases, pipeline and deployment from weeks 23-26.
 
 New words in this chapter — context engineering, retrieval, gold set, pass rate, trace, judge — are
 explained where they first appear below, and collected in
-[Terms in plain English](../README.md#glossary).
+[Terms in plain English](../content/reader-guide.md#glossary).
 
 ---
 
@@ -62,6 +62,78 @@ These records let you explain failures and compare changes. Neither a trace nor 
 replaces a domain expert or application-enforced permissions.
 
 ## What to learn
+
+### Worked lesson: evaluate the change on the same cases
+
+Consider 50 invented, independently sampled task families with one evaluated case each. Freeze the
+rubric before scoring the same cases with a baseline and a candidate. This development example
+uses human pass/fail labels and no repeated attempts:
+
+| Baseline | Candidate | Cases |
+| --- | --- | --- |
+| Pass | Pass | 35 |
+| Pass | Fail | 4 |
+| Fail | Pass | 6 |
+| Fail | Fail | 5 |
+
+The baseline passes 39/50 (78%); the candidate passes 41/50 (82%). The paired improvement is
+`(6 - 4) / 50 = 4 percentage points`. Reporting only “82%” hides four regressions. The ten
+discordant pairs contain the evidence about this particular change.
+
+An exact paired test under an exchangeable no-change null treats the ten discordant outcomes as
+fair coin flips. Six wins against four losses is not surprising under that null:
+
+```python
+from math import comb
+
+wins, losses, total = 6, 4, 50
+discordant = wins + losses
+paired_difference = (wins - losses) / total
+two_sided_p = min(1.0, 2 * sum(comb(discordant, k)
+                             for k in range(min(wins, losses) + 1)) / 2 ** discordant)
+assert paired_difference == 0.04
+assert abs(two_sided_p - 0.75390625) < 1e-12
+```
+
+The p-value is not the probability that the models are equal. It also does not show whether an
+improvement would be useful. If the declared rule requires at least five percentage points of
+supported improvement and no severe regression, this table does not justify promotion. Record the
+decision, inspect development failures and acquire enough independent evidence for the next release.
+For an interval, resample the paired task-family differences, preserving the sampling unit; a tiny
+or dependent sample can make an ordinary interval misleading.
+
+This is the exact binomial form of McNemar's paired test; the
+[statsmodels documentation](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html)
+describes the exact and large-sample options. A repeated-trial or clustered design needs its own
+sampling assumptions, rather than treating every attempt as an independent pair.
+
+Now audit a judge on these candidate outputs, treating **failure** as positive. Suppose it catches
+7 of the 9 human failures, misses 2, and incorrectly flags 4 of the 41 human passes. Failure
+sensitivity is `7/9 ≈ 78%`, false-alarm rate is `4/41 ≈ 10%`, and agreement is `44/50 = 88%`.
+That apparently reassuring agreement still hides two missed failures. Audit severity and slices
+before trusting the judge. These development labels can tune the judge; they then cannot provide
+independent release evidence for the tuned judge.
+
+**Try it yourself.** A new candidate fixes all five cases both versions failed, but breaks three
+cases both passed. What is its pass rate and paired improvement over the original baseline?
+
+<details>
+<summary>Hint and explained answer</summary>
+
+Starting from the original candidate's 41 passes, add five and subtract three: 43/50 = 86%.
+Compared with the baseline's 39 passes, the improvement is 8 percentage points. There are now eleven
+wins (the original six plus five) and seven losses (the original four plus three). Save those
+individual outcomes and severity labels; aggregate rates alone cannot establish an acceptable
+release. This exercise reuses development cases, so it supplies no fresh confirmation.
+
+</details>
+
+### Core concepts and optional depth
+
+The first product needs a bounded task, a baseline, a trace, a checked output and independent
+evaluation. MCP, agent harness research and post-training are optional extensions after that path
+works. The [reference lab](../labs/README.md) provides a no-API starting point for reproducible
+evaluation; its synthetic outcomes do not measure a hosted language model.
 
 **The model as a dependency.** Treat it like a database: a stochastic function with a latency
 budget, a token bill and a schema contract. Learn structured output, tool calls, streaming,
@@ -365,8 +437,8 @@ access for a private application. Optional agents and tuning experiments come la
 | 9   | Redacted request logs, restricted access and the crudest possible trace viewer                 | You can inspect failures without exposing private inputs            |
 | 10  | Read development failures; group them; add development cases                                   | Error taxonomy; release holdout untouched                           |
 | 11  | Fix one common failure and compare on development                                              | Measured change, including no improvement if that is the result     |
-| 12  | Deploy and harden: container, secrets, rate limit, per-user cost cap, graceful degradation     | **A public URL**                                                    |
-| 13  | Validate a judge if needed; regression checks in CI; fix candidate and release criteria        | Reproducible evaluation and declared decision rules                 |
+| 12  | Minimal read-only deploy; server-side secrets if needed; request/spending bounds; safe fallback | **A usable URL** or documented local demo if hosting is unavailable |
+| 13  | Validate a judge if needed; run regression command; freeze candidate and release criteria       | Reproducible local checks and declared decision rules               |
 | 14  | Run reserved release cases; save demo, costs and known failures                                | Release or defer decision supported by results                      |
 
 Use deterministic checks for objective tasks; a model judge is optional. Run selected repeated
@@ -374,10 +446,24 @@ trials for stochastic/tool-heavy cases within the budget and disclose the count.
 failed release until it happens to pass. Investigate on development data and acquire fresh release
 evidence if changes have been tuned to the old holdout.
 
-Days 12 and 13 ask for skills this book has not taught yet — containers, secrets, CI. That is
-deliberate: [Chapter 6](../06-production/README.md) teaches them properly, and takes this exact
-application as its starting point. For now the crudest deploy that produces a public URL is enough.
-Check current hosting eligibility and charges before choosing a route.
+**The Chapter 5 minimum is explicit:** a read-only, narrowly scoped interface, a repeatable local
+regression command, independent quality evidence, known failures and bounds on any paid requests.
+Use synthetic/public inputs or verified platform authentication for private inputs. A static demo
+with recorded or deterministic responses is a valid first deployment when labeled accurately; it
+must not claim to call a live model. If you add a paid API, keep its credential on the server,
+validate requests, bound input/output, enforce request and spending limits and fail safely. These
+controls are required for that deployment, even before the later hardening chapter.
+
+| Complete in Chapter 5 | Extend in Chapter 6 |
+| --- | --- |
+| Repeatable local regression command | Run the command in a least-privilege CI workflow |
+| Minimal platform deploy or documented local demo | Container build, readiness and measured serving load |
+| Request bounds, safe fallback and a measured cost table | Structured monitoring, alerts and a rehearsed rollback |
+| Independent release cases | Versioned release process and outcome-feedback loop |
+
+[Chapter 6](../06-production/README.md) takes this exact application as its starting point. Its
+container and CI work is not an extra Chapter 5 completion gate. Check current hosting eligibility
+and charges before choosing a route.
 [Hugging Face Spaces](https://huggingface.co/docs/hub/spaces-overview) still offers free Static
 Spaces; creating Gradio/Docker Spaces has account-plan requirements and some ZeroGPU exceptions.
 Free CPU hardware and permission to create a Space are separate issues.
@@ -385,8 +471,9 @@ Free CPU hardware and permission to create a Space are separate issues.
 whose per-token charges are not covered by those credits. Neither route guarantees free model API
 calls or a free running demo.
 
-Completion means a usable URL, an honest independent quality report, regression checks, access and
-spending controls, known failures, a cost table and feedback from at least one other user. A
+Completion means a usable URL or documented local-demo fallback, an honest independent quality
+report, a repeatable local regression command, the access and spending controls relevant to that
+deployment, known failures, a cost table and feedback from at least one other user. A
 measured lack of improvement is a valid result; release claims need independent evidence.
 
 After release, model/SDK upgrades, prompt changes and corpus refreshes are separate versioned

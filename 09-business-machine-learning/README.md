@@ -22,10 +22,16 @@ a claim that one model wins in every company.
 
 ## Your applied plan
 
-Read the shared delivery plan, then choose a guide. You can use one case for the
+Read the [short causal primer](causal-primer.md), the shared delivery plan, then choose a guide. You can use one case for the
 [Chapter 7 capstone](../07-specialisation/README.md), or finish all three as a connected business
 project. The hours are for a bounded learner prototype using public or synthetic data. Collecting
 real longitudinal data and running a powered business experiment take additional calendar time.
+
+These are **scaffolded practice budgets**: reuse the earlier environment, a prepared small dataset
+and the service boundary. Starting from a blank repository or collecting your own historical data
+requires a separate setup allowance. The [reference lab](../labs/README.md) supplies a synthetic
+starting point; it is not evidence of a real business effect. On the first pass, finish the baseline,
+constraints and evidence report before opening the optional research sections.
 
 | Block                                           | Hours | Work                                                                        | Deliverable                                                |
 | ----------------------------------------------- | ----- | --------------------------------------------------------------------------- | ---------------------------------------------------------- |

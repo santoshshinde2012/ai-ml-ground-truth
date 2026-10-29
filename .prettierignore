@@ -1,0 +1,8 @@
+node_modules
+dist
+.astro
+.cache
+labs
+public/lab-reference
+public/downloads
+package-lock.json

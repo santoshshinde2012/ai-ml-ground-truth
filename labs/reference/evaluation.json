@@ -1,0 +1,188 @@
+{
+  "baseline": {
+    "brier": 0.2513,
+    "confusion": {
+      "fn": 0,
+      "fp": 74,
+      "tn": 0,
+      "tp": 76
+    },
+    "cost_per_customer": 0.9866666666666667,
+    "log_loss": 0.6957513904359482,
+    "n": 150,
+    "prevalence": 0.5066666666666667,
+    "roc_auc": 0.5,
+    "threshold": 0.05
+  },
+  "business": {
+    "contribution_winner": 25,
+    "conversion_winner": 20,
+    "currency": "fictional currency units",
+    "inventory_example": {
+      "inventory": 10,
+      "mean_demand_both": 10,
+      "served_deterministic_demand_10": 10,
+      "served_half_0_half_20": 5
+    },
+    "pricing": [
+      {
+        "conversion_probability": 0.3,
+        "expected_contribution_per_opportunity": 3.0,
+        "price": 20,
+        "unit_cost": 10
+      },
+      {
+        "conversion_probability": 0.24,
+        "expected_contribution_per_opportunity": 3.5999999999999996,
+        "price": 25,
+        "unit_cost": 10
+      },
+      {
+        "conversion_probability": 0.15,
+        "expected_contribution_per_opportunity": 3.0,
+        "price": 30,
+        "unit_cost": 10
+      }
+    ],
+    "randomized_experiment": {
+      "arm_sizes": {
+        "0": 374,
+        "1": 426
+      },
+      "assignment_probability": 0.5,
+      "delivery_count": 385,
+      "intent_to_treat_contribution_difference": -0.2194270794105151,
+      "interpretation": "One simulated randomized experiment; includes failed deliveries in their assigned arm. No real business impact is established."
+    },
+    "retention": {
+      "budget": 8,
+      "contact_cost": 4,
+      "profiles": [
+        {
+          "churn_risk": 0.65,
+          "customer_id": "example-1",
+          "eligible": true,
+          "incremental_value": -2.0,
+          "segment": "high_risk"
+        },
+        {
+          "churn_risk": 0.65,
+          "customer_id": "example-2",
+          "eligible": true,
+          "incremental_value": -2.0,
+          "segment": "high_risk"
+        },
+        {
+          "churn_risk": 0.35,
+          "customer_id": "example-3",
+          "eligible": true,
+          "incremental_value": 14.0,
+          "segment": "saveable"
+        },
+        {
+          "churn_risk": 0.35,
+          "customer_id": "example-4",
+          "eligible": true,
+          "incremental_value": 14.0,
+          "segment": "saveable"
+        },
+        {
+          "churn_risk": 0.1,
+          "customer_id": "example-5",
+          "eligible": true,
+          "incremental_value": -3.0,
+          "segment": "stable"
+        },
+        {
+          "churn_risk": 0.1,
+          "customer_id": "example-6",
+          "eligible": true,
+          "incremental_value": -3.0,
+          "segment": "stable"
+        }
+      ],
+      "risk_contacts": [
+        "example-1",
+        "example-2"
+      ],
+      "risk_expected_increment": -4.0,
+      "source": "known simulator effects; oracle illustration, not learned causal estimates",
+      "value_contacts": [
+        "example-3",
+        "example-4"
+      ],
+      "value_expected_increment": 28.0
+    }
+  },
+  "candidate": {
+    "brier": 0.16902006107806244,
+    "confusion": {
+      "fn": 2,
+      "fp": 47,
+      "tn": 27,
+      "tp": 74
+    },
+    "cost_per_customer": 0.76,
+    "log_loss": 0.4959357818758788,
+    "n": 150,
+    "prevalence": 0.5066666666666667,
+    "roc_auc": 0.8372155049786629,
+    "threshold": 0.15
+  },
+  "cohort_sizes": {
+    "calibration": 150,
+    "test": 150,
+    "train": 300
+  },
+  "data_kind": "synthetic; no measured real-world impact",
+  "execution": {
+    "decisions": [
+      {
+        "cost": 4,
+        "customer_id": "example-3",
+        "decision_id": "contact-001",
+        "status": "unknown"
+      },
+      {
+        "cost": 4,
+        "customer_id": "example-4",
+        "decision_id": "contact-002",
+        "status": "confirmed_not_delivered"
+      }
+    ],
+    "lesson": "Unknown delivery retains its reservation; a repeated request does not reserve twice.",
+    "remaining_budget": 4
+  },
+  "gate": "Upper paired 95% bootstrap bound on candidate-minus-baseline log loss < -0.01, and candidate Brier <= baseline Brier. No real deployment approved.",
+  "judge": {
+    "confusion": {
+      "fn": 4,
+      "fp": 3,
+      "tn": 17,
+      "tp": 26
+    },
+    "false_acceptance_rate": 0.15,
+    "limitation": "Fixed fixture arithmetic, not a measured judge or evidence of general reliability",
+    "positive_means": "acceptable answer",
+    "precision": 0.896551724137931,
+    "recall": 0.8666666666666667,
+    "source": "hand-constructed 50-case teaching fixture"
+  },
+  "lab_version": "1.0.0",
+  "limitations": [
+    "Entirely synthetic: predictive and causal findings do not establish real-world performance or business impact.",
+    "Fixed independent-customer cohorts; real repeated users require grouped/time-aware resampling.",
+    "One final test and predeclared gate. Changing the candidate after seeing this test requires fresh confirmatory data.",
+    "Sigmoid calibration on a separate cohort is not a guarantee after population shift.",
+    "Oracle retention effects and assumed price response are teaching assumptions, not learned causal estimates."
+  ],
+  "paired_log_loss_difference": {
+    "draws": 1000,
+    "lower_95": -0.289922080655043,
+    "mean": -0.19981560856006947,
+    "resampling_unit": "unique synthetic customer; paired predictions",
+    "upper_95": -0.11539338673105394
+  },
+  "prototype_decision": "pass_simulated_gate",
+  "seed": 42
+}

@@ -1,0 +1,25 @@
+{
+  "calibrator": "sigmoid on separate calibration cohort, bundled in model.json",
+  "data_manifest_sha256": "829f8723c4dc29eb3a56d84aa6ded70f3803eb25855a6d2d715bf18478f162a3",
+  "decision": "pass_simulated_gate",
+  "dependencies": "Python standard library only; record exact Python version when reproducing",
+  "evaluation_report": "reports/evaluation.json",
+  "evaluation_sha256": "7cadf0b30b5c0046741bf9b7419765b1782349d55d28b16dede503e12e270912",
+  "evidence_level": "simulated prototype",
+  "fallback": "training-prevalence baseline; no autonomous contact or price action",
+  "feature_schema": [
+    "purchases_30d",
+    "support_30d",
+    "recency_days"
+  ],
+  "model_sha256": "1b9659424e7cbb556d8126a08d866220d36e8dfa834e6a0aa3dbc343c441e1f8",
+  "policy": {
+    "false_negative_cost": 10,
+    "false_positive_cost": 2,
+    "threshold": 0.15
+  },
+  "real_world_launch_approved": false,
+  "release_id": "synthetic-v1.0.0-seed-42",
+  "source_sha256": "f81143a78a225784f6e126178136d78299dfb868fb6d6b030f208b6dced08402",
+  "training_cutoff": "2025-03-05T12:00:00Z"
+}

@@ -1,0 +1,241 @@
+---
+import Base from '../../layouts/Base.astro';
+import ConceptLab from '../../components/ConceptLab.astro';
+import ChapterPlate from '../../components/ChapterPlate.astro';
+import { chapters, updated, repository } from '../../lib/catalog.mjs';
+import { getBook, getReadingPages, bookHref, basePath } from '../../lib/book.mjs';
+import type { BookPage } from '../../lib/types';
+interface Props {
+  page: BookPage;
+}
+export async function getStaticPaths() {
+  return (await getReadingPages()).map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }));
+}
+const { page } = Astro.props;
+const docs = await getBook();
+const chapter = chapters.find((c) => c.number === page.chapter);
+const readingOrder = page.parentSlug
+  ? (await getReadingPages()).filter((d) => d.parentSlug === page.parentSlug)
+  : docs.filter((d) => d.category !== 'Resources');
+const currentIndex = readingOrder.findIndex((d) => d.slug === page.slug);
+const previous = readingOrder[currentIndex - 1];
+const next = readingOrder[currentIndex + 1];
+const toc = page.headings.filter((h) => h.depth === 2);
+const sourceURL = `${repository}/blob/main/${page.file}`;
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  canonical={page.parentSlug ? bookHref(page.parentSlug) : undefined}
+  reader
+>
+  <div class="reader-shell">
+    <aside class="book-sidebar" aria-label="Book navigation" data-pagefind-ignore>
+      <details class="mobile-chapters" open>
+        <summary>
+          Explore the book <span aria-hidden="true">⌄</span>
+        </summary>
+        <nav>
+          <div class="sidebar-label">YOUR FIELD GUIDE</div>
+          <a
+            class:list={['sidebar-link', { active: page.slug === 'start-here' }]}
+            aria-current={page.slug === 'start-here' ? 'page' : undefined}
+            href={bookHref('start-here')}
+          >
+            Start here <span>↗</span>
+          </a>
+          <a
+            class:list={['sidebar-link', { active: page.slug === 'reader-guide' }]}
+            aria-current={page.slug === 'reader-guide' ? 'page' : undefined}
+            href={bookHref('reader-guide')}
+          >
+            The reader’s guide
+          </a>
+          {chapters.map((ch) => (
+            <div class="sidebar-chapter">
+              <a
+                class:list={['sidebar-link', { active: page.slug === ch.dir }]}
+                aria-current={page.slug === ch.dir ? 'page' : undefined}
+                href={bookHref(ch.dir)}
+              >
+                <span class="chapter-number">{String(ch.number).padStart(2, '0')}</span>
+                {ch.title}
+                <span
+                  class="completed-dot"
+                  data-completed-for={ch.dir}
+                  aria-label="Completed"
+                  hidden
+                >
+                  ✓
+                </span>
+              </a>
+              {page.chapter === ch.number && (
+                <div class="sidebar-subpages">
+                  <a
+                    href={bookHref(`${ch.dir}/resources`)}
+                    aria-current={page.slug.endsWith('/resources') ? 'page' : undefined}
+                  >
+                    Reading & references
+                  </a>
+                  {docs
+                    .filter((d) => d.chapter === ch.number && d.category === 'Applied guide')
+                    .map((d) => (
+                      <a
+                        href={bookHref(d.slug)}
+                        aria-current={page.slug === d.slug ? 'page' : undefined}
+                      >
+                        {d.title}
+                      </a>
+                    ))}
+                </div>
+              )}
+            </div>
+          ))}
+          <div class="sidebar-label sidebar-lab-label">MAKE IT CONCRETE</div>
+          <a class="sidebar-link" href={`${basePath()}/laboratory/`}>
+            Interactive laboratory <span>↗</span>
+          </a>
+          <a class="sidebar-link" href={bookHref('reference-lab')}>
+            Reference code & data
+          </a>
+        </nav>
+        <div class="sidebar-progress">
+          <span data-progress-label>0 of 9 chapters complete</span>
+          <progress data-book-progress max="9" value="0">
+            0 of 9
+          </progress>
+          <button type="button" data-clear-progress>
+            Clear local progress
+          </button>
+        </div>
+      </details>
+    </aside>
+    <main
+      class="reading-main"
+      id="main"
+      data-pagefind-body={page.parentSlug ? undefined : true}
+      data-book-page={page.slug}
+    >
+      <header class="reading-header">
+        {page.parentSlug && (
+          <a class="lesson-back" href={bookHref(page.parentSlug)}>
+            ← Back to the complete chapter
+          </a>
+        )}
+        <div class="eyebrow">
+          {page.category === 'Chapter'
+            ? `CHAPTER ${String(page.chapter).padStart(2, '0')} · ${chapter?.part}`
+            : page.category}
+        </div>
+        <h1 data-pagefind-meta="title">{page.title}</h1>
+        <p class="reading-deck">{page.description}</p>
+        <div class="reading-meta">
+          <span>{page.minutes} min read</span>
+          {chapter && (
+            <>
+              <span>{chapter.hours} practice plan</span>
+              <span>{chapter.weeks}</span>
+            </>
+          )}
+          <span>
+            Updated <time datetime={updated}>30 Oct 2026</time>
+          </span>
+        </div>
+        {page.category === 'Chapter' && page.chapter && <ChapterPlate chapter={page.chapter} />}
+      </header>
+      <div class="reader-tools" data-pagefind-ignore>
+        <button type="button" data-focus-toggle aria-pressed="false">
+          Focus reading
+        </button>
+        <button type="button" data-font-toggle aria-pressed="false">
+          Larger text
+        </button>
+        <a href={sourceURL}>Read source ↗</a>
+        <button type="button" onclick="window.print()">
+          Print
+        </button>
+      </div>
+      {page.lab && (
+        <div class="chapter-experiment" data-pagefind-ignore>
+          <div class="eyebrow">A SMALL EXPERIMENT BEFORE YOU READ</div>
+          <ConceptLab kind={page.lab} />
+        </div>
+      )}
+      {!page.parentSlug && page.lessons && page.lessons.length > 1 && (
+        <details class="lesson-menu" data-pagefind-ignore>
+          <summary>
+            Read this chapter in {page.lessons.length} shorter lessons <span>↘</span>
+          </summary>
+          <nav aria-label="Shorter lessons">
+            {page.lessons.map((lesson, i) => (
+              <a href={bookHref(lesson.slug)}>
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                {lesson.title}
+                <small>{lesson.minutes} min</small>
+              </a>
+            ))}
+          </nav>
+        </details>
+      )}
+      <article class="prose" set:html={page.html} />
+      {page.category === 'Chapter' && (
+        <div class="completion-block" data-pagefind-ignore>
+          <div>
+            <span class="eyebrow">KEEP YOUR EVIDENCE</span>
+            <p>Save your work, explain one decision, and record what you would test next.</p>
+          </div>
+          <button
+            class="button button-dark"
+            type="button"
+            data-mark-complete={page.slug}
+            aria-pressed="false"
+          >
+            Mark chapter complete <span>✓</span>
+          </button>
+        </div>
+      )}
+      <nav class="reading-pagination" aria-label="Continue reading" data-pagefind-ignore>
+        {previous ? (
+          <a href={bookHref(previous.slug)}>
+            <span>← PREVIOUS</span>
+            <strong>{previous.title}</strong>
+          </a>
+        ) : (
+          <span />
+        )}
+        {next && (
+          <a href={bookHref(next.slug)}>
+            <span>CONTINUE →</span>
+            <strong>{next.title}</strong>
+          </a>
+        )}
+      </nav>
+      <p class="correction-note" data-pagefind-ignore>
+        Something unclear or out of date?{' '}
+        <a
+          href={`${repository}/issues/new?title=${encodeURIComponent(`Correction: ${page.title}`)}`}
+        >
+          Suggest a correction ↗
+        </a>
+      </p>
+    </main>
+    <aside class="page-toc" aria-label="On this page" data-pagefind-ignore>
+      <span class="sidebar-label">IN THIS CHAPTER</span>
+      <nav>
+        {toc.map((h) => (
+          <a href={`#${h.id}`}>{h.text}</a>
+        ))}
+      </nav>
+      <a
+        class="toc-resource"
+        href={bookHref(chapter ? `${chapter.dir}/resources` : 'reference-lab')}
+      >
+        {chapter ? 'Annotated resources' : 'Open the reference lab'} ↗
+      </a>
+    </aside>
+  </div>
+</Base>

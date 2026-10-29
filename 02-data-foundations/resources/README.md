@@ -186,10 +186,10 @@ _Kaggle education team_ &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&
 
 Zero-install: everything runs in Kaggle's hosted notebooks with graded exercises against real
 datasets, so a beginner gets reps without touching an environment. The Data Cleaning course (missing
-values, scaling/normalisation, date parsing, character encodings, inconsistent text entry) is the
-best free treatment of that specific topic anywhere and is the one not to skip. That said, these are
-deliberately shallow API tours — they teach which method to call, not why. They are excellent reps
-and a poor primary curriculum. Use them as drills between chapters of McKinney.
+values, scaling/normalisation, date parsing, character encodings, inconsistent text entry) is a
+useful set of short drills for this chapter. These deliberately narrow API exercises provide
+practice with method calls; use McKinney and your decision log to examine why a transformation is
+appropriate. Work through the drills that address a gap in your own analysis.
 
 > **Worth knowing.** Check the hosted notebook's pandas version before carrying an example into your
 > locked local environment.
@@ -198,12 +198,11 @@ and a poor primary curriculum. Use them as drills between chapters of McKinney.
 
 _Peter Cottle_ &nbsp;·&nbsp; Interactive &nbsp;·&nbsp; Free &nbsp;·&nbsp; 3–5 hours
 
-The only Git resource that makes branching, merging, rebasing and remotes click, because it animates
-the commit graph as you type real commands. Entirely client-side, no signup, no install, translated
-into many languages. Git's mental model is a directed graph and every text tutorial fails to convey
-that; this one shows it. Do the Main levels and the Remote levels; the 'Git golf' challenges are
-optional fun. Pair it with Missing Semester's Git lecture (theory) — this one supplies the muscle
-memory.
+An interactive way to practise branching, merging, rebasing and remotes: it animates the commit
+graph as you type commands. Entirely client-side, no signup, no install, translated into many
+languages. The visual graph can help explain relationships that are harder to follow in a terminal
+log. Do the Main levels and the Remote levels; the 'Git golf' challenges are optional. Pair it with
+Missing Semester's Git lecture for the underlying model and then practise on a disposable real repo.
 
 ### [marimo — reactive Python notebooks](https://marimo.io/)
 

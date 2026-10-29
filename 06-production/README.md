@@ -42,6 +42,57 @@ which very few people can discuss with numbers from a system they built themselv
 
 ## What to learn
 
+### Worked lesson: a timeout is an unknown outcome
+
+Your service asks a destination to issue a voucher with operation ID `retention-42`. The destination
+issues it, but the acknowledgement is lost. Retrying with a new ID can issue another voucher. A
+local timeout is evidence about the response, not proof that the remote effect failed.
+
+This tiny destination fixture illustrates a business idempotency contract:
+
+```python
+issued = {}
+
+def issue_voucher(operation_id, amount):
+    if operation_id in issued:
+        if issued[operation_id]["amount"] != amount:
+            raise ValueError("same operation ID with different arguments")
+        return issued[operation_id]
+    result = {"voucher_id": f"voucher-{len(issued) + 1}", "amount": amount}
+    issued[operation_id] = result
+    return result
+
+first = issue_voucher("retention-42", 10)
+retry = issue_voucher("retention-42", 10)
+assert first == retry and len(issued) == 1
+```
+
+The dictionary is a teaching fixture, not a production store. Real delivery needs durable state,
+atomic handling of concurrent requests, retention of deduplication keys, and the destination's
+documented idempotency/reconciliation behavior. A transactional outbox closes the local
+decision-to-dispatch gap; it cannot by itself deduplicate a remote service's effects.
+
+**Try it yourself.** The worker crashes after the voucher is issued and before its local delivery
+row is marked complete. What must it persist before dispatch, what key should it reuse, and what
+should happen if the destination cannot report or deduplicate the operation?
+
+<details>
+<summary>Hint and explained answer</summary>
+
+Persist the validated decision and pending delivery record atomically before dispatch, including
+the business operation ID and exact arguments. Retry or query with that same ID; mark completion
+after reconciliation. If the destination cannot deduplicate or reveal its state, stop automatic
+retries and reconcile the unknown outcome. A new key, or assuming the timeout means nondelivery,
+does not make the operation safe. Rehearse both crash windows using a fake destination.
+
+</details>
+
+### Core operations and optional systems depth
+
+Finish one deploy, regression command, monitored failure and rollback before experimenting with
+distributed serving or framework optimizations. Consult the [reference lab](../labs/README.md) for
+a deterministic starting point; production claims still need measurements from your actual system.
+
 **Containers, and about forty per cent of Docker.** Images and layers, why your build is slow,
 multi-stage builds, `.dockerignore`, sensible Dockerfile hygiene for Python, volumes, environment
 variables and secrets, and Compose for local work. Keep a small CPU/API application lean, and
@@ -64,6 +115,12 @@ before seeing the result; a noisy one-point judge fluctuation should not masquer
 regression.
 [MLflow's regression-testing workflow](https://mlflow.org/docs/latest/genai/eval-monitor/regression-testing/)
 shows how to record tests and traces, but the scoring design remains your responsibility.
+
+Keep workflow permissions minimal: read-only repository access for checks, and deployment access
+only in the deployment job. Run untrusted pull-request code without production secrets; do not use
+a privileged workflow trigger to check out and execute a contributor's branch. Pin third-party
+actions to reviewed commit SHAs, lock dependencies, and load model artifacts only from trusted,
+recorded sources. A passing test suite cannot make an untrusted build artifact safe.
 
 Version prompts, retrieval settings, tool schemas, decoding settings and model identifiers with the
 application. Keep a held-out evaluation set for release decisions: continually tuning on the same
@@ -277,7 +334,9 @@ another model in a portfolio, because very few people have one.
 
 ## Before you move on
 
-- You can write a multi-stage Dockerfile from memory.
+- You can explain each Docker build stage and repair a build with a missing runtime dependency;
+  documentation is allowed. Show that the image starts and its readiness check detects an
+  incompatible or missing model bundle.
 - You can rerun training from the release manifest within a declared metric tolerance, or explain
   the limits of replaying a hosted model.
 - You can show your dashboard and justify each alert.

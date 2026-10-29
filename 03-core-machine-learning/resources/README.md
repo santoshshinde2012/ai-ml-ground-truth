@@ -85,11 +85,10 @@ exists, in the middle weeks of this chapter.
 
 _XGBoost contributors_ &nbsp;·&nbsp; Documentation &nbsp;·&nbsp; Free &nbsp;·&nbsp; 6–10 hours
 
-You cannot claim tabular ML competence without being able to tune a boosted tree deliberately rather
-than by superstition. Read the 'Introduction to Boosted Trees' tutorial (Chen's own derivation of
-the objective and why regularisation is baked into the split criterion) and then the parameter
-documentation until you can predict each parameter's effect on bias and variance before you change
-it.
+Use this to tune one boosted tree with a written hypothesis for each change. Read the 'Introduction
+to Boosted Trees' tutorial (the objective and why regularisation enters the split criterion), then
+the parameter documentation. Predict a change's likely effect, compare on the same validation
+protocol and record whether the evidence supports that prediction.
 
 ### [Interpretable Machine Learning: A Guide for Making Black Box Models Explainable](https://christophm.github.io/interpretable-ml-book/)
 
@@ -99,8 +98,8 @@ The free canonical reference for the half of tabular ML that decides whether you
 ships: permutation feature importance and why it misleads under correlated features, partial
 dependence and ICE plots, LIME, and SHAP. Molnar covers the methods behind the chapter's argument
 that regulated industries need defensible, explainable decisions — and he is honest about each
-method's failure modes. It is also the most common follow-up question after 'which model did you
-pick?' in interviews.
+method's failure modes. Prepare to explain one actual error and an interpretation's limits when
+presenting your project; interview expectations vary by role and employer.
 
 ### [StatQuest with Josh Starmer (Statistics Fundamentals, Machine Learning, Neural Networks playlists)](https://www.youtube.com/@statquest/playlists)
 

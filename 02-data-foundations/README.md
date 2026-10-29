@@ -10,7 +10,32 @@ by publishing a small, reproducible analysis of a dataset you found yourself, wh
 of everything you build later.
 
 **This dataset carries forward.** Chapter 3 models it. Chapter 5 can use documents in the same
-domain. Do not switch datasets mid-book unless you must.
+domain. Keep the domain consistent where feasible; document a necessary change rather than forcing
+an unsuitable dataset to support a claim it cannot answer.
+
+## Choose a dataset you can finish
+
+Before investing in cleaning, check five things:
+
+- **Permission:** you may download, analyse and publish the intended examples.
+- **Grain:** you can state what one row represents and identify duplicates or repeated entities.
+- **Question:** one useful descriptive question and a feasible binary or numeric prediction target.
+- **Clocks:** you know when inputs would be available and when outcomes become observable. A current
+  export without history can support a limited exercise, not a verified historical backtest.
+- **Size and continuity:** a small sample runs on your machine, and related public documents could
+  support the later application.
+
+If selection stalls, use the [reference lab](../labs/README.md) while looking for your own portfolio
+dataset. It uses synthetic data, so its results establish behavior under stated assumptions. A city
+open-data export, a permitted personal-service export or a small transaction dataset can supply the
+independent project if it passes these checks. You do not need the largest or most unusual dataset.
+
+**Reserve the test before outcome-informed exploration.** As soon as you choose the supervised
+question, declare the prediction time and time/group split and reserve its final holdout. All-row
+source, schema and integrity audits are useful, but learned transformations, target-conditioned
+charts and feature choices belong on training/development data. Keep the holdout out of those
+choices. If you have already explored every outcome, label that work exploratory and obtain fresh
+confirmatory data; splitting afterwards does not erase that influence. Chapter 3 reviews this design.
 
 **In this chapter:** [Plan](#your-five-week-plan) &nbsp;·&nbsp; [Learn](#what-to-learn)
 &nbsp;·&nbsp; [Build](#what-to-build) &nbsp;·&nbsp; [Completion](#before-you-move-on) &nbsp;·&nbsp;
@@ -28,10 +53,10 @@ About ten hours a week. Each week ends with something on GitHub.
 | 2    | pandas        | McKinney ch 4–7 or pandas Getting Started; write 3 cleaning functions with tests        | Functions in `src/`; tests in `tests/` pass          |
 | 3    | SQL           | SQLBolt basics, selected ThoughtSpot window/join lessons; DuckDB on your CSV            | Top-N-per-group query and join-cardinality check run |
 | 4    | Your dataset  | Confirm data **you** sourced; schema/source manifest and cleaning decision log          | Eight+ meaningful checks pass; log has 3+ decisions  |
-| 5    | Publish       | README (question / answer / limitation); five charts; a locked run from a fresh process | Stranger can clone and reproduce                     |
+| 5    | Publish       | README (question / answer / limitation); question-led charts; a locked fresh-process run | Stranger can clone and reproduce                     |
 
 New words in this chapter — array, broadcasting, dataframe, point-in-time — are explained where they
-first appear below, and collected in [Terms in plain English](../README.md#glossary).
+first appear below, and collected in [Terms in plain English](../content/reader-guide.md#glossary).
 
 Work in the Chapter 1 project. Add the SQL, plotting and test dependencies, then commit the changed
 project files:
@@ -54,6 +79,54 @@ Take a messy dataset you found yourself and turn it into a published, reproducib
 stranger can run with one command.
 
 ## What to learn
+
+### Worked lesson: the event happened, but you did not know it
+
+Suppose you predict at the start of 3 January, using the preceding seven days. These invented
+transactions distinguish when an event occurred from when the service received it:
+
+| Amount | Event time | Available at | Available for this prediction? |
+| --- | --- | --- | --- |
+| 10 | 1 January | 1 January | Yes |
+| 20 | 2 January | 4 January | No: it arrived later |
+| 30 | 4 January | 4 January | No: the event is in the future |
+
+The historical total is **10**. Filtering only event time produces 30 and leaks a late arrival.
+Using today's complete customer total produces 60 and also includes a future event. Correct values
+today can be incorrect inputs for a past decision.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+def day(number):
+    return datetime(2026, 1, number, tzinfo=timezone.utc)
+
+events = [(10, day(1), day(1)), (20, day(2), day(4)), (30, day(4), day(4))]
+as_of = day(3)
+total = sum(amount for amount, event_at, available_at in events
+            if as_of - timedelta(days=7) <= event_at < as_of
+            and available_at <= as_of)
+assert total == 10
+```
+
+**Try it yourself.** Move the decision to 5 January. Which records now qualify, and what is the
+total? Then add an event exactly at the prediction time. Decide whether it belongs before running.
+
+<details>
+<summary>Hint and explained answer</summary>
+
+Both clocks must pass. At 5 January all three original records qualify, so the total is 60. An event
+at exactly `as_of` is excluded by the half-open event window `[as_of - lookback, as_of)`. That
+boundary prevents the current decision's own activity from becoming its historical input. The
+availability rule here includes records arriving exactly at `as_of`; document and test whether your
+real extraction order can actually use them.
+
+</details>
+
+Use this tiny fixture to test a larger SQL or pandas implementation. The
+[reference lab](../labs/README.md) develops the same habit on a reproducible synthetic project.
+
+### Core concepts
 
 **Thinking in arrays.** You are fluent in loops. Machine learning is written in shapes and batches,
 and the second dialect takes a little while. What you need is small but you need it cold: `shape`
@@ -210,13 +283,15 @@ more sense afterwards.
 - At least eight meaningful checks spanning cleaning functions, unique keys, joins, timestamps and
   missingness
 - Your cleaning decision log
-- Five charts, each captioned with what it shows and what it does not
+- Only charts that answer named questions, each with a denominator, units, source and limitation.
+  Cover the relevant distributions, missingness/coverage and time or group variation; show uncertainty
+  when making an estimate. Use readable labels and a palette understandable without color alone.
 - A data contract covering row keys, both timestamps, feature windows, label maturity, actual
   outcome availability/coverage and permitted use
 - A source manifest with immutable-input checksums, extraction cutoff and documented exclusions
 
 Give the package an analysis entrypoint and document its exact `uv run --locked ...` command. It
-must read the documented inputs and regenerate the cleaned output, summary results and five charts
+must read the documented inputs and regenerate the cleaned output, summary results and chosen charts
 without notebook state. Test `uv run --locked pytest` separately; passing tests alone does not
 reproduce the analysis.
 
@@ -224,7 +299,7 @@ Choose a dataset that **you found yourself**: a city open-data portal, a governm
 marketplace, or your own exported data from a service you use. Before Week 4, identify an outcome
 you could later predict — a delay, a price, a category — and inputs available when that prediction
 would be made, because [Chapter 3](../03-core-machine-learning/README.md) will ask you to model it.
-State the prediction time, row/group key and feasible split in the handoff. If the dataset cannot
+State the prediction time, row/group key, reserved holdout and feasible split in the handoff. If the dataset cannot
 support a supervised question, document a necessary dataset change rather than inventing labels or
 using the outcome as an input. Your own data can be useful when its export and permissions support
 the project.
@@ -234,7 +309,8 @@ the project.
 - A stranger can install the locked environment, run the tests and regenerate your analysis with the
   documented command.
 - You can defend two cleaning decisions against "why not just drop those rows?"
-- You can write a top-N-per-group SQL query from memory.
+- You can write and explain a top-N-per-group query, checking ties and duplicate keys on a fixture;
+  documentation is allowed.
 - You can predict the output shape of a broadcast before running it.
 - You can show that a late-arriving record and an unfinished label cannot enter a training row.
 - You can distinguish a mature observed negative, a censored duration and a missing outcome, and

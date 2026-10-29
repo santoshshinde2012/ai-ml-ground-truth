@@ -26,7 +26,7 @@ below.
 | Week | Focus                   | Do this                                                                                                               | Done when                                                       |
 | ---- | ----------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | 14   | Autograd                | Karpathy micrograd / Zero to Hero 1–2; rebuild `Value` from empty file                                                | Backward pass on paper + code                                   |
-| 15   | PyTorch basics          | Official PyTorch tutorial; training loop from memory                                                                  | Loop runs on toy data                                           |
+| 15   | PyTorch basics          | Official PyTorch tutorial; implement and explain a training loop                                                       | Loop runs; a deliberate mode/gradient bug is diagnosed          |
 | 16   | Debug training          | Overfit 10 samples; learning-rate sweep; loss curves                                                                  | Can name 3 failure modes                                        |
 | 17   | MLP / CNN               | Dive into Deep Learning or CS231n notes; one small classifier                                                         | Baseline comparison and loss curves explained                   |
 | 18   | Transfer learning       | fast.ai lessons 1–4 **or** fastbook ch 1–4; train the head, then compare unfreezing the backbone                      | Demo on **your** images or domain                               |
@@ -71,17 +71,53 @@ model's end-to-end speed; several new features are explicitly experimental.
 
 ## What to learn
 
+### Worked lesson: gradients must accumulate
+
+Let `x = 3`, `a = x × x` and `y = a + a`. Forward evaluation gives `a = 9` and `y = 18`.
+There are two uses of `a`, each contributing 1 to `dy/da`, so its accumulated gradient is 2.
+The two inputs to `x × x` then each contribute `x × 2 = 6` to `dy/dx`. The final gradient is 12.
+Assigning a gradient with `=` instead of accumulating with `+=` silently loses a path.
+
+```python
+def objective(x):
+    a = x * x
+    return a + a
+
+x, epsilon = 3.0, 1e-5
+numeric_gradient = (objective(x + epsilon) - objective(x - epsilon)) / (2 * epsilon)
+assert abs(numeric_gradient - 12.0) < 1e-6
+```
+
+This numerical gradient is a small independent check on the backward implementation. It is a
+diagnostic, not the training algorithm: a numerical check needs many forward evaluations and can
+be unstable near nondifferentiable points or at unsuitable step sizes.
+
+**Try it yourself.** Change the graph to `y = a × a`, keeping `a = x × x`. At `x = 3`, predict
+the value and derivative before running the numerical check. Which reused nodes need accumulation?
+
+<details>
+<summary>Hint and explained answer</summary>
+
+The objective is `x⁴`: its value is 81 and derivative is `4x³ = 108`. Both uses of `a` contribute
+9, giving `dy/da = 18`. Both uses of `x` then contribute `3 × 18 = 54`, accumulating to 108.
+Test this graph alongside ordinary addition and multiplication. A backward pass that happens to
+work only on a chain is incomplete.
+
+</details>
+
+### Core concepts
+
 **Backpropagation, by building it.** Write a scalar autograd engine: a `Value` class with the
 arithmetic operations, a topological sort for the backward pass, and correct gradient accumulation
 when a node is used more than once. That last detail is where most people's bug lives, and finding
 it is the moment the chain rule stops being a formula.
 
 **PyTorch as a language.** Tensors, `Dataset` and `DataLoader`, and the explicit training loop you
-should be able to type from nothing. Know why `model.train()` and `model.eval()` differ, why
+should be able to implement and explain. Know why `model.train()` and `model.eval()` differ, why
 `zero_grad()` exists, what `torch.no_grad()` saves you, and why both the model and the data need to
 be on the same device.
 
-The loop you should be able to type from an empty file:
+Start with this explicit loop and inspect each state change:
 
 ```python
 for epoch in range(num_epochs):
@@ -97,8 +133,8 @@ for epoch in range(num_epochs):
 For validation, call `model.eval()` and run the forward pass inside `torch.no_grad()` or
 `torch.inference_mode()`. Evaluation mode changes dropout and batch-normalization behavior;
 disabling autograd avoids building a backward graph. Neither substitutes for the other. If you
-cannot write this without looking, you are not ready to debug someone else's training code. Restore
-training mode at the start of each epoch after validation has changed it.
+are debugging the loop, check mode and gradient state separately rather than guessing from its
+shape. Restore training mode at the start of each epoch after validation has changed it.
 [PyTorch's optimization tutorial](https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html)
 shows separate training and evaluation loops.
 
@@ -152,6 +188,14 @@ reasoning failures. Add tests for causal masking, padding, position handling and
 trips. Split a language corpus by source document before making token windows, so adjacent or
 duplicated text cannot leak into validation. Learn BPE merges and any fitted preprocessing only from
 training text; keep them fixed for validation and the final test.
+
+The scale has a useful derivation. If the `d` query and key components are independent, zero-mean
+and unit-variance, each product has variance 1 and their dot-product sum has variance `d`. Dividing
+by `sqrt(d)` gives variance 1 under those assumptions, helping prevent dot products from growing
+with head dimension and making the softmax excessively concentrated. Learned components need not
+satisfy those assumptions exactly; this is the rationale for the scale, not a proof of exact
+normalization for every trained head. Apply a causal mask before softmax: a forbidden future token
+gets no attention weight, regardless of how large its unmasked score would have been.
 
 Check causal masking by changing a future token and verifying that earlier logits stay unchanged
 within numerical tolerance in evaluation mode. Shift targets correctly for next-token prediction;
@@ -246,11 +290,13 @@ were within noise, with wall-clock times alongside, says more about you than a g
 
 ## Before you move on
 
-- You can rebuild the autograd engine from an empty file, in under an hour.
-- You can write a training loop from nothing.
+- Your autograd engine passes a numerical gradient check on a graph with a reused node, and you can
+  explain and repair a deliberately broken accumulation rule.
+- You can implement a training/validation loop, diagnose an incorrect mode or gradient setting and
+  demonstrate that validation does not update the model. Documentation is allowed.
 - Given an unhealthy loss curve, you can name a likely cause and the instrument that confirms it.
-- You can draw attention from memory and explain why we divide by the square root of the head
-  dimension.
+- You can annotate a causal attention matrix, identify its shapes and mask, and explain the
+  variance-scaling rationale for dividing by the square root of the head dimension.
 - You can reload a checkpoint and explain what would be lost by saving only model weights.
 - You can compare a precision or compile change on quality, memory and measured runtime.
 

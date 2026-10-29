@@ -1,0 +1,4 @@
+price,conversion_probability,unit_cost,expected_contribution_per_opportunity
+20,0.3,10,3.0
+25,0.24,10,3.5999999999999996
+30,0.15,10,3.0

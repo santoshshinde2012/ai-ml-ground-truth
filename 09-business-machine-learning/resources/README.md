@@ -74,13 +74,15 @@ Read the methods, split construction and limitations before reproducing a leader
 | Paper                                                                                         | Status and date                             | Useful question                                                                | Boundary                                                                         |
 | --------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | [Athey and Wager — Policy Learning with Observational Data](https://arxiv.org/abs/1702.02896) | Econometrica, 2021; revised preprint linked | Can a constrained binary decision policy improve held-out value?               | Requires identification and nuisance estimates; not a multi-arm budget solver    |
-| [CausalPFN](https://arxiv.org/abs/2506.07918)                                                 | NeurIPS 2025; arXiv revised October         | Does a pretrained causal prior help a supported binary effect-estimation task? | Released implementation is binary; check unconfoundedness, overlap and prior fit |
+| [CausalPFN](https://arxiv.org/abs/2506.07918)                                                 | NeurIPS 2025; arXiv revised 27 October 2025 | Does a pretrained causal prior help a supported binary effect-estimation task? | Released implementation is binary; check unconfoundedness, overlap and prior fit |
 | [UpliftBench](https://arxiv.org/abs/2608.00915)                                               | August 2026 preprint                        | Do ranking and cost-based policy selection agree?                              | Dataset-specific evidence; some threshold comparisons reuse evaluation data      |
 | [UNIQUE](https://arxiv.org/abs/2609.23718)                                                    | September 2026 preprint                     | Does unified generative retrieval/ranking justify its serving complexity?      | Feed-engagement results do not validate paid-incentive profit                    |
 
 ### [CIPS/CDR — Ranking evaluation from deterministic slates](https://arxiv.org/abs/2603.21485)
 
-_March 2026 preprint; optional ranking research._ Study click-wise support and slate-independent
+_ICLR 2026 conference paper; March 2026 arXiv version; optional ranking research._ See the
+[conference publication](https://proceedings.iclr.cc/paper_files/paper/2026/hash/c6af791af7ef0f3e02bccef011211ca5-Abstract-Conference.html).
+Study click-wise support and slate-independent
 expected post-click reward before using stochastic clicks to evaluate a different ranking. Estimated
 click ratios determine bias; the paper's CDR does not gain the usual doubly robust guarantee from an
 accurate reward model. These assumptions do not identify incentive treatment effects.

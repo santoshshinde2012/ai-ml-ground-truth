@@ -26,6 +26,11 @@ outcome window takes additional calendar time.
 Build this after the validation work in [Chapter 3](../03-core-machine-learning/README.md) and the
 serving work in [Chapter 6](../06-production/README.md). Deep learning is optional here.
 
+Start with the [causal primer](causal-primer.md). The 25-hour schedule assumes prepared small data,
+the earlier environment and a reused service boundary. Data acquisition, a new delivery integration
+or production campaign approval needs a separate allowance. Finish one supported binary-action
+baseline first; the pretrained causal, generative ranking and bandit discussions are optional depth.
+
 | Session | Hours | Do this                                                                                             | Done when                                                                         |
 | ------- | ----: | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | 1       |     3 | Define action, no-offer control, profit, decision time, and measurement window                      | A one-page decision contract has an owner and examples                            |
@@ -344,9 +349,12 @@ value and cost and use an allocation method that enforces the actual constraints
 with reliable value can be preferable to a more accurate effect model whose downstream threshold is
 unstable.
 
+<details>
+<summary>Optional research: a pretrained causal prior</summary>
+
 [CausalPFN](https://arxiv.org/abs/2506.07918), published at
 [NeurIPS 2025](https://proceedings.neurips.cc/paper_files/paper/2025/hash/e3d3db07c1bfb63e1d0b998996de1d12-Abstract-Conference.html)
-and revised on arXiv in October, is an optional pretrained causal-model challenger. Its released
+and revised on arXiv on 27 October 2025, is an optional pretrained causal-model challenger. Its released
 implementation covers **binary treatment/control**; a finite-action theoretical framework does not
 make it a ready multi-arm selector. Its synthetic structural-model prior enables in-context effect
 estimation; it still assumes unconfoundedness and treatment overlap. Prior-based uncertainty does
@@ -354,6 +362,8 @@ not establish that those assumptions hold in a campaign. Compare it with the S/T
 supported binary comparison, held-out policy value, runtime and sensitivity to its prior. Check the
 actual weights, licence, context limits and inference implementation before planning a deployment.
 Ordinary TabPFN outcome prediction and CausalPFN effect estimation are different tasks.
+
+</details>
 
 This extension is outside the 25-hour starting project. Add it only after the randomized baseline
 and held-out evaluation work; a recent paper is a reason to test a candidate, not to replace them.
@@ -399,21 +409,27 @@ possible and again before the final decision, especially when stock changes.
 If incentives are attached to retrieved products, there are two decisions: product relevance and
 whether its incentive adds profit. Candidate quality does not replace randomized incentive evidence.
 
-**A boundary for deterministic ranking logs.** The March 2026
-[CIPS/CDR preprint](https://arxiv.org/abs/2603.21485) studies ranking evaluation using stochastic
+<details>
+<summary>Optional research: deterministic ranking logs and generative retrieval</summary>
+
+**A boundary for deterministic ranking logs.** The
+[CIPS/CDR paper, published at ICLR 2026](https://proceedings.iclr.cc/paper_files/paper/2026/hash/c6af791af7ef0f3e02bccef011211ca5-Abstract-Conference.html),
+with a [March 2026 arXiv version](https://arxiv.org/abs/2603.21485), studies ranking evaluation using stochastic
 clicks despite deterministic slates. Its identification requires click-wise support and expected
 post-click reward independent of the slate. Estimated click-probability ratios control bias; Theorem
 4.2 gives CDR the same bias as CIPS regardless of reward-model accuracy, so its name does not supply
 the usual “one of two models is correct” robustness. This is an optional ranking-specific research
 direction. It does not identify coupon/no-offer effects or excuse unsupported campaign actions.
 
-**A current research direction.** [UNIQUE](https://arxiv.org/abs/2609.23718), a September 2026
+**Optional research — generative recommendation.** [UNIQUE](https://arxiv.org/abs/2609.23718), a September 2026
 preprint, unifies generative candidate retrieval and target-aware ranking using shared semantic
 codes. Its reported industrial feed experiment concerns engagement and serving performance, not
 coupon incrementality or retail margin. Consider this architecture only when a measured
 retrieval/ranking bottleneck warrants it. Generated codes must resolve to existing eligible items;
 measure invalid IDs, collisions, duplicates, refresh lag, cold-start coverage and p95/p99 latency.
 Compare against the same two-tower/ranker candidate budget and an eventual business experiment.
+
+</details>
 
 ## 5. Treat constraints as part of the policy
 

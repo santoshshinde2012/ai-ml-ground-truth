@@ -1,0 +1,62 @@
+---
+import fs from 'node:fs/promises';
+import Base from '../layouts/Base.astro';
+import { basePath } from '../lib/book.mjs';
+import type { SourceInventory } from '../lib/types';
+const inventory: SourceInventory = JSON.parse(await fs.readFile('public/sources.json', 'utf8'));
+---
+
+<Base
+  title="Source inventory"
+  description="The primary papers, documentation, courses and practitioner references cited in Ground Truth."
+>
+  <main id="main" class="source-main page-width">
+    <span class="eyebrow">FOLLOW THE EVIDENCE</span>
+    <h1>
+      Keep the sources
+      <br />
+      <em>in sight.</em>
+    </h1>
+    <p>
+      The papers, documentation, courses and practitioner writing cited in this edition. The
+      inventory records where each link is used. Inclusion is not an endorsement of every claim, and
+      the edition date is not an independent verification date for every source.
+    </p>
+    <div class="source-controls">
+      <label for="source-filter">Find a source</label>
+      <input type="search" id="source-filter" placeholder="Search title, URL or chapter…" />
+      <span class="source-count" data-source-count>
+        {inventory.sources.length} sources
+      </span>
+    </div>
+    <a class="text-link" href={`${basePath()}/sources.json`} download>
+      Download the inventory as JSON ↓
+    </a>
+    <div data-source-list>
+      {inventory.sources.map((s) => (
+        <section
+          class="source-row"
+          data-source-text={`${s.label} ${s.url} ${s.locations.map((l) => l.title).join(' ')}`.toLowerCase()}
+        >
+          <a href={s.url}>{s.label} ↗</a>
+          <div class="muted">{s.url}</div>
+          <details>
+            <summary>
+              Used in {s.locations.length} {s.locations.length === 1 ? 'page' : 'pages'}
+            </summary>
+            <ul>
+              {s.locations.map((l) => (
+                <li>
+                  <a href={l.href}>{l.title}</a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </section>
+      ))}
+    </div>
+    <p data-source-empty hidden>
+      No matching sources. Try a broader term.
+    </p>
+  </main>
+</Base>
