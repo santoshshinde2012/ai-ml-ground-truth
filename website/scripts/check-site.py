@@ -21,6 +21,8 @@ import xml.etree.ElementTree as ET
 import zipfile
 import os
 
+WEBSITE_ROOT = Path(__file__).resolve().parents[1]
+
 
 @dataclass
 class Reference:
@@ -263,7 +265,7 @@ def check_epub(path: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dist", default="dist", type=Path)
+    parser.add_argument("--dist", default=WEBSITE_ROOT / "dist", type=Path)
     parser.add_argument("--base-path", default=os.environ.get("BASE_PATH", "/ai-ml-ground-truth"))
     parser.add_argument("--site-url", default=os.environ.get("SITE_URL", "https://santoshshinde2012.github.io"))
     parser.add_argument("--epub", type=Path, help="EPUB to validate; otherwise discover EPUBs under dist")

@@ -2,8 +2,9 @@
 import fs from 'node:fs/promises';
 import Base from '../layouts/Base.astro';
 import { basePath } from '../lib/book.mjs';
+import { fromWebsite } from '../lib/paths.mjs';
 import type { SourceInventory } from '../lib/types';
-const inventory: SourceInventory = JSON.parse(await fs.readFile('public/sources.json', 'utf8'));
+const inventory: SourceInventory = JSON.parse(await fs.readFile(fromWebsite('public/sources.json'), 'utf8'));
 ---
 
 <Base

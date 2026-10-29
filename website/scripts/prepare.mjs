@@ -1,13 +1,15 @@
 import fs from 'node:fs/promises';
-import path from 'node:path';
 import sharp from 'sharp';
 import { getBook, bookHref, basePath, orderForEdition } from '../src/lib/book.mjs';
 import { edition, updated } from '../src/lib/catalog.mjs';
+import { fromRepository, fromWebsite } from '../src/lib/paths.mjs';
 
-await fs.mkdir('.cache', { recursive: true });
-await fs.mkdir('public/downloads', { recursive: true });
-await fs.cp('labs/reference', 'public/lab-reference', { recursive: true });
-await sharp('public/cover.svg').png().toFile('public/cover.png');
+await fs.mkdir(fromWebsite('.cache'), { recursive: true });
+await fs.mkdir(fromWebsite('public/downloads'), { recursive: true });
+await fs.cp(fromRepository('labs/reference'), fromWebsite('public/lab-reference'), {
+  recursive: true,
+});
+await sharp(fromWebsite('public/cover.svg')).png().toFile(fromWebsite('public/cover.png'));
 const pages = await getBook();
 const sources = new Map();
 for (const page of pages) {
@@ -22,7 +24,7 @@ for (const page of pages) {
   }
 }
 await fs.writeFile(
-  'public/sources.json',
+  fromWebsite('public/sources.json'),
   JSON.stringify(
     {
       edition,
@@ -40,7 +42,7 @@ const titlePage = {
   html: `<img src="${basePath()}/cover.png" alt="Ground Truth. Build the thing. Understand why. An open field guide for working developers."/><h1>Ground Truth</h1><p>A working developer’s path into AI and machine learning.</p><p>Written by Santosh Shinde · Edition ${edition}</p><p>MIT license. External sources retain their own terms. The reference data and business results are simulated teaching examples.</p>`,
 };
 await fs.writeFile(
-  '.cache/book-export.json',
+  fromWebsite('.cache/book-export.json'),
   JSON.stringify([
     titlePage,
     ...orderForEdition(pages).map(({ title, slug, html }) => ({ title, slug, html })),

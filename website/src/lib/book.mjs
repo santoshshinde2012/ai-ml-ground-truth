@@ -12,8 +12,8 @@ import { visit } from 'unist-util-visit';
 import GithubSlugger from 'github-slugger';
 import { codeToHtml } from 'shiki';
 import { documentList, repository } from './catalog.mjs';
+import { fromRepository } from './paths.mjs';
 
-const root = process.cwd();
 /** @type {Map<string, Promise<import('./types').BookPage[]>>} */
 const cache = new Map();
 /** @type {Map<string, Promise<import('./types').BookPage[]>>} */
@@ -152,7 +152,7 @@ export async function getBook() {
         const docs = documentList();
         return Promise.all(
           docs.map(async (doc) => {
-            const markdown = await fs.readFile(path.join(root, doc.file), 'utf8');
+            const markdown = await fs.readFile(fromRepository(doc.file), 'utf8');
             const words =
               markdown.replace(/```[\s\S]*?```/g, '').match(/\b[\p{L}\p{N}’'-]+\b/gu)?.length || 0;
             const rendered = await renderContent(markdown, doc.file);

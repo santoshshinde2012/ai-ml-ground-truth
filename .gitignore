@@ -8,10 +8,10 @@ dist/
 __pycache__/
 *.py[cod]
 labs/output/
-public/lab-reference/
-public/downloads/
-public/sources.json
-public/cover.png
+website/public/lab-reference/
+website/public/downloads/
+website/public/sources.json
+website/public/cover.png
 .cache/
 test-results/
 playwright-report/

@@ -21,10 +21,13 @@ import subprocess
 import sys
 from urllib.parse import urlsplit, urlunsplit
 
+WEBSITE_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = WEBSITE_ROOT.parent
+
 
 EXCLUDED_DIRECTORIES = {
     ".git", ".cache", ".astro", "node_modules", "dist", "build", "coverage",
-    ".venv", "venv", "__pycache__", "output", ".next",
+    ".venv", "venv", "__pycache__", "output", ".next", "lab-reference", "downloads",
 }
 
 
@@ -140,8 +143,8 @@ def check_url(curl: str, url: str, locations: list[dict], timeout: float) -> dic
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path("."))
-    parser.add_argument("--report", type=Path, default=Path(".cache/external-links.json"))
+    parser.add_argument("--root", type=Path, default=REPOSITORY_ROOT)
+    parser.add_argument("--report", type=Path, default=WEBSITE_ROOT / ".cache/external-links.json")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--timeout", type=float, default=15)
     parser.add_argument("--limit", type=int, help="limit the request count for a manual smoke check")

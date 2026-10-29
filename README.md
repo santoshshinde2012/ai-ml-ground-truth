@@ -75,10 +75,13 @@ ai-ml-ground-truth/
 ├── labs/                     # Runnable Python reference project and its guide
 │   ├── reference/            # Checked-in example reports, figures and manifests
 │   └── tests/                # Python lab tests
-├── src/                      # Website components, layouts, routes, scripts and styles
-├── public/                   # Cover, favicon and standalone interaction script
-├── scripts/                  # Build preparation, EPUB export and link validation
-├── tests/                    # Website content and interaction tests
+├── website/                  # All website implementation and build configuration
+│   ├── src/                  # Components, layouts, routes, scripts and styles
+│   ├── public/               # Cover, favicon and standalone interaction script
+│   ├── scripts/              # Build preparation, EPUB export and link validation
+│   ├── tests/                # Website content and interaction tests
+│   ├── package.json
+│   └── package-lock.json
 ├── .github/workflows/        # Pull-request checks and GitHub Pages deployment
 ├── README.md                 # Repository entry point
 └── LICENSE
@@ -87,36 +90,39 @@ ai-ml-ground-truth/
 Each numbered chapter keeps its main `README.md` and annotated `resources/README.md`. Chapter 9
 also contains the applied guides and shared delivery plan. These Markdown files are the canonical
 book content; the website renders them directly and derives shorter lessons from their sections.
+The chapter directories, `content/` and teaching `labs/` remain at the repository root. The website
+reads these source files in place, so there is no second copy of the book to maintain.
 
 Keep chapter order, learning decisions, explanations and the author's voice intact when changing
-organization or presentation. Put website implementation in `src/` and supporting build tools in
-`scripts/`, rather than mixing them into the chapter folders.
+organization or presentation. Keep website code, assets, dependencies, tests and configuration in
+`website/`. GitHub requires workflow files in the root `.github/workflows/` directory.
 
 `labs/reference/` contains maintained, versioned examples. Local lab runs go to the ignored
-`labs/output/` directory. Website output (`dist/`), intermediates (`.astro/` and `.cache/`), generated
-public assets and installed dependencies are also ignored. Edit the source files rather than those
-generated copies; see [what to change where](content/publishing.md#what-to-change-where).
+`labs/output/` directory. Website output (`website/dist/`), intermediates (`website/.astro/` and
+`website/.cache/`), generated public assets and installed dependencies are also ignored. Edit the
+source files rather than those generated copies; see
+[what to change where](content/publishing.md#what-to-change-where).
 
 ## Develop and publish
 
-Use **Node.js 24** and Python 3.10 or newer:
+Use **Node.js 24** and Python 3.10 or newer. Run these commands from the repository root:
 
 ```bash
-npm ci
-npm run dev
+npm --prefix website ci
+npm --prefix website run dev
 ```
 
 Before publishing:
 
 ```bash
-npm run check
-npm test
-npm run build
-npm run preview
+npm --prefix website run check
+npm --prefix website test
+npm --prefix website run build
+npm --prefix website run preview
 ```
 
 A build generates the static site, Pagefind search index, offline EPUB and checks internal links.
-Use the URL printed by `npm run preview` to check the complete built edition, including search;
+Use the URL printed by the preview command to check the complete built edition, including search;
 the development server alone does not generate the search index.
 GitHub Actions verifies pull requests and deploys successful builds from `main` to GitHub Pages.
 See [publishing and contributing](content/publishing.md) for configuration, source locations,

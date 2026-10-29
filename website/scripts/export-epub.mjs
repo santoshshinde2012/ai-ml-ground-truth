@@ -9,8 +9,9 @@ import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parse, parseFragment } from 'parse5';
 import { zipSync, strToU8 } from 'fflate';
+import { websiteRoot, repositoryRoot, fromRepository } from '../src/lib/paths.mjs';
 
-const root = process.cwd();
+const root = websiteRoot;
 const siteOrigin = new URL(process.env.SITE_URL ?? 'https://santoshshinde2012.github.io').origin;
 const defaultBase = '/ai-ml-ground-truth/';
 const siteBase = (process.env.BASE_PATH ?? defaultBase).replace(/\/?$/, '/');
@@ -153,9 +154,10 @@ for (const [index, document] of documents.entries()) {
   document.slug = document.slug.replace(/^\/+|\/+$/g, '');
   if (!document.slug || routes.has(document.slug))
     throw new Error(`Duplicate/empty book slug: ${document.slug}`);
-  document.filename = document.slug === 'title-page'
-    ? 'cover.xhtml'
-    : `chapter-${String(index + 1).padStart(3, '0')}.xhtml`;
+  document.filename =
+    document.slug === 'title-page'
+      ? 'cover.xhtml'
+      : `chapter-${String(index + 1).padStart(3, '0')}.xhtml`;
   document.id = document.slug === 'title-page' ? 'cover-page' : `chapter-${index + 1}`;
   routes.set(document.slug, document.filename);
 }
@@ -201,10 +203,11 @@ async function bundleImage(value, document) {
     : decoded.replace(/^\/+/, '');
   const candidates = [path.join(root, 'dist', relative), path.join(root, 'public', relative)];
   if (relative.startsWith('lab-reference/'))
-    candidates.push(path.join(root, 'labs/reference', relative.slice('lab-reference/'.length)));
+    candidates.push(fromRepository('labs/reference', relative.slice('lab-reference/'.length)));
   const source = await (async () => {
     for (const candidate of candidates) {
-      if (candidate.startsWith(`${root}${path.sep}`) && (await exists(candidate))) return candidate;
+      if (candidate.startsWith(`${repositoryRoot}${path.sep}`) && (await exists(candidate)))
+        return candidate;
     }
     return null;
   })();
@@ -230,10 +233,12 @@ async function serialize(node, document, parentNamespace = htmlNamespace) {
     return `<p>Online media${href ? `: <a href="${escapeAttribute(href)}">${escapeText(original.title || original.src || 'Open the media')}</a>` : ' is available in the web edition.'}</p>`;
   }
   if (node.tagName === 'img') {
-    const src = document.slug === 'title-page' &&
-      /(?:^|\/)cover\.(?:svg|png)(?:[?#].*)?$/.test(original.src || '') && coverImageHref
-      ? coverImageHref
-      : await bundleImage(original.src || '', document);
+    const src =
+      document.slug === 'title-page' &&
+      /(?:^|\/)cover\.(?:svg|png)(?:[?#].*)?$/.test(original.src || '') &&
+      coverImageHref
+        ? coverImageHref
+        : await bundleImage(original.src || '', document);
     if (!src) {
       warnings.add(
         `Image ${original.src || '(missing source)'} in ${document.slug} has a text/online alternative.`,
@@ -284,7 +289,8 @@ for (const candidate of ['public/cover.png', 'public/cover.svg']) {
 }
 const coverDocument = documents.find((document) => document.slug === 'title-page');
 const readingDocuments = documents.filter((document) => document !== coverDocument);
-const firstReadingDocument = readingDocuments.find((document) => /^01-/.test(document.slug)) || readingDocuments[0];
+const firstReadingDocument =
+  readingDocuments.find((document) => /^01-/.test(document.slug)) || readingDocuments[0];
 
 const archive = {
   mimetype: [strToU8('application/epub+zip'), { level: 0 }],
@@ -314,9 +320,15 @@ for (const document of documents) {
 }
 
 if (!coverDocument) {
-  contentManifest.unshift('<item id="cover-page" href="Text/cover.xhtml" media-type="application/xhtml+xml" />');
-  archive['EPUB/Text/cover.xhtml'] = strToU8(xhtml('Ground Truth · Cover',
-    `<section epub:type="cover" class="cover-page" id="cover">${coverImageHref ? `<img src="${escapeAttribute(coverImageHref)}" alt="Ground Truth book cover" />` : ''}<h1>Ground Truth</h1><p>A working developer’s path into AI and machine learning.</p><p>By Santosh Shinde · October 2026</p></section>`));
+  contentManifest.unshift(
+    '<item id="cover-page" href="Text/cover.xhtml" media-type="application/xhtml+xml" />',
+  );
+  archive['EPUB/Text/cover.xhtml'] = strToU8(
+    xhtml(
+      'Ground Truth · Cover',
+      `<section epub:type="cover" class="cover-page" id="cover">${coverImageHref ? `<img src="${escapeAttribute(coverImageHref)}" alt="Ground Truth book cover" />` : ''}<h1>Ground Truth</h1><p>A working developer’s path into AI and machine learning.</p><p>By Santosh Shinde · October 2026</p></section>`,
+    ),
+  );
 }
 archive['EPUB/Text/about.xhtml'] = strToU8(
   xhtml(
@@ -369,10 +381,12 @@ const identifier = `urn:sha256:${crypto
   .digest('hex')}`;
 const modified = '2026-10-30T00:00:00Z';
 const coverMetadata = coverImageFilename ? '<meta name="cover" content="cover-image" />' : '';
-const imageManifest = sortedAssets.map(([filename, asset], index) => {
-  const isCover = filename === coverImageFilename;
-  return `<item id="${isCover ? 'cover-image' : `image-${index + 1}`}" href="Images/${filename}" media-type="${asset.mediaType}"${isCover ? ' properties="cover-image"' : ''} />`;
-}).join('');
+const imageManifest = sortedAssets
+  .map(([filename, asset], index) => {
+    const isCover = filename === coverImageFilename;
+    return `<item id="${isCover ? 'cover-image' : `image-${index + 1}`}" href="Images/${filename}" media-type="${asset.mediaType}"${isCover ? ' properties="cover-image"' : ''} />`;
+  })
+  .join('');
 const spine = `<itemref idref="cover-page" /><itemref idref="about" />${readingDocuments.map((document) => `<itemref idref="${document.id}" />`).join('')}`;
 archive['EPUB/package.opf'] = strToU8(
   `<?xml version="1.0" encoding="utf-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id" xml:lang="en" prefix="schema: http://schema.org/"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">${identifier}</dc:identifier><dc:title>Ground Truth</dc:title><dc:creator>Santosh Shinde</dc:creator><dc:language>en</dc:language><dc:rights>Copyright © 2026 Santosh Shinde. MIT license.</dc:rights><dc:description>A working developer’s path into AI and machine learning: an illustrated engineering field guide with applied business cases and reproducible labs.</dc:description><meta property="dcterms:modified">${modified}</meta>${coverMetadata}<meta property="schema:accessMode">textual</meta><meta property="schema:accessMode">visual</meta><meta property="schema:accessibilityFeature">tableOfContents</meta><meta property="schema:accessibilityFeature">structuralNavigation</meta><meta property="schema:accessibilitySummary">Reflowable text with headings, expanded exercise answers, a table of contents and image alternatives. Interactive web graphics are represented by descriptive text and source; the web edition supplies their controls.</meta></metadata><manifest><item id="about" href="Text/about.xhtml" media-type="application/xhtml+xml" /><item id="nav" href="Text/nav.xhtml" media-type="application/xhtml+xml" properties="nav" /><item id="css" href="Styles/book.css" media-type="text/css" />${contentManifest.join('')}${imageManifest}</manifest><spine>${spine}</spine></package>`,
