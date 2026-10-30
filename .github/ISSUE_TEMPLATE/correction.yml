@@ -1,0 +1,44 @@
+name: Correction
+description: Report a claim, example, link or explanation that is unclear, outdated or wrong.
+title: 'Correction: '
+labels: [documentation]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Thank you. A bounded correction with a primary source or a reproducible example is the
+        quickest to review. An HTTP success response establishes that a link is available, not
+        that it supports the prose.
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The web-book address or the chapter and section.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source file
+      description: For example `03-core-machine-learning/README.md`. Filled in when you start from the web book.
+  - type: textarea
+    id: claim
+    attributes:
+      label: The specific claim
+      description: Quote the sentence, command or example.
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What you observed
+      description: What happened, or what the current source says instead.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Primary source or reproducible example
+      description: For a model or library claim, include the version and the relevant date.
+    validations:
+      required: true

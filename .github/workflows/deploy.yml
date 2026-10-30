@@ -23,6 +23,7 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
       - run: npm ci
+      - run: npm run format:check
       - run: npm run check
       - run: npm test
       - run: npm run build

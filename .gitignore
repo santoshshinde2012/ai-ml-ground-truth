@@ -9,7 +9,6 @@ __pycache__/
 *.py[cod]
 labs/output/
 website/public/lab-reference/
-website/public/downloads/
 website/public/sources.json
 website/public/cover.png
 .cache/

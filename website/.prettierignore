@@ -3,5 +3,6 @@ dist
 .astro
 .cache
 public/lab-reference
-public/downloads
+public/sources.json
+public/cover.png
 package-lock.json

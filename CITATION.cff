@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: If you cite or build on this book, please cite it as below.
+title: 'Ground Truth: A working developer''s path into AI and machine learning'
+type: software
+authors:
+  - family-names: Shinde
+    given-names: Santosh
+version: '2026.10'
+date-released: '2026-10-31'
+license:
+  - CC-BY-4.0
+  - MIT
+url: 'https://santoshshinde2012.github.io/ai-ml-ground-truth/'
+repository-code: 'https://github.com/santoshshinde2012/ai-ml-ground-truth'
+keywords:
+  - machine learning
+  - artificial intelligence
+  - language models
+  - mlops
+  - causal inference
+  - open textbook
+preferred-citation:
+  type: book
+  title: 'Ground Truth: A working developer''s path into AI and machine learning'
+  authors:
+    - family-names: Shinde
+      given-names: Santosh
+  year: 2026
+  edition: '2026.10'
+  url: 'https://santoshshinde2012.github.io/ai-ml-ground-truth/'

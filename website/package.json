@@ -2,6 +2,7 @@
   "name": "ground-truth-book",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=22.23.4"
@@ -13,9 +14,12 @@
     "build": "astro build && pagefind --site dist && node scripts/export-epub.mjs && python3 scripts/check-site.py",
     "preview": "astro preview --host 127.0.0.1",
     "check": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "node --test tests/*.test.mjs && python3 -m unittest discover -s ../labs/tests -v",
     "lab": "python3 ../labs/ground_truth_lab.py all --output ../labs/output",
-    "check:links": "python3 scripts/check-external-links.py"
+    "check:links": "python3 scripts/check-external-links.py",
+    "export:pdf": "node scripts/export-pdf.mjs"
   },
   "dependencies": {
     "@astrojs/check": "0.9.12",
