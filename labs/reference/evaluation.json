@@ -50,9 +50,39 @@
         "1": 426
       },
       "assignment_probability": 0.5,
+      "decision": "inconclusive",
+      "delivered_by_arm": {
+        "0": 0,
+        "1": 385
+      },
       "delivery_count": 385,
       "intent_to_treat_contribution_difference": -0.2194270794105151,
-      "interpretation": "One simulated randomized experiment; includes failed deliveries in their assigned arm. No real business impact is established."
+      "intention_to_treat": {
+        "accounts_per_arm_to_detect_designed_effect": 4912,
+        "decision": "inconclusive",
+        "difference": -0.2194270794105151,
+        "estimand": "mean net contribution per assigned account, contact minus control",
+        "interval_method": "normal approximation, unequal arm variances",
+        "lower_95": -6.882298445609065,
+        "minimum_detectable_effect_80_power": 9.518387665997928,
+        "simulator_designed_effect": 2.70675,
+        "standard_error": 3.3994241664278317,
+        "upper_95": 6.443444286788035
+      },
+      "interpretation": "One simulated randomized experiment analysed by assigned arm, including failed deliveries. An interval spanning zero is inconclusive, not evidence of no effect. No real business impact is established.",
+      "sample_ratio_check": {
+        "alarm_threshold": 0.001,
+        "chi_square": 3.38,
+        "expected": {
+          "0": 400.0,
+          "1": 400.0
+        },
+        "observed": {
+          "0": 374,
+          "1": 426
+        },
+        "p_value": 0.0659921
+      }
     },
     "retention": {
       "budget": 8,
@@ -153,6 +183,8 @@
     "lesson": "Unknown delivery retains its reservation; a repeated request does not reserve twice.",
     "remaining_budget": 4
   },
+  "experiment_decision": "inconclusive",
+  "experiment_gate": "Sample-ratio chi-square p >= 0.001 before reading lift; claim a simulated contact effect only if the 95% intention-to-treat interval excludes zero, otherwise inconclusive. No real campaign approved.",
   "gate": "Upper paired 95% bootstrap bound on candidate-minus-baseline log loss < -0.01, and candidate Brier <= baseline Brier. No real deployment approved.",
   "judge": {
     "confusion": {
@@ -168,13 +200,14 @@
     "recall": 0.8666666666666667,
     "source": "hand-constructed 50-case teaching fixture"
   },
-  "lab_version": "1.0.0",
+  "lab_version": "1.1.0",
   "limitations": [
     "Entirely synthetic: predictive and causal findings do not establish real-world performance or business impact.",
     "Fixed independent-customer cohorts; real repeated users require grouped/time-aware resampling.",
     "One final test and predeclared gate. Changing the candidate after seeing this test requires fresh confirmatory data.",
     "Sigmoid calibration on a separate cohort is not a guarantee after population shift.",
-    "Oracle retention effects and assumed price response are teaching assumptions, not learned causal estimates."
+    "Oracle retention effects and assumed price response are teaching assumptions, not learned causal estimates.",
+    "The randomized experiment is far smaller than its power check requires; its interval, not its point estimate, is the result."
   ],
   "paired_log_loss_difference": {
     "draws": 1000,
