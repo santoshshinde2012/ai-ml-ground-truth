@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import ChapterPlate from '../components/ChapterPlate.astro';
+import { plateFor } from '../lib/plates.mjs';
 import { getBook, bookHref, basePath, printContent, orderForEdition } from '../lib/book.mjs';
 import { edition, repository } from '../lib/catalog.mjs';
 const docs = orderForEdition(await getBook());
@@ -38,9 +40,10 @@ const docs = orderForEdition(await getBook());
       ))}
     </nav>
     {docs.map((d) => (
-      <section class="print-chapter" id={`print-${d.slug.replaceAll('/', '-')}`}>
+      <section class="print-chapter" id={`print-${d.slug.replaceAll('/', '-')}`} data-slug={d.slug}>
         <div class="eyebrow">{d.category}</div>
         <h1>{d.title}</h1>
+        {plateFor(d) && <ChapterPlate {...plateFor(d)} instance={d.slug.replaceAll('/', '-')} />}
         <p class="print-source">
           Web edition: <a href={bookHref(d.slug)}>{d.title}</a>
         </p>

@@ -26,7 +26,9 @@ npm --prefix website run preview
 
 `npm --prefix website run format` applies the Prettier style that the format check expects. The
 build renders the book, creates a Pagefind search index, packages the EPUB and checks internal page,
-anchor and asset links. `website/dist/` is generated output and is not committed. To test full-text
+anchor and asset links. When Chrome or Chromium is installed, the build also saves every diagram and
+plate as an image so the EPUB carries the same pictures as the web book; without it, the EPUB keeps
+text descriptions. `website/dist/` is generated output and is not committed. To test full-text
 search and the offline download, open the address the preview server prints. The development
 command prepares content and assets but does not build the search index or EPUB. You can also
 change into `website/` and run the same npm commands without `--prefix website`. Run the standalone

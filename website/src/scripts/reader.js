@@ -274,6 +274,9 @@ if (diagrams.length) {
         deterministicIds: true,
         theme: dark ? 'dark' : 'neutral',
         fontFamily: 'DM Sans Variable, sans-serif',
+        // The print edition uses SVG text labels so each diagram can be saved as a
+        // self-contained image for the EPUB; HTML labels do not display inside images.
+        htmlLabels: !$('.print-book'),
         flowchart: { useMaxWidth: true, htmlLabels: false },
       });
       for (let i = 0; i < diagrams.length; i++) {

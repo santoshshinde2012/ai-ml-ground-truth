@@ -99,6 +99,27 @@ async function exists(file) {
   }
 }
 
+// Pictures saved by export-figures.mjs; without them the EPUB keeps text descriptions.
+async function readFigures() {
+  const folder = path.join(root, '.cache/figures');
+  try {
+    const index = JSON.parse(await fs.readFile(path.join(folder, 'index.json'), 'utf8'));
+    const diagrams = new Map(
+      Object.entries(index.diagrams).map(([key, file]) => [key, path.join(folder, file)]),
+    );
+    const plates = new Map(
+      Object.entries(index.plates).map(([slug, plate]) => [
+        slug,
+        { ...plate, file: path.join(folder, plate.file) },
+      ]),
+    );
+    return { diagrams, plates };
+  } catch {
+    return { diagrams: new Map(), plates: new Map() };
+  }
+}
+const figures = await readFigures();
+
 async function readBook() {
   const cachePath = path.join(root, '.cache/book-export.json');
   if (await exists(cachePath)) {
@@ -225,7 +246,11 @@ async function serialize(node, document, parentNamespace = htmlNamespace) {
     ).join('');
   if (removedElements.has(node.tagName) || hasClass(node, 'katex-html')) return '';
   const original = attributes(node);
+  if (node.tagName === 'details' && figures.diagrams.has(original['data-diagram'])) return '';
   if (hasClass(node, 'mermaid')) {
+    const image = figures.diagrams.get(original['data-diagram']);
+    if (image)
+      return `<img class="diagram-image" src="${escapeAttribute(await registerImage(image))}" alt="${escapeAttribute(original['aria-label'] || 'Diagram')}" />`;
     return '<p class="diagram-offline">The diagram is described below. Its complete source follows the caption; the web edition provides the rendered graphic.</p>';
   }
   if (node.tagName === 'iframe' || node.tagName === 'video' || node.tagName === 'audio') {
@@ -306,6 +331,10 @@ const contentManifest = [];
 for (const document of documents) {
   const tree = document.tree || parseFragment(document.html);
   const html = await serialize(tree, document);
+  const plate = figures.plates.get(document.slug);
+  const plateHTML = plate
+    ? `<figure class="plate"><img src="${escapeAttribute(await registerImage(plate.file))}" alt="${escapeAttribute(plate.label)}" /><figcaption>${escapeText(plate.caption)}</figcaption></figure>`
+    : '';
   const features = [
     html.includes(`xmlns="${mathNamespace}"`) ? 'mathml' : '',
     html.includes(`xmlns="${svgNamespace}"`) ? 'svg' : '',
@@ -318,7 +347,7 @@ for (const document of documents) {
       document.title,
       document === coverDocument
         ? `<section epub:type="cover" class="cover-page" id="cover">${html}</section>`
-        : `<section epub:type="chapter"><h1>${escapeText(document.title)}</h1>${html}<p class="web-source">Web edition: <a href="${escapeAttribute(`${siteURL}book/${document.slug}/`)}">${escapeText(document.title)}</a></p></section>`,
+        : `<section epub:type="chapter"><h1>${escapeText(document.title)}</h1>${plateHTML}${html}<p class="web-source">Web edition: <a href="${escapeAttribute(`${siteURL}book/${document.slug}/`)}">${escapeText(document.title)}</a></p></section>`,
     ),
   );
 }
@@ -337,7 +366,7 @@ if (!coverDocument) {
 archive['EPUB/Text/about.xhtml'] = strToU8(
   xhtml(
     'About this edition',
-    `<section epub:type="preface"><h1>About this edition</h1><p>This EPUB holds the canonical chapters, applied guides, annotated resources and reference-lab instructions from the web book. Exercise answers are expanded for offline reading. The interactive controls are in the <a href="${escapeAttribute(siteURL)}">web edition</a>. The worked examples around them and the diagram descriptions are all here.</p><p>The companion data and numerical reference results are synthetic teaching material. They show nothing about real customer performance, causal benefit or production readiness.</p><p>Copyright © 2026 Santosh Shinde. The text, illustrations and laboratory reports are licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The code is licensed under the <a href="https://github.com/santoshshinde2012/ai-ml-ground-truth/blob/main/LICENSE-CODE">MIT licence</a>. Linked external resources keep their own terms.</p></section>`,
+    `<section epub:type="preface"><h1>About this edition</h1><p>This EPUB holds the canonical chapters, applied guides, annotated resources and reference-lab instructions from the web book. Exercise answers are expanded for offline reading. The interactive controls are in the <a href="${escapeAttribute(siteURL)}">web edition</a>. The worked examples around them, the diagrams and the chapter illustrations are all here.</p><p>The companion data and numerical reference results are synthetic teaching material. They show nothing about real customer performance, causal benefit or production readiness.</p><p>Copyright © 2026 Santosh Shinde. The text, illustrations and laboratory reports are licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The code is licensed under the <a href="https://github.com/santoshshinde2012/ai-ml-ground-truth/blob/main/LICENSE-CODE">MIT licence</a>. Linked external resources keep their own terms.</p></section>`,
   ),
 );
 const navigation = `<nav epub:type="toc" id="toc"><h1>Contents</h1><ol><li><a href="cover.xhtml">Ground Truth · Cover</a></li><li><a href="about.xhtml">About this edition</a></li>${readingDocuments.map((document) => `<li><a href="${document.filename}">${escapeText(document.title)}</a></li>`).join('')}</ol></nav><nav epub:type="landmarks" hidden="hidden"><h2>Book landmarks</h2><ol><li><a epub:type="cover" href="cover.xhtml">Cover</a></li><li><a epub:type="bodymatter" href="${firstReadingDocument?.filename || 'about.xhtml'}">Start reading</a></li></ol></nav>`;
@@ -366,6 +395,9 @@ section > h1 { break-before: page; }
 .cover-page img { display: block; margin: 0 auto; }
 .edition { font-family: sans-serif; font-size: .8em; letter-spacing: .12em; }
 .diagram-source { font-size: .8em; }
+.plate { margin: 0 0 1.6em; }
+.plate img, .diagram-image { display: block; width: 100%; height: auto; margin: 0 auto; }
+.plate figcaption { margin-top: .4em; }
 .align-left { text-align: left; }
 .align-center { text-align: center; }
 .align-right { text-align: right; }

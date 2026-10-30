@@ -11,7 +11,7 @@
     "predev": "node scripts/prepare.mjs",
     "dev": "astro dev --host 127.0.0.1",
     "prebuild": "node scripts/prepare.mjs",
-    "build": "astro build && pagefind --site dist && node scripts/export-epub.mjs && python3 scripts/check-site.py",
+    "build": "astro build && pagefind --site dist && node scripts/export-figures.mjs && node scripts/export-epub.mjs && python3 scripts/check-site.py",
     "preview": "astro preview --host 127.0.0.1",
     "check": "astro check",
     "format": "prettier --write .",

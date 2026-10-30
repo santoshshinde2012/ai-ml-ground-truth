@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { unified } from 'unified';
@@ -70,7 +71,13 @@ export async function renderContent(markdown, source, { removeTitle = true } = {
               const description =
                 node.value.match(/accDescr:\s*(.+)/)?.[1] ||
                 'A diagram of the process described in the surrounding text.';
-              value = `<figure class="diagram"><div class="mermaid" aria-label="${escapeHTML(description)}">${escapeHTML(diagramSource)}</div><figcaption>${escapeHTML(description)}</figcaption></figure><details class="diagram-source"><summary>Diagram source</summary><pre><code>${escapeHTML(node.value)}</code></pre></details>`;
+              // A stable key lets the EPUB use the image rendered from this diagram.
+              const key = crypto
+                .createHash('sha256')
+                .update(diagramSource)
+                .digest('hex')
+                .slice(0, 16);
+              value = `<figure class="diagram"><div class="mermaid" data-diagram="${key}" aria-label="${escapeHTML(description)}">${escapeHTML(diagramSource)}</div><figcaption>${escapeHTML(description)}</figcaption></figure><details class="diagram-source" data-diagram="${key}"><summary>Diagram source</summary><pre><code>${escapeHTML(node.value)}</code></pre></details>`;
             } else {
               const language = node.lang || 'text';
               try {
