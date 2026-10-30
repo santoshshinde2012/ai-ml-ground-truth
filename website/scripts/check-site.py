@@ -245,6 +245,16 @@ def check_epub(path: Path) -> list[str]:
                 title = root.find("{*}head/{*}title")
                 if title is None or not "".join(title.itertext()).strip():
                     issues.append(prefix + f"XHTML document has no title: {name}")
+                # Rules EpubCheck enforces that browsers forgive; stores reject the file.
+                if any(node.get("align") is not None for node in root.iter()):
+                    issues.append(prefix + f"{name} uses the obsolete align attribute")
+                for figure in root.findall(".//{*}figure"):
+                    children = list(figure)
+                    captions = [i for i, child in enumerate(children) if child.tag.endswith("figcaption")]
+                    if any(i not in (0, len(children) - 1) for i in captions):
+                        issues.append(prefix + f"{name} has a figcaption that is not the first or last child of its figure")
+                if any(nav.get("aria-label") is not None for nav in root.findall(".//{*}nav")):
+                    issues.append(prefix + f"{name} has aria-label on a navigation element")
                 for node in root.iter():
                     for attribute in ("href", "src"):
                         value = node.get(attribute)

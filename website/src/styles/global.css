@@ -1173,6 +1173,15 @@
   .prose tr:last-child td {
     border-bottom: 0;
   }
+  .prose .align-left {
+    text-align: left;
+  }
+  .prose .align-center {
+    text-align: center;
+  }
+  .prose .align-right {
+    text-align: right;
+  }
   .prose td code {
     font-size: 10px;
   }

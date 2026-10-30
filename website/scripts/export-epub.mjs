@@ -258,7 +258,9 @@ async function serialize(node, document, parentNamespace = htmlNamespace) {
   for (const attribute of node.attrs || []) {
     if (
       /^on/i.test(attribute.name) ||
-      /^(?:style|data-|aria-|tabindex|hidden|inert|open|loading|decoding)/i.test(attribute.name)
+      /^(?:style|data-|aria-|role|tabindex|hidden|inert|open|loading|decoding)/i.test(
+        attribute.name,
+      )
     )
       continue;
     if (attribute.name === 'xmlns') continue;
@@ -338,7 +340,7 @@ archive['EPUB/Text/about.xhtml'] = strToU8(
     `<section epub:type="preface"><h1>About this edition</h1><p>This EPUB holds the canonical chapters, applied guides, annotated resources and reference-lab instructions from the web book. Exercise answers are expanded for offline reading. The interactive controls are in the <a href="${escapeAttribute(siteURL)}">web edition</a>. The worked examples around them and the diagram descriptions are all here.</p><p>The companion data and numerical reference results are synthetic teaching material. They show nothing about real customer performance, causal benefit or production readiness.</p><p>Copyright © 2026 Santosh Shinde. The text, illustrations and laboratory reports are licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The code is licensed under the <a href="https://github.com/santoshshinde2012/ai-ml-ground-truth/blob/main/LICENSE-CODE">MIT licence</a>. Linked external resources keep their own terms.</p></section>`,
   ),
 );
-const navigation = `<nav epub:type="toc" id="toc"><h1>Contents</h1><ol><li><a href="cover.xhtml">Ground Truth · Cover</a></li><li><a href="about.xhtml">About this edition</a></li>${readingDocuments.map((document) => `<li><a href="${document.filename}">${escapeText(document.title)}</a></li>`).join('')}</ol></nav><nav epub:type="landmarks" aria-label="Book landmarks" hidden="hidden"><h2>Book landmarks</h2><ol><li><a epub:type="cover" href="cover.xhtml">Cover</a></li><li><a epub:type="toc" href="nav.xhtml#toc">Contents</a></li><li><a epub:type="bodymatter" href="${firstReadingDocument?.filename || 'about.xhtml'}">Start reading</a></li></ol></nav>`;
+const navigation = `<nav epub:type="toc" id="toc"><h1>Contents</h1><ol><li><a href="cover.xhtml">Ground Truth · Cover</a></li><li><a href="about.xhtml">About this edition</a></li>${readingDocuments.map((document) => `<li><a href="${document.filename}">${escapeText(document.title)}</a></li>`).join('')}</ol></nav><nav epub:type="landmarks" hidden="hidden"><h2>Book landmarks</h2><ol><li><a epub:type="cover" href="cover.xhtml">Cover</a></li><li><a epub:type="toc" href="nav.xhtml#toc">Contents</a></li><li><a epub:type="bodymatter" href="${firstReadingDocument?.filename || 'about.xhtml'}">Start reading</a></li></ol></nav>`;
 archive['EPUB/Text/nav.xhtml'] = strToU8(xhtml('Contents', navigation));
 archive['EPUB/Styles/book.css'] = strToU8(`
 html { color: #173d35; background: #fffef9; }
@@ -364,6 +366,9 @@ section > h1 { break-before: page; }
 .cover-page img { display: block; margin: 0 auto; }
 .edition { font-family: sans-serif; font-size: .8em; letter-spacing: .12em; }
 .diagram-source { font-size: .8em; }
+.align-left { text-align: left; }
+.align-center { text-align: center; }
+.align-right { text-align: right; }
 nav ol { padding-left: 1.4em; }
 nav li { margin: .5em 0; }
 `);
