@@ -72,6 +72,8 @@ Set `CHROME_PATH` if Chrome or Chromium is not in a standard location.
 | Reading layout and typography | `website/src/layouts/` and `website/src/styles/` |
 | Interactive explanations | `website/src/components/ConceptLab.astro` and `website/public/scripts/concept-lab.js` |
 | Chapter, guide and lab plates | `website/src/components/ChapterPlate.astro` |
+| Book cover for stores and the EPUB | `website/design/book-cover.html`, rendered to `website/public/book-cover.png` |
+| Zenodo archive metadata | `.zenodo.json` |
 | Reproducible examples and the checks that stop a bad run | `labs/` |
 | Checked-in reference reports and figures | `labs/reference/` |
 | Website content and interaction tests | `website/tests/` |

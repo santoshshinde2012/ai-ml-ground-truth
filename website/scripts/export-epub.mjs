@@ -279,9 +279,10 @@ function xhtml(title, body) {
   return `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="${htmlNamespace}" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" lang="en"><head><meta charset="utf-8" /><title>${escapeText(title)}</title><link rel="stylesheet" type="text/css" href="../Styles/book.css" /></head><body>${body}</body></html>`;
 }
 
-// Prefer a raster cover for broad reader compatibility. Register it directly
-// from public/ so an older built asset cannot replace the current cover.
-for (const candidate of ['public/cover.png', 'public/cover.svg']) {
+// Prefer the portrait book cover, then the raster social image, for broad reader
+// compatibility. Register it directly from public/ so an older built asset cannot
+// replace the current cover.
+for (const candidate of ['public/book-cover.png', 'public/cover.png', 'public/cover.svg']) {
   if (await exists(path.join(root, candidate))) {
     coverImageHref = await registerImage(path.join(root, candidate));
     coverImageFilename = path.posix.basename(coverImageHref);
