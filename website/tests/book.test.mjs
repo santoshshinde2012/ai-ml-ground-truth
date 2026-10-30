@@ -102,3 +102,17 @@ test('legacy diagram themes cannot override the reader appearance', async () => 
   assert.ok(html.includes('init:'));
   assert.ok(html.includes('Data becomes evidence.'));
 });
+
+test('currency and prose are not rendered as mathematics', async () => {
+  // Two unescaped dollar amounts in one paragraph become inline math; escape them as \$.
+  const prose = [];
+  for (const page of await getBook()) {
+    for (const [, tex] of page.html.matchAll(
+      /<annotation encoding="application\/x-tex">([^<]*)</g,
+    )) {
+      if (/[a-z]{2,} [a-z]{2,} [a-z]{2,}/i.test(tex.replace(/\\text\{[^}]*\}/g, '')))
+        prose.push(`${page.file}: ${tex}`);
+    }
+  }
+  assert.deepEqual(prose, []);
+});

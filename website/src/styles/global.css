@@ -579,6 +579,56 @@
   .chapter-row:hover .chapter-row-arrow {
     transform: translate(3px, -3px);
   }
+  /* One thread through every chapter: a line in the gutter and a node at each stop. */
+  .chapter-row {
+    position: relative;
+    --thread-x: 79px;
+    --thread-node: 62px;
+  }
+  .chapter-row::before,
+  .chapter-row::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+  }
+  .chapter-row::before {
+    left: var(--thread-x);
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--line);
+  }
+  .chapter-row:first-child::before {
+    top: var(--thread-node);
+  }
+  .chapter-row:last-child::before {
+    bottom: auto;
+    height: var(--thread-node);
+  }
+  .chapter-row::after {
+    left: calc(var(--thread-x) - 4px);
+    top: calc(var(--thread-node) - 4px);
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--muted);
+    border-radius: 50%;
+    background: var(--surface);
+    transition:
+      background 0.18s,
+      transform 0.18s;
+  }
+  .chapter-row:last-child::after {
+    border-radius: 1px;
+    transform: rotate(45deg);
+  }
+  .chapter-row:hover::after {
+    background: var(--accent);
+    border-color: var(--ink);
+    transform: scale(1.4);
+  }
+  .chapter-row:last-child:hover::after {
+    transform: rotate(45deg) scale(1.4);
+  }
   .schedule-note {
     font-size: 11px;
     line-height: 1.8;
@@ -1225,16 +1275,28 @@
   }
   .laboratory-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 45px 30px;
+    grid-template-columns: 1fr;
+    gap: 64px;
   }
+  /* Each field note keeps its designed reading width; the margin ties it to its chapter. */
   .lab-entry {
     min-width: 0;
     scroll-margin-top: 35px;
+    display: grid;
+    grid-template-columns: minmax(0, 820px) minmax(200px, 300px);
+    justify-content: space-between;
+    align-items: start;
+    gap: 0 56px;
   }
   .lab-entry .concept-lab {
     margin: 0 !important;
-    height: calc(100% - 45px);
+  }
+  .lab-margin {
+    position: sticky;
+    top: 96px;
+    display: grid;
+    gap: 16px;
+    padding-top: 8px;
   }
   .lab-chapter-link {
     font-size: 11px;
@@ -1501,6 +1563,17 @@
   .laboratory-grid {
     gap: 35px 20px;
   }
+  .lab-entry {
+    grid-template-columns: 1fr;
+  }
+  .lab-margin {
+    position: static;
+    padding-top: 12px;
+  }
+  .lab-margin .eyebrow,
+  .lab-margin .chapter-plate {
+    display: none;
+  }
 }
 @media (max-width: 900px) {
   .header-nav {
@@ -1534,6 +1607,7 @@
   .chapter-row {
     grid-template-columns: 40px minmax(0, 1fr) 120px 25px;
     gap: 18px;
+    --thread-x: 49px;
   }
   .chapter-row-copy h3 {
     font-size: 25px;
@@ -1703,6 +1777,8 @@
     grid-template-columns: 30px minmax(0, 1fr) 18px;
     gap: 16px;
     padding-block: 23px;
+    --thread-x: 38px;
+    --thread-node: 58px;
   }
   .chapter-row-number {
     font-size: 24px;
@@ -2082,7 +2158,8 @@
     max-height: 150mm;
     height: auto;
   }
-  .diagram-source {
+  .diagram-source,
+  .prose details.diagram-source {
     display: none !important;
   }
   .diagram figcaption {

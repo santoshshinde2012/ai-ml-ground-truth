@@ -1,9 +1,16 @@
 ---
+type PlateKind =
+  'start' | 'guide' | 'causal' | 'offer' | 'price' | 'churn' | 'delivery' | 'lab' | 'publish';
 interface Props {
-  chapter: number | string;
+  chapter?: number | string;
+  kind?: PlateKind;
+  /** Highlights one laboratory stage: 0 generate, 1 check, 2 fit, 3 evaluate, 4 report. */
+  stage?: number;
+  /** Distinguishes repeated plates on one page so their SVG IDs stay unique. */
+  instance?: string;
   compact?: boolean;
 }
-const { chapter, compact = false } = Astro.props;
+const { chapter, kind, stage = -1, instance, compact = false } = Astro.props;
 const number = Number(chapter) || 1;
 const captions = [
   'Find your coordinates',
@@ -13,10 +20,9 @@ const captions = [
   'Ground every answer',
   'Keep the system accountable',
   'Choose where to go deep',
-  'Show the evidence',
+  'Show your work',
   'Turn evidence into action',
 ];
-const caption = captions[Math.max(0, Math.min(8, number - 1))];
 const accents = [
   '#accc76',
   '#86b7a6',
@@ -28,80 +34,613 @@ const accents = [
   '#c4ae94',
   '#a1c97e',
 ];
-const accent = accents[(number - 1) % accents.length];
-const patternId = `plate-grid-${number}${compact ? '-compact' : ''}`;
+// Pages outside the numbered chapters use the same drawing grammar with their own subject.
+const plates: Record<
+  PlateKind,
+  { code: string; accent: string; caption: string; description: string }
+> = {
+  start: {
+    code: 'START',
+    accent: '#accc76',
+    caption: 'Begin with a small, real win',
+    description:
+      'You are here. Core, practice and research reading layers lead towards results you can show.',
+  },
+  guide: {
+    code: 'PATH',
+    accent: '#86b7a6',
+    caption: 'One thread through the whole book',
+    description:
+      'Chapters 1 to 6 follow one track. Chapter 7 branches into three roles. The job search runs alongside Chapter 6, and Chapter 9 extends the work after Chapter 3.',
+  },
+  causal: {
+    code: '09·A',
+    accent: '#a1c97e',
+    caption: 'Name the comparison before the estimate',
+    description:
+      'A population is randomly assigned to treated and control arms. Their outcomes are compared as a difference.',
+  },
+  offer: {
+    code: '09·B',
+    accent: '#d0b47d',
+    caption: 'Choose by incremental value',
+    description:
+      'One decision opportunity, offers with positive or negative incremental value, and the best feasible choice.',
+  },
+  price: {
+    code: '09·C',
+    accent: '#c4ae94',
+    caption: 'Optimise only where prices were tested',
+    description:
+      'Conversion falls as price rises, while contribution peaks inside the tested price range that informs the decision.',
+  },
+  churn: {
+    code: '09·D',
+    accent: '#c4abd0',
+    caption: 'Risk is not saveability',
+    description:
+      'Customers placed by risk of leaving and effect of contact. Only customers a contact helps fill the limited budget.',
+  },
+  delivery: {
+    code: '09·E',
+    accent: '#94b5c1',
+    caption: 'From decision brief to feedback',
+    description:
+      'A brief, data, a model, an experiment and operation, with observed outcomes feeding the next brief.',
+  },
+  lab: {
+    code: 'LAB',
+    accent: '#a8b7d5',
+    caption: 'Reproduce, check, then decide',
+    description:
+      'A seeded simulator makes the data. Checks reject mismatched hashes. The model fits on training data, the final test is scored once, and reports are written.',
+  },
+  publish: {
+    code: 'EDITIONS',
+    accent: '#b8be83',
+    caption: 'One source, every edition',
+    description:
+      'Canonical Markdown is built and checked once, then published as the web book, an EPUB and a PDF.',
+  },
+};
+const labStages = ['GENERATE', 'CHECK', 'FIT', 'EVALUATE', 'REPORT'];
+const labCaptions = [
+  'Know what the simulated data can claim',
+  'Rehearse the failure before it happens',
+  'Fit on training data only',
+  'Open the final test once',
+  'Write down what the results support',
+];
+const plate = kind ? plates[kind] : undefined;
+const labStage = kind === 'lab' && stage >= 0 && stage < labStages.length ? stage : -1;
+const code = !plate
+  ? String(number).padStart(2, '0')
+  : labStage >= 0
+    ? `LAB·0${labStage + 1}`
+    : plate.code;
+const caption = !plate
+  ? captions[Math.max(0, Math.min(8, number - 1))]
+  : labStage >= 0
+    ? labCaptions[labStage]
+    : plate.caption;
+const accent = plate ? plate.accent : accents[(number - 1) % accents.length];
+const label = plate
+  ? `${caption}. ${plate.description}`
+  : `Chapter ${number}: ${caption}. An abstract data point travels through records, a model, a decision and a feedback loop.`;
+const patternId = `plate-grid-${kind ?? number}${instance ? `-${instance}` : ''}${compact ? '-compact' : ''}`;
+const grid = [0, 1, 2].flatMap((r) => [0, 1, 2].map((c) => [r, c]));
+const guideNodes = [80, 172, 264, 356, 448, 540];
+const offers: [string, number, number][] = [
+  ['OFFER A', 78, 60],
+  ['OFFER B', 110, 120],
+  ['OFFER C', 142, -50],
+  ['NO OFFER', 174, 0],
+];
+const churnDots = [
+  [150, 100],
+  [190, 84],
+  [240, 112],
+  [300, 92],
+  [352, 108],
+  [410, 112],
+  [160, 170],
+  [205, 152],
+  [270, 160],
+  [330, 148],
+  [380, 172],
+  [420, 158],
+];
+const hot = (i: number) => (labStage === i ? 'plate-key' : 'plate-outline');
 ---
 
 <figure class:list={['chapter-plate', { compact }]} style={`--plate-accent:${accent}`}>
-  <svg
-    viewBox="0 0 760 250"
-    role="img"
-    aria-label={`Chapter ${number}: ${caption}. An abstract data point travels through records, a model, a decision and a feedback loop.`}
-  >
+  <svg viewBox="0 0 760 250" role="img" aria-label={label}>
     <defs>
       <pattern id={patternId} width="20" height="20" patternUnits="userSpaceOnUse">
         <circle cx="1" cy="1" r=".7" fill="currentColor" opacity=".18" />
       </pattern>
     </defs>
     <rect width="760" height="250" fill={`url(#${patternId})`} />
-    <path d="M86 126H222M289 126H405M459 126H582M638 126H711" class="plate-track" />
-    <path d="M610 157V207H255V161" class="plate-return" />
-    {[0, 1, 2].map((r) =>
-      [0, 1, 2].map((c) => (
-        <rect
-          x={48 + c * 17}
-          y={101 + r * 17}
-          width="11"
-          height="11"
-          rx="2"
-          class:list={['plate-cell', { 'plate-key': r === 1 && c === 1 }]}
-        />
-      )),
+    {!plate && (
+      <>
+        <path d="M86 126H222M289 126H405M459 126H582M638 126H711" class="plate-track" />
+        <path d="M610 157V207H255V161" class="plate-return" />
+        {grid.map(([r, c]) => (
+          <rect
+            x={48 + c * 17}
+            y={101 + r * 17}
+            width="11"
+            height="11"
+            rx="2"
+            class:list={['plate-cell', { 'plate-key': r === 1 && c === 1 }]}
+          />
+        ))}
+        <g transform="translate(255 126) rotate(45)">
+          <rect x="-30" y="-30" width="60" height="60" rx="3" class="plate-outline" />
+          <rect x="-11" y="-11" width="22" height="22" rx="2" class="plate-key" />
+        </g>
+        <g transform="translate(432 126)">
+          <circle r="30" class="plate-outline" />
+          <circle r="8" class="plate-key" />
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <circle
+              cx={Math.cos((i * Math.PI) / 3) * 48}
+              cy={Math.sin((i * Math.PI) / 3) * 48}
+              r="3"
+              class="plate-cell"
+            />
+          ))}
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <line
+              x1="0"
+              y1="0"
+              x2={Math.cos((i * Math.PI) / 3) * 48}
+              y2={Math.sin((i * Math.PI) / 3) * 48}
+              class="plate-spoke"
+            />
+          ))}
+        </g>
+        <g transform="translate(610 126)">
+          <rect x="-28" y="-28" width="56" height="56" rx="28" class="plate-key" />
+          <path d="m-10 1 7 7 15-17" class="plate-check" />
+        </g>
+        <circle cx={86 + ((number - 1) / 8) * 620} cy="126" r="5" class="plate-traveller" />
+        <text x="48" y="182" class="plate-caption">
+          DATA
+        </text>
+        <text x="255" y="182" text-anchor="middle" class="plate-caption">
+          STRUCTURE
+        </text>
+        <text x="432" y="198" text-anchor="middle" class="plate-caption">
+          MODEL
+        </text>
+        <text x="610" y="182" text-anchor="middle" class="plate-caption">
+          DECISION
+        </text>
+      </>
     )}
-    <g transform="translate(255 126) rotate(45)">
-      <rect x="-30" y="-30" width="60" height="60" rx="3" class="plate-outline" />
-      <rect x="-11" y="-11" width="22" height="22" rx="2" class="plate-key" />
-    </g>
-    <g transform="translate(432 126)">
-      <circle r="30" class="plate-outline" />
-      <circle r="8" class="plate-key" />
-      {[0, 1, 2, 3, 4, 5].map((i) => (
+    {kind === 'start' && (
+      <>
+        <path d="M108 126C140 126 138 92 168 92H648" class="plate-track" />
+        <path d="M108 126C140 126 138 136 168 136H600" class="plate-dash" />
+        <path d="M108 126C140 126 138 180 168 180H540" class="plate-return" />
+        {[280, 400, 520].map((x) => (
+          <circle cx={x} cy="92" r="7" class="plate-outline" />
+        ))}
+        {[300, 440].map((x) => (
+          <rect x={x - 5} y="131" width="10" height="10" rx="2" class="plate-cell" />
+        ))}
+        {[340, 480].map((x) => (
+          <circle cx={x} cy="180" r="4" class="plate-outline" />
+        ))}
+        <rect x="648" y="76" width="34" height="34" rx="17" class="plate-key" />
+        <path d="m657 93 5 5 10-11" class="plate-check" />
+        <circle cx="92" cy="126" r="16" class="plate-outline" />
+        <circle cx="92" cy="126" r="5" class="plate-traveller" />
+        <text x="92" y="166" text-anchor="middle" class="plate-caption">
+          YOU ARE HERE
+        </text>
+        <text x="180" y="82" class="plate-caption">
+          CORE
+        </text>
+        <text x="180" y="126" class="plate-caption">
+          PRACTICE
+        </text>
+        <text x="180" y="170" class="plate-caption">
+          RESEARCH
+        </text>
+        <text x="665" y="132" text-anchor="middle" class="plate-caption">
+          EVIDENCE
+        </text>
+      </>
+    )}
+    {kind === 'guide' && (
+      <>
+        <path d="M80 120H610" class="plate-track" />
+        <path
+          d="M644 120C670 120 668 88 694 88M644 120H694M644 120C670 120 668 152 694 152"
+          class="plate-track"
+        />
+        <path d="M540 133V176H700" class="plate-return" />
+        <path d="M264 133V204H392" class="plate-return" />
+        {guideNodes.map((x, i) => (
+          <circle cx={x} cy="120" r="13" class={i === 0 ? 'plate-key' : 'plate-outline'} />
+        ))}
+        {guideNodes.map((x, i) => (
+          <text
+            x={x}
+            y="123"
+            text-anchor="middle"
+            class:list={['plate-num', { 'plate-on-key': i === 0 }]}
+          >
+            {`0${i + 1}`}
+          </text>
+        ))}
+        <g transform="translate(626 120) rotate(45)">
+          <rect x="-13" y="-13" width="26" height="26" rx="2" class="plate-outline" />
+        </g>
+        <text x="626" y="123" text-anchor="middle" class="plate-num">
+          07
+        </text>
+        {[88, 120, 152].map((y) => (
+          <circle cx="698" cy={y} r="4" class="plate-key" />
+        ))}
+        {[
+          ['AI', 91],
+          ['ML', 123],
+          ['DS', 155],
+        ].map(([role, y]) => (
+          <text x="710" y={y} class="plate-caption">
+            {role}
+          </text>
+        ))}
+        <rect x="392" y="192" width="24" height="24" rx="3" class="plate-key" />
+        <text x="404" y="207" text-anchor="middle" class="plate-num plate-on-key">
+          09
+        </text>
+        <circle cx="126" cy="120" r="5" class="plate-traveller" />
+        <text x="556" y="194" class="plate-caption">
+          08 · ALONGSIDE
+        </text>
+        <text x="428" y="208" class="plate-caption">
+          APPLIED EXTENSION
+        </text>
+      </>
+    )}
+    {kind === 'causal' && (
+      <>
+        <path d="M100 126H200" class="plate-track" />
+        <path d="M262 126C292 126 290 88 320 88H520C560 88 560 126 598 126" class="plate-track" />
+        <path
+          d="M262 126C292 126 290 164 320 164H520C560 164 560 126 598 126"
+          class="plate-track"
+        />
+        {grid.map(([r, c]) => (
+          <rect x={48 + c * 17} y={101 + r * 17} width="11" height="11" rx="2" class="plate-cell" />
+        ))}
+        <g transform="translate(230 126) rotate(45)">
+          <rect x="-22" y="-22" width="44" height="44" rx="3" class="plate-outline" />
+        </g>
+        <text x="230" y="129" text-anchor="middle" class="plate-num">
+          R
+        </text>
+        {[0, 1, 2, 3, 4].map((i) => (
+          <rect x={350 + i * 28} y="80" width="16" height="16" rx="2" class="plate-key" />
+        ))}
+        {[0, 1, 2, 3, 4].map((i) => (
+          <rect x={350 + i * 28} y="156" width="16" height="16" rx="2" class="plate-outline" />
+        ))}
+        <circle cx="630" cy="126" r="30" class="plate-key" />
+        <text x="630" y="134" text-anchor="middle" class="plate-glyph">
+          Δ
+        </text>
+        <circle cx="508" cy="88" r="5" class="plate-traveller" />
+        <text x="350" y="70" class="plate-caption">
+          TREATED
+        </text>
+        <text x="350" y="194" class="plate-caption">
+          CONTROL
+        </text>
+        <text x="48" y="182" class="plate-caption">
+          POPULATION
+        </text>
+        <text x="230" y="182" text-anchor="middle" class="plate-caption">
+          RANDOM ASSIGNMENT
+        </text>
+        <text x="630" y="182" text-anchor="middle" class="plate-caption">
+          DIFFERENCE
+        </text>
+      </>
+    )}
+    {kind === 'offer' && (
+      <>
+        <path d="M400 64V190" class="plate-return" />
+        {offers.map(([, y]) => (
+          <path d={`M102 126C170 126 170 ${y} 230 ${y}`} class="plate-spoke" />
+        ))}
+        <path d="M524 110C574 110 572 126 604 126" class="plate-track" />
+        <circle cx="80" cy="126" r="22" class="plate-outline" />
+        <circle cx="80" cy="120" r="6" class="plate-cell" />
+        <path d="M70 136a10 8 0 0 1 20 0" class="plate-line" />
+        {offers.map(([name, y, value], i) => (
+          <>
+            <text x="240" y={y + 3} class="plate-caption">
+              {name}
+            </text>
+            <rect
+              x={value >= 0 ? 400 : 400 + value}
+              y={y - 7}
+              width={Math.abs(value) || 2}
+              height="14"
+              rx="2"
+              class={i === 1 ? 'plate-key' : 'plate-outline'}
+            />
+          </>
+        ))}
+        <g transform="translate(632 126)">
+          <rect x="-28" y="-28" width="56" height="56" rx="28" class="plate-key" />
+          <path d="m-10 1 7 7 15-17" class="plate-check" />
+        </g>
+        <circle cx="560" cy="114" r="5" class="plate-traveller" />
+        <text x="80" y="182" text-anchor="middle" class="plate-caption">
+          OPPORTUNITY
+        </text>
+        <text x="400" y="210" text-anchor="middle" class="plate-caption">
+          INCREMENTAL VALUE
+        </text>
+        <text x="632" y="182" text-anchor="middle" class="plate-caption">
+          CHOICE
+        </text>
+      </>
+    )}
+    {kind === 'price' && (
+      <>
+        <rect x="210" y="64" width="220" height="132" class="plate-band" />
+        <path d="M210 64V196M430 64V196" class="plate-return" />
+        <path d="M110 64V196H520" class="plate-track" />
+        <path d="M120 78C220 92 330 132 510 182" class="plate-dash" />
+        <path d="M120 186C210 124 290 94 352 94C420 94 470 140 510 178" class="plate-curve" />
+        {[230, 290, 350, 410].map((x) => (
+          <rect x={x - 3} y="193" width="6" height="6" class="plate-cell" />
+        ))}
+        <path d="M360 94C470 94 560 126 622 126" class="plate-track" />
+        <circle cx="352" cy="94" r="7" class="plate-key plate-ring" />
+        <g transform="translate(650 126)">
+          <rect x="-28" y="-28" width="56" height="56" rx="28" class="plate-key" />
+          <path d="m-10 1 7 7 15-17" class="plate-check" />
+        </g>
+        <path d="M540 66h22" class="plate-curve" />
+        <path d="M540 82h22" class="plate-dash" />
+        <text x="570" y="69" class="plate-caption">
+          CONTRIBUTION
+        </text>
+        <text x="570" y="85" class="plate-caption">
+          CONVERSION
+        </text>
+        <text x="320" y="216" text-anchor="middle" class="plate-caption">
+          TESTED PRICES
+        </text>
+        <text x="520" y="216" text-anchor="end" class="plate-caption">
+          PRICE →
+        </text>
+        <text x="650" y="182" text-anchor="middle" class="plate-caption">
+          DECISION
+        </text>
+      </>
+    )}
+    {kind === 'churn' && (
+      <>
+        <rect x="120" y="64" width="320" height="66" class="plate-band" />
+        <path d="M120 130H440" class="plate-return" />
+        <path d="M120 64V196H440" class="plate-track" />
+        <path d="M440 97C480 97 490 126 516 126" class="plate-track" />
+        {churnDots.map(([x, y]) =>
+          y < 130 ? (
+            <circle cx={x} cy={y} r="6" class="plate-key plate-ring" />
+          ) : (
+            <circle cx={x} cy={y} r="4" class="plate-cell" />
+          ),
+        )}
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <rect
+            x={520 + i * 30}
+            y="114"
+            width="22"
+            height="24"
+            rx="3"
+            class={i < 2 ? 'plate-key' : 'plate-outline'}
+          />
+        ))}
+        <text x="432" y="80" text-anchor="end" class="plate-caption">
+          CONTACT HELPS
+        </text>
+        <text x="432" y="190" text-anchor="end" class="plate-caption">
+          CONTACT DOES NOT HELP
+        </text>
+        <text x="440" y="216" text-anchor="end" class="plate-caption">
+          RISK OF LEAVING →
+        </text>
+        <text transform="translate(106 190) rotate(-90)" class="plate-caption">
+          CONTACT EFFECT →
+        </text>
+        <text x="605" y="160" text-anchor="middle" class="plate-caption">
+          CONTACT BUDGET
+        </text>
+      </>
+    )}
+    {kind === 'delivery' && (
+      <>
+        <path
+          d="M108 126H180M234 126H300M352 126H418M474 126H536M596 126H658"
+          class="plate-track"
+        />
+        <path d="M686 154V210H86V152" class="plate-return" />
+        <rect x="70" y="104" width="32" height="44" rx="3" class="plate-outline" />
+        <path d="M77 116h18M77 124h18M77 132h12" class="plate-line" />
+        {grid.map(([r, c]) => (
+          <rect
+            x={184 + c * 16}
+            y={104 + r * 16}
+            width="11"
+            height="11"
+            rx="2"
+            class:list={['plate-cell', { 'plate-key': r === 1 && c === 1 }]}
+          />
+        ))}
+        <circle cx="326" cy="126" r="24" class="plate-outline" />
+        <circle cx="326" cy="126" r="7" class="plate-key" />
+        <g transform="translate(446 126) rotate(45)">
+          <rect x="-20" y="-20" width="40" height="40" rx="3" class="plate-outline" />
+          <rect x="-7" y="-7" width="14" height="14" rx="2" class="plate-key" />
+        </g>
+        <rect x="538" y="106" width="56" height="40" rx="4" class="plate-outline" />
+        <path d="M546 128h10l5-11 7 20 5-9h14" class="plate-curve" />
+        <circle cx="686" cy="126" r="28" class="plate-key" />
+        <path d="M695 120a11 11 0 1 0 2 9" class="plate-check" />
+        <path d="m691 114 5 6-7 3" class="plate-check" />
+        <circle cx="386" cy="126" r="5" class="plate-traveller" />
+        {[
+          ['BRIEF', 86],
+          ['DATA', 206],
+          ['MODEL', 326],
+          ['EXPERIMENT', 446],
+          ['OPERATE', 566],
+          ['FEEDBACK', 686],
+        ].map(([name, x]) => (
+          <text x={x} y="86" text-anchor="middle" class="plate-caption">
+            {name}
+          </text>
+        ))}
+      </>
+    )}
+    {kind === 'lab' && (
+      <>
+        <path d="M114 126H196M250 126H330M386 126H464M524 126H608" class="plate-track" />
+        <path d="M630 156V206H222V158" class="plate-return" />
+        <rect x="60" y="100" width="52" height="52" rx="4" class={hot(0)} />
+        {grid.map(([r, c]) => (
+          <rect x={68 + c * 14} y={108 + r * 14} width="9" height="9" rx="2" class="plate-cell" />
+        ))}
+        <path d="M222 98l24 9v18c0 15-11 24-24 29-13-5-24-14-24-29v-18Z" class={hot(1)} />
+        <path
+          d="m212 126 7 7 13-14"
+          class:list={['plate-check', { 'plate-check-ink': labStage !== 1 }]}
+        />
+        <circle cx="358" cy="126" r="26" class={hot(2)} />
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <circle
+            cx={358 + Math.cos((i * Math.PI) / 3) * 14}
+            cy={126 + Math.sin((i * Math.PI) / 3) * 14}
+            r="3"
+            class="plate-cell"
+          />
+        ))}
+        <rect x="466" y="98" width="56" height="56" rx="3" class={hot(3)} />
+        <path d="M472 148L516 104" class="plate-return" />
+        {[
+          [480, 138],
+          [493, 122],
+          [507, 113],
+        ].map(([x, y]) => (
+          <circle cx={x} cy={y} r="3" class="plate-cell" />
+        ))}
+        <rect x="610" y="100" width="40" height="52" rx="3" class={hot(4)} />
+        <path d="M618 114h24M618 122h24M618 130h16" class="plate-line" />
+        <rect
+          x="56"
+          y="166"
+          width="60"
+          height="18"
+          rx="9"
+          class={labStage < 0 ? 'plate-key' : 'plate-outline'}
+        />
+        <text
+          x="86"
+          y="178"
+          text-anchor="middle"
+          class:list={['plate-num', { 'plate-on-key': labStage < 0 }]}
+        >
+          SEED 42
+        </text>
         <circle
-          cx={Math.cos((i * Math.PI) / 3) * 48}
-          cy={Math.sin((i * Math.PI) / 3) * 48}
-          r="3"
-          class="plate-cell"
+          cx={labStage < 0 ? 152 : [86, 222, 358, 494, 630][labStage] - 44}
+          cy="126"
+          r="5"
+          class="plate-traveller"
         />
-      ))}
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <line
-          x1="0"
-          y1="0"
-          x2={Math.cos((i * Math.PI) / 3) * 48}
-          y2={Math.sin((i * Math.PI) / 3) * 48}
-          class="plate-spoke"
+        {labStages.map((name, i) => (
+          <text x={[86, 222, 358, 494, 630][i]} y="86" text-anchor="middle" class="plate-caption">
+            {name}
+          </text>
+        ))}
+        <text x="426" y="222" text-anchor="middle" class="plate-caption">
+          HASHES MUST MATCH
+        </text>
+      </>
+    )}
+    {kind === 'publish' && (
+      <>
+        <path d="M116 126H232M290 126H372" class="plate-track" />
+        <path
+          d="M426 126C480 126 486 84 540 84M426 126H540M426 126C480 126 486 168 540 168"
+          class="plate-track"
         />
-      ))}
-    </g>
-    <g transform="translate(610 126)">
-      <rect x="-28" y="-28" width="56" height="56" rx="28" class="plate-key" />
-      <path d="m-10 1 7 7 15-17" class="plate-check" />
-    </g>
-    <circle cx={86 + ((number - 1) / 8) * 620} cy="126" r="5" class="plate-traveller" />
+        {[2, 1, 0].map((i) => (
+          <rect
+            x={52 + i * 8}
+            y={104 - i * 8}
+            width="44"
+            height="52"
+            rx="3"
+            class="plate-outline"
+          />
+        ))}
+        <path d="M60 118h26M60 126h26M60 134h18" class="plate-line" />
+        <g transform="translate(260 126) rotate(45)">
+          <rect x="-20" y="-20" width="40" height="40" rx="3" class="plate-outline" />
+          <rect x="-7" y="-7" width="14" height="14" rx="2" class="plate-key" />
+        </g>
+        <circle cx="400" cy="126" r="26" class="plate-outline" />
+        <path d="m390 127 7 7 14-16" class="plate-check plate-check-ink" />
+        {[
+          ['WEB', 69],
+          ['EPUB', 111],
+          ['PDF', 153],
+        ].map(([name, y], i) => (
+          <>
+            <rect
+              x="540"
+              y={y}
+              width="96"
+              height="30"
+              rx="3"
+              class={i === 0 ? 'plate-key' : 'plate-outline'}
+            />
+            <text
+              x="588"
+              y={Number(y) + 19}
+              text-anchor="middle"
+              class:list={['plate-num', { 'plate-on-key': i === 0 }]}
+            >
+              {name}
+            </text>
+          </>
+        ))}
+        <circle cx="330" cy="126" r="5" class="plate-traveller" />
+        {[
+          ['MARKDOWN', 80],
+          ['BUILD', 260],
+          ['CHECKS', 400],
+          ['EDITIONS', 588],
+        ].map(([name, x]) => (
+          <text x={x} y="214" text-anchor="middle" class="plate-caption">
+            {name}
+          </text>
+        ))}
+      </>
+    )}
     <text x="48" y="51" class="plate-label">
-      GROUND TRUTH / {String(number).padStart(2, '0')}
-    </text>
-    <text x="48" y="182" class="plate-caption">
-      DATA
-    </text>
-    <text x="255" y="182" text-anchor="middle" class="plate-caption">
-      STRUCTURE
-    </text>
-    <text x="432" y="198" text-anchor="middle" class="plate-caption">
-      MODEL
-    </text>
-    <text x="610" y="182" text-anchor="middle" class="plate-caption">
-      DECISION
+      GROUND TRUTH / {code}
     </text>
     <text x="708" y="51" text-anchor="end" class="plate-mark">
       ↗
@@ -109,7 +648,7 @@ const patternId = `plate-grid-${number}${compact ? '-compact' : ''}`;
   </svg>
   <figcaption>
     {caption}
-    <span>PLATE {String(number).padStart(2, '0')}</span>
+    <span>PLATE {code}</span>
   </figcaption>
 </figure>
 <style>
@@ -139,12 +678,40 @@ const patternId = `plate-grid-${number}${compact ? '-compact' : ''}`;
     fill: none;
     opacity: 0.3;
   }
+  .plate-dash {
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-dasharray: 6 5;
+    fill: none;
+    opacity: 0.45;
+  }
+  .plate-curve {
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .plate-line {
+    stroke: currentColor;
+    stroke-width: 1;
+    fill: none;
+    opacity: 0.45;
+  }
+  .plate-band {
+    fill: var(--plate-accent);
+    opacity: 0.22;
+  }
   .plate-cell {
     fill: currentColor;
     opacity: 0.6;
   }
   .plate-key {
     fill: var(--plate-accent);
+  }
+  .plate-ring {
+    stroke: currentColor;
+    stroke-width: 1;
   }
   .plate-outline {
     fill: var(--paper, #f7f4ed);
@@ -154,12 +721,16 @@ const patternId = `plate-grid-${number}${compact ? '-compact' : ''}`;
   .plate-spoke {
     stroke: currentColor;
     stroke-width: 1;
+    fill: none;
     opacity: 0.2;
   }
   .plate-check {
     stroke: #1b302e;
     stroke-width: 2;
     fill: none;
+  }
+  .plate-check-ink {
+    stroke: currentColor;
   }
   .plate-traveller {
     fill: var(--ink, #1b302e);
@@ -175,6 +746,18 @@ const patternId = `plate-grid-${number}${compact ? '-compact' : ''}`;
   .plate-caption {
     font-size: 9px;
     opacity: 0.6;
+  }
+  .plate-num {
+    fill: currentColor;
+    font: 9px var(--font-mono, monospace);
+    letter-spacing: 0.5px;
+  }
+  .plate-on-key {
+    fill: #1b302e;
+  }
+  .plate-glyph {
+    fill: #1b302e;
+    font: 26px var(--font-heading, Georgia, serif);
   }
   .plate-mark {
     font: 25px var(--font-sans, system-ui, sans-serif);

@@ -1,13 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getBook, bookHref, basePath, printContent, orderForEdition } from '../lib/book.mjs';
-import { edition } from '../lib/catalog.mjs';
+import { edition, repository } from '../lib/catalog.mjs';
 const docs = orderForEdition(await getBook());
 ---
 
 <Base
   title="Complete print edition"
-  description="A continuous reading and print edition of Ground Truth, with all chapters and resource notes."
+  description="All of Ground Truth on one page, to read straight through or print, with resource notes."
 >
   <main id="main" class="print-book">
     <header class="print-title">
@@ -24,10 +24,11 @@ const docs = orderForEdition(await getBook());
         <a href={`${basePath()}/downloads/ground-truth.epub`} download>
           Download EPUB
         </a>
+        <a href={`${repository}/releases`}>PDF & past editions</a>
       </div>
       <p class="print-explainer">
-        Use your browser’s print dialog to save a PDF. Interactive examples are explained in the
-        chapter text; explore their controls in the web laboratory.
+        Use your browser’s print dialog to save a PDF. The chapter text explains each interactive
+        example. To try the controls, open the web laboratory.
       </p>
     </header>
     <nav class="print-contents" aria-label="Print contents">
