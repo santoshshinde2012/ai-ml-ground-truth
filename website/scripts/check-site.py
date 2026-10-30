@@ -232,6 +232,24 @@ def check_epub(path: Path) -> list[str]:
                         issues.append(prefix + f"spine ID not in manifest: {itemref.get('idref', '')}")
                     elif referenced.get("media-type") != "application/xhtml+xml":
                         issues.append(prefix + f"spine item is not XHTML: {itemref.get('idref', '')}")
+                # Navigation may only link to documents in the reading spine.
+                package_dir = posixpath.dirname(package_name)
+                spine_paths = {
+                    posixpath.normpath(posixpath.join(package_dir, unquote(urlsplit(by_id[ref.get("idref", "")].get("href", "")).path)))
+                    for ref in spine if ref.get("idref", "") in by_id
+                }
+                for item in items:
+                    if "nav" not in item.get("properties", "").split():
+                        continue
+                    nav_path = posixpath.normpath(posixpath.join(package_dir, unquote(urlsplit(item.get("href", "")).path)))
+                    nav_root = documents.get(nav_path)
+                    for node in nav_root.findall(".//{*}a") if nav_root is not None else []:
+                        link = urlsplit(node.get("href") or "")
+                        if not link.path or link.scheme or link.netloc:
+                            continue
+                        target = posixpath.normpath(posixpath.join(posixpath.dirname(nav_path), unquote(link.path)))
+                        if target not in spine_paths:
+                            issues.append(prefix + f"navigation links outside the reading spine: {node.get('href')}")
             identifiers = {}
             for name, root in documents.items():
                 counts = Counter(node.get("id") for node in root.iter() if node.get("id"))
