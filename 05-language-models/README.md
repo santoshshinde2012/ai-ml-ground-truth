@@ -8,8 +8,10 @@
 right facts, constrain its actions, and measure whether it works. Finish with a small application,
 an independent release evaluation, measured operating costs, and a user who is not you.
 
-**Same thread.** Build on documents from your Chapter 2 domain — ticket appeals, API docs you use at
-work, your exported notes. The eval discipline is the same as Chapter 3, applied to text.
+**Same thread.** Build on documents from your Chapter 2 domain: if you modelled parking-ticket
+disputes, extract fields from the appeals. If the domain has no suitable documents, use API
+docs from work or your exported notes, and record that change. The eval discipline is the same as
+in Chapter 3, applied to text.
 
 **In this chapter:** [Plan](#your-ten-week-overview) &nbsp;·&nbsp; [Learn](#what-to-learn)
 &nbsp;·&nbsp; [Product sprint](#your-first-ai-product-a-two-week-plan) &nbsp;·&nbsp;
@@ -20,8 +22,8 @@ work, your exported notes. The eval discipline is the same as Chapter 3, applied
 ## Your ten-week overview
 
 Weeks 23–32, about ten hours a week. Read selected lessons rather than every resource. Weeks 27–28
-reserve about 20 hours for the **two-week product sprint**; its days are work sessions, not fourteen
-full working days. Reuse the cases, pipeline and deployment from weeks 23-26.
+set aside about 20 hours for the **two-week product sprint**. Its days are work sessions, not
+fourteen full working days. Reuse the cases, pipeline and deployment from weeks 23-26.
 
 | Week  | Focus                | Do this                                                                         | Done when                                                            |
 | ----- | -------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -35,7 +37,7 @@ full working days. Reuse the cases, pipeline and deployment from weeks 23-26.
 | 31    | Fine-tuning decision | Compare prompt-only, examples and retrieval; optionally an adapter              | Keep the simplest acceptable approach; report a null result honestly |
 | 32    | Release + buffer     | CI regression checks; independent release run; design story                     | Evidence supports release or a decision to defer                     |
 
-New words in this chapter — context engineering, retrieval, gold set, pass rate, trace, judge — are
+New words in this chapter (context engineering, retrieval, gold set, pass rate, trace, judge) are
 explained where they first appear below, and collected in
 [Terms in plain English](../content/reader-guide.md#glossary).
 
@@ -49,25 +51,25 @@ optimising, an error taxonomy taken from real traces, and a cost per thousand re
 ## The one idea to take from this chapter
 
 **A plausible answer is an observation, not proof that the system works.** You need examples with
-criteria you can check, traces that reveal how answers were produced, and a release decision that
-was not tuned to the test answers. This applies to document extraction and to an agent that can
-change files or call services.
+criteria you can check, traces that show how answers were produced, and a release decision that was
+not tuned to the test answers. This holds for document extraction and for agents that change files
+or call services.
 
-An application with a good interface and no labelled examples is hard to improve, because there is
-no way to tell whether a change helped. The same application with a hundred hand-labelled traces, a
-documented set of failure modes, and a judge you have checked against your own labels is a different
-proposition entirely. A trace is the saved record of one request — input, intermediate steps,
-output. A judge is a model prompted to grade another model's answers against criteria you wrote.
-These records let you explain failures and compare changes. Neither a trace nor a model judge
-replaces a domain expert or application-enforced permissions.
+An application with a good interface and no labelled examples is hard to improve, because you
+cannot tell whether a change helped. Add a hundred hand-labelled traces, a written list of failure
+modes and a judge checked against your own labels, and it becomes a different thing. A trace is
+the saved record of one request: input, intermediate steps and output. A judge is a model prompted
+to grade another model's answers against criteria you wrote. These records help you explain
+failures and compare changes, but they do not replace a domain expert or application-enforced
+permissions.
 
 ## What to learn
 
 ### Worked lesson: evaluate the change on the same cases
 
-Consider 50 invented, independently sampled task families with one evaluated case each. Freeze the
-rubric before scoring the same cases with a baseline and a candidate. This development example
-uses human pass/fail labels and no repeated attempts:
+Take 50 invented task families, sampled independently, with one evaluated case each. Freeze the
+rubric, then score the same cases with a baseline and a candidate. This development example uses
+human pass/fail labels and no repeated attempts:
 
 | Baseline | Candidate | Cases |
 | --- | --- | --- |
@@ -76,12 +78,12 @@ uses human pass/fail labels and no repeated attempts:
 | Fail | Pass | 6 |
 | Fail | Fail | 5 |
 
-The baseline passes 39/50 (78%); the candidate passes 41/50 (82%). The paired improvement is
+The baseline passes 39/50 (78%) and the candidate 41/50 (82%). The paired improvement is
 `(6 - 4) / 50 = 4 percentage points`. Reporting only “82%” hides four regressions. The ten
-discordant pairs contain the evidence about this particular change.
+discordant pairs, where the versions disagree, hold the evidence about this change.
 
-An exact paired test under an exchangeable no-change null treats the ten discordant outcomes as
-fair coin flips. Six wins against four losses is not surprising under that null:
+Assuming no change, an exact paired test treats the ten discordant outcomes as fair coin
+flips. Six wins against four losses is not surprising under that null:
 
 ```python
 from math import comb
@@ -95,24 +97,24 @@ assert paired_difference == 0.04
 assert abs(two_sided_p - 0.75390625) < 1e-12
 ```
 
-The p-value is not the probability that the models are equal. It also does not show whether an
-improvement would be useful. If the declared rule requires at least five percentage points of
+The p-value is not the probability that the models are equal, nor does it show whether an
+improvement would be useful. If your declared rule requires at least five percentage points of
 supported improvement and no severe regression, this table does not justify promotion. Record the
-decision, inspect development failures and acquire enough independent evidence for the next release.
-For an interval, resample the paired task-family differences, preserving the sampling unit; a tiny
-or dependent sample can make an ordinary interval misleading.
+decision, inspect development failures and collect enough independent cases for the next release.
+For an interval, resample the paired task-family differences, preserving the sampling
+unit. A tiny or dependent sample can make an ordinary interval misleading.
 
-This is the exact binomial form of McNemar's paired test; the
+This is the exact binomial form of McNemar's paired test. The
 [statsmodels documentation](https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html)
 describes the exact and large-sample options. A repeated-trial or clustered design needs its own
-sampling assumptions, rather than treating every attempt as an independent pair.
+sampling assumptions, instead of treating every attempt as an independent pair.
 
-Now audit a judge on these candidate outputs, treating **failure** as positive. Suppose it catches
-7 of the 9 human failures, misses 2, and incorrectly flags 4 of the 41 human passes. Failure
-sensitivity is `7/9 ≈ 78%`, false-alarm rate is `4/41 ≈ 10%`, and agreement is `44/50 = 88%`.
-That apparently reassuring agreement still hides two missed failures. Audit severity and slices
-before trusting the judge. These development labels can tune the judge; they then cannot provide
-independent release evidence for the tuned judge.
+Now audit a judge on these candidate outputs, treating **failure** as positive. Suppose
+it catches 7 of the 9 human-labelled failures, misses 2, and wrongly flags 4 of the 41 human passes.
+Failure sensitivity is `7/9 ≈ 78%`, false-alarm rate is `4/41 ≈ 10%`, and agreement is
+`44/50 = 88%`. That reassuring agreement still hides two missed failures, so check severity and
+slices before trusting the judge. If you use these development labels to tune the judge, they can no
+longer give independent release evidence for it.
 
 **Try it yourself.** A new candidate fixes all five cases both versions failed, but breaks three
 cases both passed. What is its pass rate and paired improvement over the original baseline?
@@ -123,17 +125,17 @@ cases both passed. What is its pass rate and paired improvement over the origina
 Starting from the original candidate's 41 passes, add five and subtract three: 43/50 = 86%.
 Compared with the baseline's 39 passes, the improvement is 8 percentage points. There are now eleven
 wins (the original six plus five) and seven losses (the original four plus three). Save those
-individual outcomes and severity labels; aggregate rates alone cannot establish an acceptable
-release. This exercise reuses development cases, so it supplies no fresh confirmation.
+individual outcomes and severity labels. Aggregate rates alone cannot justify a release. This
+exercise reuses development cases, so it gives no fresh confirmation.
 
 </details>
 
 ### Core concepts and optional depth
 
 The first product needs a bounded task, a baseline, a trace, a checked output and independent
-evaluation. MCP, agent harness research and post-training are optional extensions after that path
-works. The [reference lab](../labs/README.md) provides a no-API starting point for reproducible
-evaluation; its synthetic outcomes do not measure a hosted language model.
+evaluation. MCP, agent harness research and post-training are optional extensions once that path
+works. The [reference lab](../labs/README.md) is a no-API starting point for reproducible
+evaluation. Its synthetic outcomes do not measure a hosted language model.
 
 **The model as a dependency.** Treat it like a database: a stochastic function with a latency
 budget, a token bill and a schema contract. Learn structured output, tool calls, streaming,
@@ -142,53 +144,53 @@ the truth. Validate values, references and tool arguments in application code. R
 identifier, sampling/effort settings, prompt version and API/SDK version for reproducible
 comparisons.
 
-Choose a current general-purpose model supporting your required interface as the baseline. Compare a
+As the baseline, use a current general-purpose model that supports your interface. Compare a
 smaller model and a stronger or reasoning model on your own tasks. Effort controls, reasoning
-visibility and billing differ by endpoint; raise the budget only when evaluations justify it.
-Self-reported model confidence is not a calibrated routing score. Validate a router against labelled
-outcomes and include escalation calls in the comparison.
+visibility and billing differ by endpoint, so raise the budget only when evaluations justify it.
+Self-reported model confidence is not a calibrated routing score. Validate a router against
+labelled outcomes, including escalation calls in the comparison.
 
 The [2026 linguistic-confidence study](https://arxiv.org/abs/2608.28382), whose authors report
-acceptance to EMNLP Findings, distinguishes useful score ordering from calibrated probabilities. For
-your router, measure error among accepted answers against the fraction accepted, then freeze its
-threshold before the release test. Recheck calibration after changing model, prompt or domain; token
-probabilities and agreement between sampled answers are also signals requiring validation.
+acceptance to EMNLP Findings, separates useful score ordering from calibrated probabilities. For
+your router, measure error among accepted answers against the fraction accepted, then freeze the
+threshold before the release test. Recheck calibration after changing model, prompt or domain.
+Token probabilities and agreement between sampled answers are also signals that need validating.
 
-**Economics you can measure.** Record input, cached input, output and separately exposed reasoning
-usage; retrieval, tool, storage and hosting charges; retries; and failed requests. Compare cold and
-warm caches. Cache minimums, lifetimes, write charges and batch discounts depend on provider and
-model. Check dated [pricing](https://platform.claude.com/docs/en/about-claude/pricing) and
-[cache documentation](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) rather
-than assuming a fixed saving applies to the whole bill. Reconcile usage fields with the provider's
-billing schema rather than summing every breakdown. Claude's
+**Economics you can measure.** Record input, cached input, output and separately reported
+reasoning usage, plus retrieval, tool, storage and hosting charges, retries and failed requests.
+Compare cold and warm caches. Cache minimums, lifetimes, write charges and batch discounts depend
+on provider and model. Check dated
+[pricing](https://platform.claude.com/docs/en/about-claude/pricing) and
+[cache documentation](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) instead
+of assuming a fixed saving applies to the whole bill. Match usage fields to the provider's billing
+schema instead of summing every breakdown. Claude's
 [thinking-cost guide](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
-explains that thinking usage is already included in billed output tokens; adding it again
+explains that thinking usage is already included in billed output tokens, so adding it again
 double-counts cost.
 
-If 1,000 attempted requests cost $8 and 800 pass task checks, the observed cost is $0.01 per
+If 1,000 attempted requests cost \$8 and 800 pass task checks, the observed cost is \$0.01 per
 successful request. Report cost per attempt and per success, p50/p95 latency and timeout rate. A
-cheaper model requiring frequent escalation can cost more for the task. Set a spending limit and a
-fallback before public deployment. Enforce request and aggregate application limits, including
-retries and concurrent calls; verify whether a provider budget setting stops requests or only
-alerts.
+cheaper model needing frequent escalation can cost more for the task. Set a spending limit and a
+fallback before public deployment. Enforce per-request and whole-application limits, counting
+retries and concurrent calls. Check whether a provider budget setting stops requests or only alerts.
 
 **Context engineering.** The context window is a budget you allocate, not a bucket you fill. Order
-it so the stable parts (system prompt, tool definitions, examples) come first and can be cached, and
-the dynamic parts (retrieved documents, history) come after. The harder problems are all about time:
-compacting history as it grows, deciding what persists across sessions, compressing errors before
-they enter the context, and noticing that a long context window does not mean the model attends
-usefully to all of it.
+it so the stable parts (system prompt, tool definitions, examples) come first and can be cached,
+and the dynamic parts (retrieved documents, history) come after. The harder problems are all about
+time: compacting history as it grows, deciding what persists across sessions, compressing errors
+before they enter the context, and noticing that a long context window does not mean the model
+attends usefully to all of it.
 
-Give sources identifiers and dates. Preserve unresolved tasks, decisions and source references when
-compacting history; test whether compaction drops a constraint or promotes an unverified claim to a
+Give sources identifiers and dates. When compacting history, keep unresolved tasks, decisions and
+source references. Test whether compaction drops a constraint or turns an unverified claim into a
 fact. Stored memory needs an owner, access permissions, update rules and deletion.
 [NoLiMa (2025)](https://arxiv.org/abs/2502.05167) tests long-context retrieval without easy literal
-matches, illustrating why a simple needle test can miss failures. Its results concern the tested
+matches, showing why a simple needle test can miss failures. Its results cover only the tested
 models and tasks. Include paraphrases, distant evidence and conflicting versions in your own tests.
 
-**Choose the information path.** Retrieval-augmented generation (RAG) fetches selected sources; long
-context supplies a larger body directly; search fetches external information when freshness or
-coverage requires it. Compare them rather than assuming every application needs a vector store.
+**Choose the information path.** Retrieval-augmented generation (RAG) fetches selected sources.
+Long context supplies a larger body directly. Search fetches outside information when freshness or
+coverage requires it. Compare them before assuming you need a vector store.
 
 | Situation                                                      | Start with                             | Measure before expanding                                             |
 | -------------------------------------------------------------- | -------------------------------------- | -------------------------------------------------------------------- |
@@ -199,64 +201,74 @@ coverage requires it. Compare them rather than assuming every application needs 
 | Questions need different information paths                     | Tested routing between paths           | Router errors and total quality/cost, including fallbacks            |
 
 The [EMNLP 2024 RAG/long-context study](https://aclanthology.org/2024.emnlp-industry.66/) compares
-both and hybrid routing. It supports a task-specific comparison, not a ranking of 2026 models. Hold
-the permitted corpus, source versions, query set and answer criteria constant.
+both, plus hybrid routing. It supports a task-specific comparison, not a ranking of 2026 models.
+Hold the permitted corpus, source versions, query set and answer criteria constant.
 
 **Retrieval that you can diagnose.** Start with keyword and dense baselines. Choose embeddings by
-language, domain, length, deployment cost and licensing; follow their query-prefix and similarity
-conventions. Changing the embedding model usually requires re-embedding the index.
+language, domain, length, deployment cost and licensing, and follow their query-prefix and
+similarity conventions. Changing the embedding model usually means re-embedding the index.
 [MMTEB (2025)](https://arxiv.org/abs/2502.13595) broadens multilingual evaluation, but your own
-domain queries still decide. Chunk around document structure; retain source/version/parent IDs;
-deduplicate chunks. Apply user access before retrieval and verify it again before returning sources,
-including caches. A cross-encoder reranker scores retrieved query-document pairs more expensively
-and cannot recover a missing candidate. See the official
+domain queries should decide. Chunk around document structure, keep source/version/parent IDs and
+deduplicate chunks. Apply user access before retrieval and check it again before returning sources,
+including caches. A cross-encoder reranker rescores retrieved query-document pairs at higher
+cost and cannot recover a missing candidate. See the official
 [retrieve-then-rerank example](https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html).
 
 Deploy the query encoder, document embeddings, chunk/source manifest and retrieval configuration as
-a compatible version. A new query encoder against an old index can silently change results. Test
-source updates, deletions and permission revocations as well as ingestion; a cached answer must not
-restore access to a source the user can no longer read.
+one compatible version. A new query encoder against an old index can silently change results.
+Test source updates, deletions and permission revocations as well as ingestion. A cached answer
+must never restore access to a source the user can no longer read.
 
 The most important habit: **measure retrieval separately from generation**. If you only measure
 end-to-end, you cannot tell whether to fix the retriever or the prompt, and you can lose a week
 rewording a prompt when the document was never fetched. Label relevant source spans and measure
-recall at k, ordering and latency; count source families rather than duplicate chunks as successes.
-Then score answer correctness, whether cited passages support claims, and suitable abstention for
-missing/conflicting evidence. Citation presence alone is not support. Twenty query families are a
-debugging exercise, not a precise production quality estimate.
+recall at k, ordering and latency. Count source families, not duplicate chunks, as successes. Then
+score answer correctness, whether cited passages support claims, and sensible abstention on missing
+or conflicting evidence. A citation's presence alone is not support. Twenty query
+families are a debugging exercise, not a precise production quality estimate.
 
-**Evaluation as a development loop.** Establish a small task specification first, then improve it
-using real development traces. An efficient order is:
+**Extracting fields from documents.** Appeals, invoices and forms often arrive as PDFs or scans.
+Extracted text (a PDF's text layer, or OCR for scans) is cheap to send and easy to inspect, but can
+lose tables, checkboxes, layout and handwriting. A vision-capable model reading page images keeps
+layout, has its own cost and can still misread. Compare both on the same labelled pages. Return
+each field with its evidence (page number and source span or region), or an explicit "not present"
+instead of a guess, so a reviewer can check it and code can reject unsupported values. Split the
+labelled set by document. Normalise dates, amounts and IDs, then report per-field accuracy,
+whole-record correctness and invalid outputs, sliced by scanned, rotated and multi-page documents.
+Check formats and cross-field rules in application code.
 
-1. Write representative cases and acceptance criteria; reserve independent release cases.
+**Evaluation as a development loop.** Write a small task specification first, then improve it
+using real development traces. A practical order is:
+
+1. Write representative cases and acceptance criteria, and reserve independent release cases.
 2. Build the smallest complete version and collect development traces.
 3. Read failures, write free-text notes, and group recurring failure modes.
 4. Add deterministic assertions where outputs or final state can be checked directly.
-5. Add a judge only for criteria needing interpretation; ask for evidence and a rubric decision.
+5. Add a judge only for criteria needing interpretation. Ask it for evidence and a rubric decision.
 6. Validate the judge on separately labelled examples before relying on its measurements.
-7. Put regression cases in CI; fix one failure mode and compare on development cases.
-8. Run the independent release evaluation after fixing the candidate and decision thresholds.
+7. Put regression cases in CI. Fix one failure mode and compare on development cases.
+8. Freeze the candidate and decision thresholds, then run the independent release evaluation.
 
 **Keep test answers out of development.** Split by source document, customer/session, time or
 question family as appropriate, then check duplicates and paraphrases across splits. Split before
-generating synthetic variants. A RAG question may legitimately refer to an accessible source
-document; its expected answer and grading notes must remain inaccessible to the application and its
-tools. Prompt-tuned cases are development cases. A CI regression set catches known failures;
-repeated optimisation against it cannot provide an independent release claim. Periodically acquire a
-fresh, independently labelled holdout.
+generating synthetic variants. A RAG question may rightly refer to a readable source, but its
+expected answer and grading notes must stay hidden from the application and its tools.
+Prompt-tuned cases are development cases. A CI regression set catches known failures, but repeated
+optimisation against it rules out an independent release claim. Periodically collect a fresh,
+independently labelled holdout.
 
-Web agents can retrieve leaked benchmark answers during evaluation even when they were absent from
+Web agents can find leaked benchmark answers during evaluation, even ones absent from
 training. Anthropic's
 [March 2026 BrowseComp investigation](https://www.anthropic.com/engineering/eval-awareness-browsecomp)
-documents leaked answers and evaluation-aware answer-key searches in its tested setup. Audit
-provenance, isolate grading assets and use fresh private cases. Public benchmark scores are
-supporting evidence, not your release test.
+documents leaked answers and answer-key searches by an evaluation-aware model in its tested
+setup. Audit provenance, isolate grading assets and use fresh private cases. Public benchmark
+scores are supporting evidence, not your release test.
 
-Use binary criteria for binary requirements; use a defined graded rubric when quality has degrees,
-and check human-rater agreement. Choose a viewer that makes inputs, sources, calls and outputs easy
-to inspect. Read the task/trial/grader sections of
+Use binary criteria for binary requirements, and a defined graded rubric when quality has degrees.
+Check human-rater agreement. Choose a viewer that makes inputs, sources, calls and outputs
+easy to inspect. Read the task, trial and grader sections of
 [Demystifying evals for AI agents (January 2026)](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents).
-Its examples describe Anthropic's experience rather than universal performance guarantees.
+Its examples describe Anthropic's experience, not universal guarantees.
 
 | What you evaluate         | Evidence to save                                                          |
 | ------------------------- | ------------------------------------------------------------------------- |
@@ -267,19 +279,20 @@ Its examples describe Anthropic's experience rather than universal performance g
 | Reliability               | Independent repeated trials, perturbations, recovery and failure severity |
 | Operations                | Cost per attempt/success, p50/p95 latency, deadlines and retry counts     |
 
-Blind reviewers to candidate identity where practical; test answer-order and verbosity sensitivity.
-Overall agreement can hide a judge passing nearly everything. If failure is the positive label,
-failure sensitivity is `TP/(TP+FN)` and false-alarm rate is `FP/(FP+TN)`. Missing labels and grader
-errors are explicit outcomes, not passes. Reset files, databases and tools between independent agent
-trials; disclose retry/attempt budgets. Report sample size, uncertainty and meaningful slices;
-respect task/session grouping rather than treating correlated trials as new users.
+Where practical, blind reviewers to candidate identity. Test answer-order and verbosity
+sensitivity. Overall agreement can hide a judge that passes nearly everything. If failure is the
+positive label, failure sensitivity is `TP/(TP+FN)` and false-alarm rate is `FP/(FP+TN)`. Missing
+labels and grader errors are explicit outcomes, not passes. Reset files, databases and tools
+between independent agent trials, and disclose retry/attempt budgets. Report sample size,
+uncertainty and meaningful slices. Respect task/session grouping instead of treating correlated
+trials as new users.
 [Towards a Science of AI Agent Reliability (ICML 2026)](https://proceedings.mlr.press/v306/rabanser26a.html)
-organises reliability around consistency, robustness, predictability and safety: one average success
-score is insufficient for an action-capable system.
+organises reliability around consistency, robustness, predictability and safety. One average
+success score is insufficient for an action-capable system.
 
-**Agents and workflows.** Start with a fixed workflow when the steps are known. Give an agent
-discretion where its next step depends on observed evidence and you can verify progress and
-constrain effects. Compare the flexibility with the added calls and failure modes.
+**Agents and workflows.** When the steps are known, start with a fixed workflow. Give an agent
+discretion where its next step depends on what it observes and you can verify progress and
+constrain effects. Weigh that flexibility against extra calls and failure modes.
 
 | Pattern                                    | Use when                                                      |
 | ------------------------------------------ | ------------------------------------------------------------- |
@@ -291,60 +304,67 @@ constrain effects. Compare the flexibility with the added calls and failure mode
 | Generate, critique, revise                 | There are clear quality criteria                              |
 | A true agent                               | You cannot hardcode the path, but you can verify progress     |
 
-Build one small loop or state machine before choosing a framework; there is no production-ready
-line-count target. Make control flow explicit: allowed tools, argument validation, deadline,
+Build one small loop or state machine before choosing a framework. No line count makes it
+production-ready. Make control flow explicit: allowed tools, argument validation, deadline,
 token/cost/step limits, bounded retries, cancellation, checkpoints and stop/handoff conditions. Use
-idempotency keys and reconcile actual service state before retrying writes. A timeout does not tell
+idempotency keys and check the real service state before retrying writes. A timeout does not tell
 you whether a remote action happened. Multi-agent designs also need bounded fan-out, shared-state
-ownership and evidence reconciliation; compare with a single-worker baseline.
+ownership and a way to reconcile findings. Compare with a single-worker baseline.
 
-For a write-capable extension, persist the validated action and its status before dispatch; use the
-same business idempotency key on retries. Bind any user confirmation to the exact action, arguments,
-recipient and validity interval. If those change, obtain a new confirmation where the product
-requires one. Recheck authorization at execution; a saved approval is not a permanent access grant.
-Chapter 6 covers durable delivery and recovery.
+For a write-capable extension, save the validated action and its status before dispatch, and reuse
+the same business idempotency key on retries. Tie any user confirmation to the exact action,
+arguments, recipient and time window. If those change, ask again where the product requires
+confirmation. Recheck authorisation at execution, because a saved approval is not a permanent
+access grant. Chapter 6 covers durable delivery and recovery.
 
-Test tool failure and context-compaction recovery. The
-[September 2026 Mid-Harness preprint](https://arxiv.org/abs/2609.39982) investigates sampling and
-verifying candidate actions before executing one in terminal-agent benchmarks. After a bounded
-baseline, optionally compare action verification with extra generation at the same total budget. Its
-results do not establish verifier reliability for your actions; application authorization still
+Test recovery from tool failure and context compaction. The
+[September 2026 Mid-Harness preprint](https://arxiv.org/abs/2609.39982) studies sampling and
+verifying candidate actions before running one, in terminal-agent benchmarks. After a bounded
+baseline, optionally compare action verification with extra generation at the same total budget.
+Its results do not prove a verifier reliable for your actions, and application authorisation still
 decides whether an action may run.
 
 **Access and tool boundaries belong in the first product.** Authenticate users when documents or
 actions are private, and apply their document permissions before retrieval. Treat retrieved text and
-tool output as untrusted input. Validate tool arguments and enforce permissions in application code;
-the model does not grant its own access. Add timeouts, bounded retries, idempotency for writes, and
-a confirmation step for consequential actions. Redact secrets and personal data from traces. Test
+tool output as untrusted input. Validate tool arguments and enforce permissions in application code.
+The model does not grant its own access. Add timeouts, bounded retries, idempotency for writes and a
+confirmation step for consequential actions. Redact secrets and personal data from traces. Test
 cross-user retrieval and documents that try to override instructions. The
-[OWASP prompt-injection reference](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) explains
-the threat and layered mitigations; the [AgentDojo benchmark](https://arxiv.org/abs/2406.13352)
-provides tool-agent attack and defence examples. Use harmless canary data for exfiltration tests.
-Downloaded skills are also untrusted. Use narrowly scoped service credentials, network/file
-allowlists and isolated execution where relevant. Keep grading secrets and other users' data outside
-the tool environment, recheck access at execution, and define trace retention. A public, read-only
-demo can keep controls small because its data and permitted effects are small.
+[OWASP prompt-injection reference](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) covers
+the threat and layered mitigations, and the [AgentDojo benchmark](https://arxiv.org/abs/2406.13352)
+gives tool-agent attack and defence examples. Use harmless canary data for exfiltration tests.
+Where relevant, use narrowly scoped service credentials,
+network/file allowlists and isolated execution. Keep grading secrets and other users' data outside
+the tool environment, recheck access at execution, and set a trace-retention period. A public,
+read-only demo can keep controls small because its data and permitted effects are small.
 
-Verify the evaluation boundary itself: use fake credentials and harmless services, test outbound
+**Check outputs as well as inputs.** Injection defences guard what enters the model. Output
+guardrails check what leaves it, before a user or tool receives it. Validate schemas and citations.
+Block or reroute answers exposing secrets, personal data or another user's documents. Add a
+moderation or policy classifier when the product has a content policy. A guardrail is another
+classifier, with misses and false blocks. Measure both on labelled examples, including the
+injection cases above, and keep application permissions as the enforcement layer.
+
+Check the evaluation boundary itself: use fake credentials and harmless services, test outbound
 access restrictions, and keep production secrets outside the harness. Anthropic's
 [August 2026 incident account](https://www.anthropic.com/news/improving-alignment-security-efforts)
-reports evaluation-environment misconfigurations that allowed unauthorized access. This is a vendor
-incident report about intentionally less-protected cyber evaluations, not an estimate of your
+reports misconfigured evaluation environments that allowed unauthorised access. This vendor
+incident report concerns deliberately less-protected cyber evaluations and does not estimate your
 application's failure rate. Test safe stopping when a task or tool cannot be completed.
 
 **MCP**, the Model Context Protocol, is an open standard connecting clients to tools and data. Learn
 the specification revision your client and server implement. The
 [2026-07-28 changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
-introduces a stateless core without the earlier initialization handshake or protocol sessions, and
+introduces a stateless core without the earlier initialisation handshake or protocol sessions, and
 adds multi-round-trip requests. Stateful business operations use explicit handles whose access the
-server must enforce. Roots, sampling and logging are deprecated, still functional during their
-deprecation window. Earlier-version tutorials may remain useful for those versions; test
-compatibility rather than assuming it.
+server must enforce. Roots, sampling and logging are deprecated but still work during their
+deprecation window. Earlier-version tutorials can still help, but test compatibility rather than
+assuming it.
 
 Learn request/version metadata, discovery, schemas, results/errors and cancellation. Transport
-retries are not exactly-once business transactions. For remote servers, validate token audience,
-avoid token passthrough, protect OAuth redirects and restrict outbound fetches against SSRF; follow
-the
+retries are not exactly-once business transactions. For remote servers, validate token
+audience, avoid token passthrough, protect OAuth redirects and restrict outbound fetches against
+SSRF. Follow the
 [official MCP security practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices).
 Installing a server does not grant access to every connected user.
 
@@ -354,11 +374,11 @@ each skill's name and description at first, and loads the rest when a task calls
 context engineering in a reusable form. The format began at Anthropic, is now an
 [open standard](https://agentskills.io/home), and coding agents from several vendors support it.
 Writing one skill for a repeated task lets you compare loading on demand with inline instructions.
-Read its scripts/references and enforce normal tool permissions. Loading a skill does not raise its
-trust level.
+Read its scripts and references, and enforce normal tool permissions. Loading a skill does not raise
+its trust.
 
-**Fine-tuning and RL when the error warrants them.** There is no fixed requirement to add RAG before
-training. Match the intervention to the failure and available evidence.
+**Fine-tuning and RL when the error warrants them.** You do not have to add RAG before training.
+Match the fix to the failure and available evidence.
 
 | Need                                                          | First comparison                                   | Evidence to justify training                                          |
 | ------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------- |
@@ -369,29 +389,30 @@ training. Match the intervention to the failure and available evidence.
 | Verifiable outcomes such as unit-tested code or bounded maths | Optional RL, such as GRPO, with a validated reward | Reward integrity, task coverage, compute budget, reward-hacking tests |
 
 The [DeepSeek-R1 paper](https://arxiv.org/abs/2501.12948) studies reasoning post-training and
-distillation; it is not a prescription to run RL for a document assistant. The official
-[TRL GRPO documentation](https://huggingface.co/docs/trl/grpo_trainer) exposes reward and training
-controls for an optional experiment. Validate reward against human/task outcomes; increased reward
-alone does not establish quality.
+distillation. It does not prescribe RL for a document assistant. The official
+[TRL GRPO documentation](https://huggingface.co/docs/trl/grpo_trainer) covers reward and training
+controls for an optional experiment. Validate reward against human or task outcomes. A rising
+reward alone does not show better quality.
 
-Split by document/customer/task family and time where appropriate, deduplicate before training, and
-keep teacher-generated examples and evaluation labels independent. Verify synthetic labels, record
-provenance and permitted data use, and compare at the same deployment budget. Quantised adapter
-tuning reduces some memory costs; sequence length, batches, optimizer state and serving context also
-matter. If training adds no useful benefit, retain the baseline and report that result.
+Split by document/customer/task family and time where appropriate, and deduplicate before
+training. Keep teacher-generated examples independent of evaluation labels. Check synthetic labels,
+record provenance and permitted data use, and compare at the same deployment budget. Quantised
+adapter tuning reduces some memory costs, but sequence length, batches, optimiser state and serving
+context also matter. If training adds no useful benefit, keep the baseline and report that result.
 
 ## Resources
 
-All 50 resources, with notes and a targeted research section, are in
-**[resources/](resources/README.md)**. Optional resource study budgets are not added to the
-chapter's 100 hours. Start with selected lessons and sections:
+All 49 resources, with notes and a targeted research section, are in
+**[resources/](resources/README.md)**. The chapter's 100 hours do not include study time for
+optional resources. Start with selected lessons and sections:
 
 - [Deep Dive into LLMs like ChatGPT](https://www.youtube.com/watch?v=7xTGNNLPyMI) — Andrej Karpathy.
   A free video, 4 hours. Watch it in week 23 for the map.
 - [Building with the Claude API (Claude Academy)](https://academy.claude.com/courses/building-with-the-claude-api)
   — Anthropic education team. A free course, 9 hours.
 - [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/) — Hamel Husain. A free article,
-  1 hour. Then the Evals FAQ by the same authors.
+  1 hour. Then the [Evals FAQ](https://hamel.dev/blog/posts/evals-faq/) by Hamel Husain and Shreya
+  Shankar.
 - [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) —
   Erik Schluntz & Barry Zhang. A free article, 1 hour.
 - [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
@@ -399,29 +420,31 @@ chapter's 100 hours. Start with selected lessons and sections:
 
 ## What to build
 
-**Warm up in about three hours.** Put a pretrained model or read-only API function behind a URL
-using non-sensitive data. Measure one request and one failure; reuse this deployment path.
+**Warm up in about three hours.** Put a pretrained model or read-only API function behind a URL,
+using non-sensitive data. Measure one request and one failure, and reuse this deployment path.
 
-**Next, the evaluation-first application.** Pick a narrow task you personally care about and can
-judge: extracting fields from your own documents, triaging your own issue tracker, drafting
-first-pass replies. Follow the evaluation loop above. Retrieval is optional when the input already
-contains all required information.
+**Next, the evaluation-first application.** Pick a narrow task you care about and can judge,
+ideally on documents from your Chapter 2 domain, such as extracting fields from its appeals or
+forms. If the domain has no suitable documents, triage your own issue tracker or draft first-pass
+replies. Follow the evaluation loop above. Skip retrieval when the input already holds
+everything needed.
 
-The output is a repository where the evaluation suite predates optimisation, with evaluation
-history, failure examples, the development/release split and a measured operating-cost table.
+The result is a repository whose evaluation suite predates optimisation, with evaluation history,
+failure examples, the development/release split and a measured operating-cost table.
 
 Then re-scope it into a small product with a public URL, following the
 [two-week plan below](#your-first-ai-product-a-two-week-plan).
 
 ## Your first AI product: a two-week plan
 
-One user, one job, one screen, one main quality metric plus cost, latency and access checks.
-Allocate about 20 hours across these sessions, reusing weeks 23–26 work. Reduce a task requiring
+One user, one job, one screen, one main quality metric, plus cost, latency and access checks.
+Spread about 20 hours across these sessions, reusing weeks 23–26 work. Cut down any task needing
 complex integration or a custom authentication system before this sprint.
 
 **Write the non-goals on day one.** No payments, autonomous writes, custom vector store, mobile app
-or model training. Use public/non-sensitive data, or platform authentication with verified per-user
-access for a private application. Optional agents and tuning experiments come later.
+or model training. Use public/non-sensitive data, or platform authentication with verified
+per-user access for a private application. Optional agents and tuning experiments come later, in
+weeks 29–31.
 
 | Day | What you do                                                                                    | What exists at the end                                              |
 | --- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
@@ -441,18 +464,18 @@ access for a private application. Optional agents and tuning experiments come la
 | 13  | Validate a judge if needed; run regression command; freeze candidate and release criteria       | Reproducible local checks and declared decision rules               |
 | 14  | Run reserved release cases; save demo, costs and known failures                                | Release or defer decision supported by results                      |
 
-Use deterministic checks for objective tasks; a model judge is optional. Run selected repeated
-trials for stochastic/tool-heavy cases within the budget and disclose the count. Do not rerun a
-failed release until it happens to pass. Investigate on development data and acquire fresh release
-evidence if changes have been tuned to the old holdout.
+Use deterministic checks for objective tasks. A model judge is optional. Run some repeated
+trials for stochastic or tool-heavy cases within budget, and disclose the count. If a release run
+fails, investigate on development data rather than rerunning it until it happens to pass. If your
+changes were tuned to the old holdout, collect fresh release cases.
 
 **The Chapter 5 minimum is explicit:** a read-only, narrowly scoped interface, a repeatable local
-regression command, independent quality evidence, known failures and bounds on any paid requests.
-Use synthetic/public inputs or verified platform authentication for private inputs. A static demo
-with recorded or deterministic responses is a valid first deployment when labeled accurately; it
-must not claim to call a live model. If you add a paid API, keep its credential on the server,
-validate requests, bound input/output, enforce request and spending limits and fail safely. These
-controls are required for that deployment, even before the later hardening chapter.
+regression command, independent quality evidence, known failures and limits on any paid requests.
+Use synthetic/public inputs, or verified platform authentication for private ones. A static demo
+with recorded or deterministic responses is a valid first deployment if it is labelled accurately
+and does not claim to call a live model. If you add a paid API, keep its credential on the server,
+validate requests, cap input and output, enforce request and spending limits, and fail safely.
+These controls apply now, before the later hardening chapter.
 
 | Complete in Chapter 5 | Extend in Chapter 6 |
 | --- | --- |
@@ -462,43 +485,43 @@ controls are required for that deployment, even before the later hardening chapt
 | Independent release cases | Versioned release process and outcome-feedback loop |
 
 [Chapter 6](../06-production/README.md) takes this exact application as its starting point. Its
-container and CI work is not an extra Chapter 5 completion gate. Check current hosting eligibility
-and charges before choosing a route.
+container and CI work is not needed to complete Chapter 5. Check current hosting eligibility and
+charges before choosing a route.
 [Hugging Face Spaces](https://huggingface.co/docs/hub/spaces-overview) still offers free Static
-Spaces; creating Gradio/Docker Spaces has account-plan requirements and some ZeroGPU exceptions.
-Free CPU hardware and permission to create a Space are separate issues.
-[Modal pricing](https://modal.com/pricing) distinguishes compute credits from Shared Endpoints,
-whose per-token charges are not covered by those credits. Neither route guarantees free model API
-calls or a free running demo.
+Spaces. Creating Gradio or Docker Spaces has account-plan requirements, with some ZeroGPU
+exceptions. Free CPU hardware and permission to create a Space are separate questions.
+[Modal pricing](https://modal.com/pricing) separates compute credits from Shared Endpoints, whose
+per-token charges those credits do not cover. Neither route guarantees free model API calls or a
+free running demo.
 
-Completion means a usable URL or documented local-demo fallback, an honest independent quality
-report, a repeatable local regression command, the access and spending controls relevant to that
-deployment, known failures, a cost table and feedback from at least one other user. A
-measured lack of improvement is a valid result; release claims need independent evidence.
+Completion means a usable URL or documented local-demo fallback, a candid independent quality
+report, a repeatable local regression command, the access and spending controls that deployment
+needs, known failures, a cost table and feedback from at least one other user. A measured lack of
+improvement is a valid result. Release claims need independent evidence.
 
 After release, model/SDK upgrades, prompt changes and corpus refreshes are separate versioned
-changes. Recheck retrieval coverage, access filtering, task quality and cost before rollout; retain
-the compatible previous configuration and index for rollback, subject to current permissions and
-deletions. A rollback must not restore revoked access or withdrawn sources. Observe sampled real
-failures and user corrections under the trace-retention policy. Chapter 6 develops this operating
-loop. If the sprint's release results guide later changes, acquire fresh release cases for week 32
-and keep the earlier cases for regression testing.
+changes. Recheck retrieval coverage, access filtering, task quality and cost before rollout. Keep
+the previous compatible configuration and index for rollback, subject to current permissions and
+deletions. A rollback must never restore revoked access or withdrawn sources. Review sampled real
+failures and user corrections under your trace-retention policy. Chapter 6 develops this operating
+loop. If the sprint's release results shape later changes, collect fresh release cases for week 32
+and keep the earlier ones for regression testing.
 
 ## Before you move on
 
 - You can explain why error analysis comes before evaluation tooling.
-- You can validate deterministic graders; if you use a model judge, you can show its confusion
+- You can validate deterministic graders. If you use a model judge, you can show its confusion
   matrix, failure sensitivity and false-alarm rate.
-- You can distinguish CI regression cases from an independent release evaluation.
-- You can demonstrate a denied tool action, timeout and tested fallback.
+- You can tell CI regression cases apart from an independent release evaluation.
+- You can show a denied tool action, timeout and tested fallback.
 - You can state cost per attempt/success and the limits of the quality estimate.
 
 ## A few things worth knowing
 
 - **Tutorial code ages.** Check repository status, dependencies, available models and endpoint
-  versions before reproducing it; preserve the conceptual lesson while updating executable details.
-- **Frameworks are a choice.** They can help persistence, tracing and integration; a small explicit
-  workflow can be easier to inspect. Compare what your application actually needs.
+  versions before reproducing it. Keep the lesson and update the code details.
+- **Frameworks are a choice.** They can help with persistence, tracing and integration. A small
+  explicit workflow can be easier to inspect. Compare what your application actually needs.
 - **Model names age quickly.** Everything specific in this chapter will be superseded. Tokenisation,
   attention, cache economics, retrieval, evaluation and context management will not, so that is
   where the study time is best spent.
