@@ -2,6 +2,8 @@
 
 **A working developer's path into AI and machine learning.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23815936.svg)](https://doi.org/10.5281/zenodo.23815936)
+
 **The short version.** Eight core chapters take you from shipping software to shipping AI systems in
 about 450 hours. A ninth applied chapter covers **offer recommendation, price recommendation and
 churn**, with model choices and a full business decision workflow. You build on **one thread** —
@@ -142,8 +144,9 @@ The reading budgets are planning estimates, not measured completion times or job
 
 Written by **Santosh Shinde**. The [author’s note and AI-assistance disclosure](content/reader-guide.md#a-note-from-the-author)
 explain the motivation and process. Corrections backed by primary sources and reproducible
-examples are welcome (see [contributing](CONTRIBUTING.md)). To cite the book, use
-[`CITATION.cff`](CITATION.cff) or GitHub's "Cite this repository" button.
+examples are welcome (see [contributing](CONTRIBUTING.md)). To cite the book, use its DOI,
+[10.5281/zenodo.23815936](https://doi.org/10.5281/zenodo.23815936), which always points to the
+latest edition, or GitHub's "Cite this repository" button. Every edition is archived on Zenodo.
 
 **Licence.** The book's text, illustrations and lab reports are released under
 [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE). You may share, translate and
