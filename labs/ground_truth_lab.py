@@ -3,6 +3,7 @@
 
 No customer data, network access, trained foundation model, or paid API is used.
 Run ``python3 labs/ground_truth_lab.py all --output labs/output``.
+Maintainers rebuild the checked-in examples with ``python3 labs/ground_truth_lab.py reference``.
 """
 
 from __future__ import annotations
@@ -14,13 +15,14 @@ import json
 import math
 import random
 import sqlite3
+import tempfile
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from statistics import mean
 from typing import Any
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 SEED = 42
 FEATURES = ("purchases_30d", "support_30d", "recency_days")
 ORIGIN = datetime(2025, 1, 1, tzinfo=timezone.utc)
@@ -28,6 +30,32 @@ COHORTS = {
     "train": {"start": 0, "days": 30, "per_day": 10, "cutoff": 63},
     "calibration": {"start": 65, "days": 15, "per_day": 10, "cutoff": 119},
     "test": {"start": 120, "days": 15, "per_day": 10, "cutoff": 175},
+}
+TABLES = ("events.csv", "snapshots.csv", "outcomes.csv", "assignments.csv", "experiment_outcomes.csv")
+DOCUMENTS = {
+    "returns-policy.md": "# Simulated returns policy\n\nProducts may be returned within 30 days. This is fictional teaching material.\n",
+    "contact-policy.md": "# Simulated contact policy\n\nContact only eligible consenting accounts. Reserve four units per contact. Do not contact an account twice in this batch.\n",
+    "price-policy.md": "# Simulated price policy\n\nThe approved teaching price grid is 20, 25 and 30. Unit cost is 10. Amounts are fictional currency units.\n",
+}
+# The manifest must list exactly these inputs. A missing entry is not an unchecked file.
+SOURCE_FILES = frozenset([f"data/{name}" for name in TABLES] + [f"data/documents/{name}" for name in DOCUMENTS])
+# Known simulator mechanism: (no-contact churn risk, retention gain from a delivered contact).
+SEGMENTS = {"high_risk": (0.65, 0.02), "saveable": (0.35, 0.18), "stable": (0.10, 0.01)}
+ASSIGNMENT_PROBABILITY = 0.5
+DELIVERY_PROBABILITY = 0.9
+RETAINED_VALUE = 100
+CONTACT_COST = 4
+# Experiment rules from 09-business-machine-learning/delivery-plan.md: diagnose sample-ratio
+# mismatch before reading lift; two-sided 5% test, 80% power, normal approximation.
+SRM_ALPHA = 0.001
+Z_ALPHA, Z_POWER = 1.96, 0.84
+# Flat, checked-in reference name -> path inside an ordinary lab run.
+REFERENCE_FILES = {
+    "calibration.svg": "figures/calibration.svg", "pricing.svg": "figures/pricing.svg",
+    "data-card.md": "reports/data-card.md", "evaluation.json": "reports/evaluation.json",
+    "evaluation.md": "reports/evaluation.md", "incident-report.md": "reports/incident-report.md",
+    "model-card.md": "reports/model-card.md", "model.json": "reports/model.json",
+    "price-comparison.csv": "reports/price-comparison.csv", "release-manifest.json": "reports/release-manifest.json",
 }
 
 
@@ -146,27 +174,21 @@ def generate(output: Path, seed: int = SEED) -> dict[str, Any]:
                 })
     assignments, experiment_outcomes = [], []
     for number in range(800):
-        segment = ["high_risk", "saveable", "stable"][number % 3]
-        risk, effect = {"high_risk": (0.65, 0.02), "saveable": (0.35, 0.18), "stable": (0.10, 0.01)}[segment]
-        assigned = int(rng.random() < 0.5)
-        delivered = int(assigned == 1 and rng.random() < 0.9)
+        segment = list(SEGMENTS)[number % 3]
+        risk, effect = SEGMENTS[segment]
+        assigned = int(rng.random() < ASSIGNMENT_PROBABILITY)
+        delivered = int(assigned == 1 and rng.random() < DELIVERY_PROBABILITY)
         retained = int(rng.random() < 1 - risk + delivered * effect)
         identity = f"experiment-{number:04d}"
         assignments.append({"decision_id": identity, "customer_id": f"trial-{number:04d}",
                             "segment": segment, "assigned_contact": assigned,
-                            "assignment_probability": 0.5, "delivered": delivered})
-        experiment_outcomes.append({"decision_id": identity, "coverage_complete": 1,
-                                    "retained": retained, "net_contribution": retained * 100 - delivered * 4})
+                            "assignment_probability": ASSIGNMENT_PROBABILITY, "delivered": delivered})
+        experiment_outcomes.append({"decision_id": identity, "coverage_complete": 1, "retained": retained,
+                                    "net_contribution": retained * RETAINED_VALUE - delivered * CONTACT_COST})
     data = output / "data"
-    for name, rows in [("events.csv", events), ("snapshots.csv", snapshots), ("outcomes.csv", outcomes),
-                       ("assignments.csv", assignments), ("experiment_outcomes.csv", experiment_outcomes)]:
+    for name, rows in zip(TABLES, [events, snapshots, outcomes, assignments, experiment_outcomes]):
         write_csv(data / name, rows)
-    documents = {
-        "returns-policy.md": "# Simulated returns policy\n\nProducts may be returned within 30 days. This is fictional teaching material.\n",
-        "contact-policy.md": "# Simulated contact policy\n\nContact only eligible consenting accounts. Reserve four units per contact. Do not contact an account twice in this batch.\n",
-        "price-policy.md": "# Simulated price policy\n\nThe approved teaching price grid is 20, 25 and 30. Unit cost is 10. Amounts are fictional currency units.\n",
-    }
-    for name, content in documents.items():
+    for name, content in DOCUMENTS.items():
         path = data / "documents" / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
@@ -187,10 +209,18 @@ def load_rows(output: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
     if manifest["lab_version"] != VERSION:
         raise ValueError("Regenerate data using this lab version")
+    for name in manifest["files"]:
+        if (output / name).resolve().is_relative_to(output.resolve()) is False:
+            raise ValueError("Manifest path escapes output directory")
+    # A deleted manifest entry would otherwise skip that file's checksum silently.
+    listed = set(manifest["files"])
+    if listed != SOURCE_FILES:
+        missing = ", ".join(sorted(SOURCE_FILES - listed)) or "none"
+        unexpected = ", ".join(sorted(listed - SOURCE_FILES)) or "none"
+        raise ValueError(f"Manifest must list exactly the lab's source files (missing: {missing}; "
+                         f"unexpected: {unexpected}); regenerate or document a new data version")
     for name, expected in manifest["files"].items():
         path = output / name
-        if path.resolve().is_relative_to(output.resolve()) is False:
-            raise ValueError("Manifest path escapes output directory")
         if digest(path) != expected:
             raise ValueError(f"Source checksum mismatch: {name}; regenerate or document a new data version")
     events = defaultdict(list)
@@ -252,7 +282,9 @@ def fit_logistic(vectors: list[list[float]], labels: list[int], iterations: int 
         gradients = [0.0] * len(weights)
         for vector, label in zip(vectors, labels):
             extended = [1.0, *vector]
-            error = sigmoid(sum(w * x for w, x in zip(weights, extended))) - label
+            # fsum is correctly rounded on every supported Python; built-in float sum
+            # changed in 3.12, which would alter the last bits of the reference model.
+            error = sigmoid(math.fsum(w * x for w, x in zip(weights, extended))) - label
             for index, value in enumerate(extended):
                 gradients[index] += error * value
         for index in range(len(weights)):
@@ -286,7 +318,7 @@ def fit_model(train: list[dict[str, Any]], calibration: list[dict[str, Any]]) ->
 
 
 def model_logit(model: dict[str, Any], row: dict[str, Any]) -> float:
-    return model["weights"][0] + sum(
+    return model["weights"][0] + math.fsum(
         weight * (row[name] - center) / scale
         for name, center, scale, weight in zip(model["features"], model["centers"], model["scales"], model["weights"][1:])
     )
@@ -357,6 +389,58 @@ def paired_bootstrap(differences: list[float], seed: int = SEED, draws: int = 10
             "resampling_unit": "unique synthetic customer; paired predictions"}
 
 
+def release_gate(interval: dict[str, Any], baseline: dict[str, Any], candidate: dict[str, Any]) -> str:
+    """Predeclared probability-quality gate; anything short of a clear gain keeps the baseline."""
+    # An uncertain gain, a worse Brier score and a regression (interval above zero) all defer.
+    if interval["upper_95"] < -0.01 and candidate["brier"] <= baseline["brier"]:
+        return "pass_simulated_gate"
+    return "defer"
+
+
+def sample_ratio_check(arm_sizes: dict[int, int], probability: float = ASSIGNMENT_PROBABILITY,
+                       alpha: float = SRM_ALPHA) -> dict[str, Any]:
+    """Chi-square goodness of fit of assigned arm sizes against the designed allocation."""
+    total = sum(arm_sizes.values())
+    if total == 0 or not 0 < probability < 1 or set(arm_sizes) - {0, 1}:
+        raise ValueError("A sample-ratio check needs control/contact counts and a designed probability")
+    expected = {0: total * (1 - probability), 1: total * probability}
+    statistic = math.fsum((arm_sizes.get(arm, 0) - expected[arm]) ** 2 / expected[arm] for arm in (0, 1))
+    # One degree of freedom: P(chi-square > x) = erfc(sqrt(x / 2)). Six significant
+    # figures are ample for an alarm threshold and keep the report platform-stable.
+    p_value = float(f"{math.erfc(math.sqrt(statistic / 2)):.6g}")
+    observed = {str(arm): arm_sizes.get(arm, 0) for arm in (0, 1)}
+    if p_value < alpha:
+        raise ValueError(f"Sample ratio mismatch: {observed['0']} control vs {observed['1']} contact assignments "
+                         f"against a designed {probability} allocation (chi-square p={p_value:.3g} < {alpha}). "
+                         "Investigate assignment and logging before reading any effect")
+    return {"observed": observed, "expected": {str(arm): value for arm, value in expected.items()},
+            "chi_square": statistic, "p_value": p_value, "alarm_threshold": alpha}
+
+
+def intention_to_treat(control: list[float], contact: list[float], known_effect: float) -> dict[str, Any]:
+    """Assigned-arm mean difference, unequal-variance standard error and a power check."""
+    if len(control) < 2 or len(contact) < 2:
+        raise ValueError("Each assigned arm needs at least two observed outcomes")
+    arms = [(arm, mean(arm)) for arm in (control, contact)]
+    variances = [math.fsum((value - center) ** 2 for value in arm) / (len(arm) - 1) for arm, center in arms]
+    difference = arms[1][1] - arms[0][1]
+    error = math.sqrt(variances[0] / len(control) + variances[1] / len(contact))
+    lower, upper = difference - Z_ALPHA * error, difference + Z_ALPHA * error
+    pooled = ((len(control) - 1) * variances[0] + (len(contact) - 1) * variances[1]) / (len(control) + len(contact) - 2)
+    # The delivery plan's sanity check: n per arm ≈ 2 × (1.96 + 0.84)^2 × variance / effect^2.
+    # This run knows the simulator's effect; a real plan uses a predeclared worthwhile effect
+    # and pre-treatment variance, decided before launch rather than after reading the result.
+    needed = math.ceil(2 * (Z_ALPHA + Z_POWER) ** 2 * pooled / known_effect ** 2) if known_effect else None
+    decision = "inconclusive" if lower <= 0 <= upper else (
+        "positive_simulated_effect" if lower > 0 else "negative_simulated_effect")
+    return {"estimand": "mean net contribution per assigned account, contact minus control",
+            "difference": difference, "standard_error": error, "lower_95": lower, "upper_95": upper,
+            "interval_method": "normal approximation, unequal arm variances",
+            "minimum_detectable_effect_80_power": (Z_ALPHA + Z_POWER) * error,
+            "simulator_designed_effect": known_effect, "accounts_per_arm_to_detect_designed_effect": needed,
+            "decision": decision}
+
+
 def judge_fixture() -> dict[str, Any]:
     # Positive means an answer is acceptable. This fixed 50-case fixture is
     # separate from churn modelling and never uses a paid/model-based judge.
@@ -385,23 +469,37 @@ def business_examples(output: Path) -> dict[str, Any]:
                for price, probability in [(20, 0.30), (25, 0.24), (30, 0.15)]]
     profiles = []
     for index, segment in enumerate(["high_risk", "high_risk", "saveable", "saveable", "stable", "stable"]):
-        risk, effect = {"high_risk": (0.65, 0.02), "saveable": (0.35, 0.18), "stable": (0.10, 0.01)}[segment]
-        profiles.append({"customer_id": f"example-{index + 1}", "segment": segment,
-                         "churn_risk": risk, "incremental_value": effect * 100 - 4, "eligible": True})
+        risk, effect = SEGMENTS[segment]
+        profiles.append({"customer_id": f"example-{index + 1}", "segment": segment, "churn_risk": risk,
+                         "incremental_value": effect * RETAINED_VALUE - CONTACT_COST, "eligible": True})
     risk_contacts = choose_contacts(profiles, "churn_risk", budget=8)
     value_contacts = choose_contacts(profiles, "incremental_value", budget=8)
     by_customer = {row["customer_id"]: row for row in profiles}
     # Independent experiment: assignment, delivery and outcome remain separate.
     assignments = read_csv(output / "data/assignments.csv")
-    outcomes = {row["decision_id"]: row for row in read_csv(output / "data/experiment_outcomes.csv")}
+    outcome_rows = read_csv(output / "data/experiment_outcomes.csv")
+    outcomes = {row["decision_id"]: row for row in outcome_rows}
+    decisions = {row["decision_id"] for row in assignments}
+    if len(decisions) != len(assignments) or len(outcomes) != len(outcome_rows) or set(outcomes) != decisions:
+        raise ValueError("Experiment outcomes must join one-to-one with unique assignments")
     arm_values = {arm: [] for arm in (0, 1)}
-    delivery_count = 0
+    delivered_by_arm = {arm: 0 for arm in (0, 1)}
+    designed_effects = []
     for row in assignments:
+        if row["assigned_contact"] not in ("0", "1") or float(row["assignment_probability"]) != ASSIGNMENT_PROBABILITY:
+            raise ValueError("Assignment log disagrees with the designed binary allocation")
         outcome = outcomes[row["decision_id"]]
         if outcome["coverage_complete"] != "1":
             raise ValueError("Do not estimate effect by replacing missing outcomes with zeros")
-        arm_values[int(row["assigned_contact"])].append(float(outcome["net_contribution"]))
-        delivery_count += int(row["delivered"])
+        arm = int(row["assigned_contact"])
+        arm_values[arm].append(float(outcome["net_contribution"]))
+        delivered_by_arm[arm] += int(row["delivered"])
+        # Oracle only: the simulator knows what an assignment is worth in each segment.
+        effect = SEGMENTS[row["segment"]][1]
+        designed_effects.append(DELIVERY_PROBABILITY * (effect * RETAINED_VALUE - CONTACT_COST))
+    # Diagnose a sample-ratio mismatch before reading any lift; a failure stops the analysis.
+    sample_ratio = sample_ratio_check({arm: len(values) for arm, values in arm_values.items()})
+    itt = intention_to_treat(arm_values[0], arm_values[1], mean(designed_effects))
     return {
         "currency": "fictional currency units", "pricing": pricing,
         "conversion_winner": max(pricing, key=lambda row: row["conversion_probability"])["price"],
@@ -413,11 +511,15 @@ def business_examples(output: Path) -> dict[str, Any]:
                       "risk_contacts": risk_contacts, "value_contacts": value_contacts,
                       "risk_expected_increment": sum(by_customer[c]["incremental_value"] for c in risk_contacts),
                       "value_expected_increment": sum(by_customer[c]["incremental_value"] for c in value_contacts)},
-        "randomized_experiment": {"assignment_probability": 0.5,
+        "randomized_experiment": {"assignment_probability": ASSIGNMENT_PROBABILITY,
                                   "arm_sizes": {str(arm): len(values) for arm, values in arm_values.items()},
-                                  "delivery_count": delivery_count,
-                                  "intent_to_treat_contribution_difference": mean(arm_values[1]) - mean(arm_values[0]),
-                                  "interpretation": "One simulated randomized experiment; includes failed deliveries in their assigned arm. No real business impact is established."},
+                                  "delivery_count": sum(delivered_by_arm.values()),
+                                  "delivered_by_arm": {str(arm): count for arm, count in delivered_by_arm.items()},
+                                  "sample_ratio_check": sample_ratio,
+                                  "intention_to_treat": itt,
+                                  "intent_to_treat_contribution_difference": itt["difference"],
+                                  "decision": itt["decision"],
+                                  "interpretation": "One simulated randomized experiment analysed by assigned arm, including failed deliveries. An interval spanning zero is inconclusive, not evidence of no effect. No real business impact is established."},
     }
 
 
@@ -510,8 +612,9 @@ def evaluate(output: Path) -> dict[str, Any]:
     uncertainty = paired_bootstrap([log_loss(y, c) - log_loss(y, b) for y, c, b in zip(labels, candidate, baseline)])
     # This gate is declared in code before opening the test. It is not tuned
     # until a desired outcome appears. A defer result is a completed lab.
-    passed = uncertainty["upper_95"] < -0.01 and candidate_metrics["brier"] <= baseline_metrics["brier"]
+    decision = release_gate(uncertainty, baseline_metrics, candidate_metrics)
     business = business_examples(output)
+    experiment = business["randomized_experiment"]
     ledger = DecisionLedger(8)
     ledger.reserve("contact-001", "example-3", 4)
     ledger.settle("contact-001", "unknown")
@@ -526,14 +629,17 @@ def evaluate(output: Path) -> dict[str, Any]:
         "cohort_sizes": {name: len(group) for name, group in groups.items()},
         "baseline": baseline_metrics, "candidate": candidate_metrics,
         "paired_log_loss_difference": uncertainty,
-        "prototype_decision": "pass_simulated_gate" if passed else "defer",
+        "prototype_decision": decision,
         "gate": "Upper paired 95% bootstrap bound on candidate-minus-baseline log loss < -0.01, and candidate Brier <= baseline Brier. No real deployment approved.",
+        "experiment_decision": experiment["decision"],
+        "experiment_gate": f"Sample-ratio chi-square p >= {SRM_ALPHA} before reading lift; claim a simulated contact effect only if the 95% intention-to-treat interval excludes zero, otherwise inconclusive. No real campaign approved.",
         "judge": judge_fixture(), "business": business, "execution": execution,
         "limitations": ["Entirely synthetic: predictive and causal findings do not establish real-world performance or business impact.",
                         "Fixed independent-customer cohorts; real repeated users require grouped/time-aware resampling.",
                         "One final test and predeclared gate. Changing the candidate after seeing this test requires fresh confirmatory data.",
                         "Sigmoid calibration on a separate cohort is not a guarantee after population shift.",
-                        "Oracle retention effects and assumed price response are teaching assumptions, not learned causal estimates."],
+                        "Oracle retention effects and assumed price response are teaching assumptions, not learned causal estimates.",
+                        "The randomized experiment is far smaller than its power check requires; its interval, not its point estimate, is the result."],
     }
     reports = output / "reports"
     write_json(reports / "evaluation.json", result)
@@ -546,7 +652,8 @@ def evaluate(output: Path) -> dict[str, Any]:
     write_csv(reports / "price-comparison.csv", business["pricing"])
     write_figures(output, labels, candidate, business["pricing"])
     release = {"release_id": f"synthetic-v{VERSION}-seed-{manifest['seed']}", "evidence_level": "simulated prototype",
-               "decision": result["prototype_decision"], "source_sha256": digest(Path(__file__)),
+               "decision": result["prototype_decision"], "experiment_decision": result["experiment_decision"],
+               "source_sha256": digest(Path(__file__)),
                "data_manifest_sha256": digest(output / "manifest.json"),
                "model_sha256": digest(reports / "model.json"), "evaluation_sha256": digest(reports / "evaluation.json"),
                "feature_schema": list(FEATURES), "calibrator": "sigmoid on separate calibration cohort, bundled in model.json",
@@ -560,23 +667,37 @@ def evaluate(output: Path) -> dict[str, Any]:
     return result
 
 
-def write_reports(reports: Path, result: dict[str, Any], release: dict[str, Any]) -> None:
+def write_reports(reports: Path, result: dict[str, Any], release: dict[str, Any], figures: str = "../figures/") -> None:
+    """``figures`` is the image link prefix: a run keeps them in ../figures/, the reference beside the report."""
     baseline, candidate = result["baseline"], result["candidate"]
     interval = result["paired_log_loss_difference"]
     business = result["business"]
+    experiment = business["randomized_experiment"]
+    ratio, itt = experiment["sample_ratio_check"], experiment["intention_to_treat"]
+    reading = {"inconclusive": "The interval includes zero, so this run cannot support a claim of benefit or harm.",
+               "positive_simulated_effect": "The interval lies above zero: a simulated benefit, not a real business result.",
+               "negative_simulated_effect": "The interval lies below zero: a simulated harm, not a real business result."}[itt["decision"]]
+    needed = itt["accounts_per_arm_to_detect_designed_effect"]
+    if needed is None:
+        power = "With a designed effect of zero, no sample size can detect it."
+    else:
+        verdict = "underpowered for" if needed > min(experiment["arm_sizes"].values()) else "large enough for"
+        power = (f"Detecting it with the book's delivery-plan\napproximation, `2 × (1.96 + 0.84)^2 × variance / effect^2`, "
+                 f"needs about {needed:,} accounts per arm.\nThis experiment is {verdict} that effect.")
     report = f'''# Evaluation report — simulated reference lab
 
 **Evidence level:** synthetic prototype. **Decision:** `{result["prototype_decision"]}`.
-No real customer performance, causal benefit or production readiness is established.
+**Contact experiment:** `{result["experiment_decision"]}`.
+It shows no real customer performance, causal benefit or production readiness.
 
 ## Frozen protocol
 
-One unique customer per row. Chronological cohorts: 300 training, 150 calibration and
-150 final-test customers. Training labels mature before calibration snapshots; calibration
-labels mature before test snapshots. Both event time and availability time restrict features.
-Train-only standardization and logistic weights; a separate calibration cohort fits a sigmoid
-and selects cost thresholds for both baseline and candidate. The final cohort is opened once
-after those choices are frozen.
+One unique customer per row. Cohorts in time order: 300 training, 150 calibration and
+150 final-test customers. Training labels mature before calibration snapshots, and calibration
+labels mature before test snapshots. Both event time and availability time limit features.
+Standardisation and logistic weights use training data only. A separate calibration cohort
+fits a sigmoid and picks cost thresholds for both baseline and candidate. The final cohort is
+opened once, after those choices are frozen.
 
 | Measure | Training-prevalence baseline | Calibrated logistic candidate |
 | --- | ---: | ---: |
@@ -588,81 +709,96 @@ after those choices are frozen.
 | FP×2 + FN×10 per customer | {baseline["cost_per_customer"]:.6f} | {candidate["cost_per_customer"]:.6f} |
 
 Threshold-dependent costs use the listed policies. The release gate compares probability
-quality; it does not establish that the candidate action policy improves real outcomes.
+quality only. It does not show that the candidate's action policy improves real outcomes.
 
 Candidate-minus-baseline mean log-loss difference: **{interval["mean"]:.6f}**.
 Paired percentile-bootstrap 95% interval: **[{interval["lower_95"]:.6f}, {interval["upper_95"]:.6f}]**,
-using {interval["draws"]} draws and unique customers as the independent resampling unit.
-These are finite-sample bootstrap estimates, conditional on this simulator and cohort design.
+using {interval["draws"]} draws, with unique customers as the independent resampling unit.
+These finite-sample bootstrap estimates hold only for this simulator and cohort design.
 
-![Held-out synthetic calibration plot; each dot is a probability bin.](../figures/calibration.svg)
+![Held-out synthetic calibration plot. Each dot is a probability bin.]({figures}calibration.svg)
 
-Predeclared gate: upper interval bound below −0.01 and no worse Brier score.
-Retain a defer result; do not tune on the final test until it passes.
+Gate, set in advance: upper interval bound below −0.01 and no worse Brier score.
+A defer result stands. Do not tune on the final test until it passes.
 
 ## Judge arithmetic fixture
 
-Positive means an acceptable answer. Human labels versus a hypothetical judge on 50
-hand-constructed cases: TP=26, FN=4, FP=3, TN=17. Precision is 26/29={26/29:.4f};
-recall is 26/30={26/30:.4f}; false acceptance among unacceptable answers is 3/20=0.15.
-This is an arithmetic fixture, not a measured model judge. Three false accepts may be
-unacceptable for a sensitive task even when aggregate agreement looks good.
+Positive means an acceptable answer. Human labels against a hypothetical judge on 50
+hand-built cases: TP=26, FN=4, FP=3, TN=17. Precision is 26/29={26/29:.4f}.
+Recall is 26/30={26/30:.4f}. False acceptance among unacceptable answers is 3/20=0.15.
+This is an arithmetic fixture, not a measured model judge. For a sensitive task, three
+false accepts may be too many, even when overall agreement looks good.
 
 ## Business decisions
 
 Prices 20, 25 and 30 have assumed conversion probabilities 0.30, 0.24 and 0.15.
 With unit cost 10, expected contribution per opportunity is 3.00, 3.60 and 3.00.
-Price {business["conversion_winner"]} wins conversion; price {business["contribution_winner"]} wins contribution.
-The probabilities are simulator assumptions. Observational price correlations would not establish them.
+Price {business["conversion_winner"]} wins on conversion. Price {business["contribution_winner"]} wins on contribution.
+The probabilities are simulator assumptions. Observational price correlations could not prove them.
 
-![Expected contribution is highest at price 25 in this assumed response example.](../figures/pricing.svg)
+![Expected contribution is highest at price 25 in this assumed response example.]({figures}pricing.svg)
 
-For six hypothetical accounts and a contact budget of eight, risk ranking selects the two
+For six hypothetical accounts and a contact budget of eight, risk ranking picks the two
 high-risk accounts for expected incremental contribution **{business["retention"]["risk_expected_increment"]:.2f}**.
-Known-effect ranking selects the two saveable accounts for **{business["retention"]["value_expected_increment"]:.2f}**.
+Known-effect ranking picks the two saveable accounts for **{business["retention"]["value_expected_increment"]:.2f}**.
 These are oracle illustrations. A real policy needs identified effects and independent policy evaluation.
 
-The separate randomized simulation keeps failed deliveries in their assigned arms.
-Its realized intention-to-treat contribution difference is
-**{business["randomized_experiment"]["intent_to_treat_contribution_difference"]:.6f}** fictional units.
-A single realized difference without an uncertainty analysis does not establish a useful effect.
+The separate randomised simulation assigns contact with probability {experiment["assignment_probability"]}. Failed
+deliveries stay in their assigned arms (intention to treat). Assigned arms: {ratio["observed"]["0"]} control and {ratio["observed"]["1"]}
+contact accounts. The {experiment["delivered_by_arm"]["1"]} contact-arm deliveries are reported separately. Sample-ratio
+check before reading lift: chi-square {ratio["chi_square"]:.3f}, p = {ratio["p_value"]:.4f} against the designed
+allocation. The alarm, set in advance, is p < {ratio["alarm_threshold"]}.
+
+| Contact minus control, net contribution per assigned account | Fictional units |
+| --- | ---: |
+| Intention-to-treat difference | {itt["difference"]:.6f} |
+| Standard error, unequal arm variances | {itt["standard_error"]:.6f} |
+| Normal-approximation 95% interval | [{itt["lower_95"]:.6f}, {itt["upper_95"]:.6f}] |
+| Minimum detectable effect, 80% power, two-sided 5% | {itt["minimum_detectable_effect_80_power"]:.6f} |
+
+**Experiment decision:** `{itt["decision"]}`.
+{reading}
+The simulator's designed effect, known here only because the data are simulated, is
+{itt["simulator_designed_effect"]:.6f} per assigned account. {power}
+A real plan fixes its size before launch, from pre-treatment variance and a minimum worthwhile effect chosen upfront.
 
 ## Limitations and next experiment
 
 The generator deliberately resembles its fitted model and uses independent synthetic customers.
 Real data have measurement errors, censoring, repeated users, selection and shifting treatment effects.
-Before a real pilot: document permissions and coverage, identify effects, power a prospective test,
-verify delivery and outcome instrumentation, predeclare guardrails and obtain operational ownership.
-Inspect the [full evaluation](evaluation.json), [release manifest](release-manifest.json),
+Before a real pilot, document permissions and coverage, identify effects, size a prospective test
+for power, check delivery and outcome instrumentation, set guardrails in advance and name an owner.
+See the [full evaluation](evaluation.json), [release manifest](release-manifest.json),
 [data card](data-card.md), [model card](model-card.md) and [incident rehearsal](incident-report.md).
 '''
     (reports / "evaluation.md").write_text(report, encoding="utf-8")
     (reports / "data-card.md").write_text('''# Data card — synthetic retail/subscription lab
 
-- **Origin and permission:** generated by this repository's MIT-licensed code; no real people or scraped data.
-- **Purpose:** learn point-in-time features, separate calibration, honest test evaluation and constrained decisions.
-- **Grain:** 600 unique modelling customers; separate 800-customer randomized experiment.
-- **Clocks:** UTC, 30-day lookback; only events with `event_time < as_of` and `available_at <= as_of`.
-- **Outcome:** simulated 30-day churn under no contact; fully observed at 33 days. Unknown coverage must never be zero-filled.
-- **Partitions:** fixed chronological train/calibration/test cohorts with mature-label gaps; never shuffle them for a better score.
-- **Known artifacts:** every customer has a deliberately late and a future purchase that historical features must exclude.
-- **Documents:** three fictional policy documents for a small retrieval/extraction exercise.
-- **Manifest:** SHA-256 for every generated input; evaluation checks those hashes and rebuilds every feature.
-- **Limitations:** intentionally simplified independent units, known response mechanism, no real consent or protected-group representation.
-- **Permitted conclusion:** the implementation works on this simulator. Real-world quality and causal impact remain unknown.
+- **Origin and permission:** made by this repository's MIT-licensed code. No real people or scraped data.
+- **Purpose:** practise point-in-time features, separate calibration, fair test evaluation and decisions under limits.
+- **Grain:** 600 unique modelling customers, plus a separate 800-customer randomised experiment.
+- **Clocks:** UTC, 30-day lookback. Only events with `event_time < as_of` and `available_at <= as_of`.
+- **Outcome:** simulated 30-day churn with no contact, fully observed at 33 days. Do not zero-fill unknown coverage.
+- **Partitions:** fixed train/calibration/test cohorts in time order, with mature-label gaps. Do not shuffle them for a better score.
+- **Known artifacts:** each customer has one deliberately late and one future purchase. Historical features must exclude both.
+- **Documents:** three fictional policy documents for a small retrieval and extraction exercise.
+- **Manifest:** SHA-256 for every generated input. Evaluation requires exactly that file list, checks every hash and rebuilds every feature.
+- **Experiment checks:** one outcome per assignment, no zero-filled outcomes, and a sample-ratio check before any lift is read.
+- **Limitations:** deliberately simple independent units, a known response mechanism, no real consent or protected-group representation.
+- **What you can conclude:** the code works on this simulator. Real-world quality and causal impact remain unknown.
 ''', encoding="utf-8")
     (reports / "model-card.md").write_text(f'''# Model card — calibrated logistic reference
 
 **Purpose:** a readable churn-risk prototype on fully synthetic no-contact data.
 **Inputs:** available purchases, support contacts and purchase recency over 30 days.
-**Training:** 300 independent customers; feature means/scales fit on training only; L2-regularized logistic regression.
-**Calibration/decision selection:** separate 150-customer cohort; sigmoid calibration and a threshold selected under FP cost 2 / FN cost 10.
-**Final evaluation:** 150 later customers; log loss {candidate["log_loss"]:.6f}, Brier {candidate["brier"]:.6f}, AUC {candidate["roc_auc"]:.6f}.
+**Training:** 300 independent customers. Feature means/scales fit on training only. L2-regularised logistic regression.
+**Calibration/decision selection:** separate 150-customer cohort. Sigmoid calibration and a threshold chosen with FP cost 2 / FN cost 10.
+**Final evaluation:** 150 later customers. Log loss {candidate["log_loss"]:.6f}, Brier {candidate["brier"]:.6f}, AUC {candidate["roc_auc"]:.6f}.
 **Baseline:** constant training prevalence, not final-test prevalence.
-**Intended use:** teaching and reproduction. No actual customer contact, pricing or eligibility decision.
-**Known limits:** simulator resembles the model; a small temporally shifted cohort; no empirical fairness, censoring or deployment validation.
-**Fallback:** preserve baseline and defer when evidence is insufficient. Risk does not measure treatment response.
-**Owner:** the learner running the prototype; a real release requires a named accountable operator.
+**Intended use:** teaching and reproduction. Not for real customer contact, pricing or eligibility decisions.
+**Known limits:** the simulator resembles the model. One small cohort is shifted in time. No empirical fairness, censoring or deployment validation.
+**Fallback:** keep the baseline and defer when evidence is too weak. Risk does not measure treatment response.
+**Owner:** the learner running the prototype. A real release needs a named accountable operator.
 ''', encoding="utf-8")
     (reports / "incident-report.md").write_text('''# Incident rehearsal — unknown contact delivery
 
@@ -671,37 +807,56 @@ Inspect the [full evaluation](evaluation.json), [release manifest](release-manif
 ## Trigger and observation
 
 Reserve four units for `contact-001`. Simulate a timeout with unknown remote delivery.
-Retry the same decision ID. The ledger returns its existing state and retains the original
-reservation. It must not debit four more units or issue a second decision for that customer.
-Reserve `contact-002`, then reconcile a confirmed nondelivery; release only that reservation.
+Retry the same decision ID. The ledger returns its existing state and keeps the original
+reservation. It must not take four more units or issue a second decision for that customer.
+Reserve `contact-002`, then reconcile a confirmed non-delivery. Release only that reservation.
 
 ## Result
 
-Initial budget: eight. One unknown reservation: four. One confirmed nondelivery refunded: four.
-Final available budget: four. No duplicate decision was created. The executable assertions
-are in `test_ground_truth_lab.py`; the generated execution records are in `evaluation.json`.
+Initial budget: eight. One unknown reservation: four. One confirmed non-delivery refunded: four.
+Final available budget: four. No duplicate decision was created. The tests for this
+are in `test_ground_truth_lab.py`, and the generated execution records are in `evaluation.json`.
 
 ## Recovery boundary
 
 This ledger makes local reservation transactions atomic. It does not call a real delivery
-provider and does not promise exactly-once external effects. A real service needs a durable
+provider, so it cannot promise exactly-once external effects. A real service needs a durable
 outbox, provider idempotency keys, acknowledgement reconciliation, access controls, backup
-and restoration tests. Keep unknown deliveries reserved until their status is established.
+and restoration tests. Keep unknown deliveries reserved until you know their status.
 
 ## Follow-up
 
-Before a pilot, test crash-before-dispatch and crash-after-effect-before-acknowledgement
-against the real provider's idempotency and status contract. Record detection and recovery
-durations from the real drill; this fixture supplies no measured production timings.
+Before a pilot, test two crashes against the real provider's idempotency and status contract:
+one before dispatch, one after the effect but before acknowledgement. Record detection
+and recovery times from the real drill. This fixture has no measured production timings.
 ''', encoding="utf-8")
+
+
+def export_reference(destination: Path, seed: int = SEED) -> dict[str, Any]:
+    """Rebuild the checked-in reference set from a fresh run in a temporary directory.
+
+    The reference is flat, so its report links to sibling figures. Every other byte is
+    the ordinary run output, including the release manifest that pins this source file.
+    """
+    with tempfile.TemporaryDirectory() as folder:
+        run = Path(folder)
+        generate(run, seed)
+        result = evaluate(run)
+        destination.mkdir(parents=True, exist_ok=True)
+        for name, source in REFERENCE_FILES.items():
+            (destination / name).write_bytes((run / source).read_bytes())
+        release = json.loads((run / "reports/release-manifest.json").read_text(encoding="utf-8"))
+        write_reports(destination, result, release, figures="")
+    return result
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    for command in ("generate", "evaluate", "all"):
-        command_parser = subparsers.add_parser(command, help={"generate": "Create deterministic synthetic data", "evaluate": "Validate existing data and create evidence reports", "all": "Generate data, validate, fit and evaluate"}[command])
-        command_parser.add_argument("--output", type=Path, default=Path("labs/output"), help="Data/report directory (default: labs/output)")
+    for command in ("generate", "evaluate", "all", "reference"):
+        command_parser = subparsers.add_parser(command, help={"generate": "Create deterministic synthetic data", "evaluate": "Validate existing data and create evidence reports", "all": "Generate data, validate, fit and evaluate", "reference": "Rebuild the flat, checked-in reference set (default: labs/reference)"}[command])
+        default = Path("labs/reference" if command == "reference" else "labs/output")
+        command_parser.add_argument("--output", type=Path, default=default, help=f"Data/report directory (default: {default})")
         if command != "evaluate":
             command_parser.add_argument("--seed", type=int, default=SEED, help="Synthetic seed (default: 42)")
     args = parser.parse_args()
@@ -712,7 +867,11 @@ def main() -> None:
         if args.command in {"evaluate", "all"}:
             result = evaluate(args.output)
             print(f"Evidence report: {args.output / 'reports/evaluation.md'}")
-            print(f"Simulated gate: {result['prototype_decision']}; no real deployment approved")
+            print(f"Simulated gate: {result['prototype_decision']}; contact experiment: {result['experiment_decision']}; no real deployment approved")
+        if args.command == "reference":
+            result = export_reference(args.output, args.seed)
+            print(f"Reference set (seed {args.seed}) written to {args.output}; review and commit it with the source change")
+            print(f"Simulated gate: {result['prototype_decision']}; contact experiment: {result['experiment_decision']}")
     except (ValueError, KeyError, FileNotFoundError) as error:
         parser.exit(2, f"Lab error: {error}\n")
 

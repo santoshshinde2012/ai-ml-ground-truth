@@ -3,15 +3,15 @@
 [Chapter 9](README.md) &nbsp;·&nbsp; [Offers](offer-recommendation.md) &nbsp;·&nbsp;
 [Prices](price-recommendation.md) &nbsp;·&nbsp; [Churn](churn.md)
 
-This plan is shared by all three cases. It turns the model research into a reproducible prototype
-and a reviewable production proposal. Implement the relevant gates; complete the live experiment
-gate only when a real experiment has run. The 15 shared hours assume a small project and reuse of
-the [Chapter 6](../06-production/README.md) deployment work.
+All three cases share this plan. It turns the research into a reproducible prototype and a
+reviewable production proposal. Work through the gates that apply to you, and complete the live
+experiment gate only after a real experiment has run. The 15 shared hours assume a small project
+reusing the [Chapter 6](../06-production/README.md) deployment work.
 
-Use the [causal primer](causal-primer.md) to write the estimand before selecting a policy estimator.
-For a prepared starting point, see the [reference lab](../labs/README.md). Its synthetic assumptions
-make the mechanics inspectable; they do not establish a live business effect or eliminate the
-integration work required by these completion gates.
+Use the [causal primer](causal-primer.md) to write the estimand before you choose a policy
+estimator. The [reference lab](../labs/README.md) is a prepared starting point. Its synthetic data
+lets you inspect the mechanics, but cannot show a live business effect or replace the integration
+work these gates ask for.
 
 **In this plan:** [Decision brief](#1-define-the-decision-and-economics) &nbsp;·&nbsp;
 [Data contract](#2-create-the-data-and-label-contract) &nbsp;·&nbsp;
@@ -22,7 +22,7 @@ integration work required by these completion gates.
 
 ## 1. Define the decision and economics
 
-Write a one-page brief before selecting a model:
+Write a one-page brief before choosing a model:
 
 | Field             | Record                                                                                           |
 | ----------------- | ------------------------------------------------------------------------------------------------ |
@@ -31,33 +31,33 @@ Write a one-page brief before selecting a model:
 | Outcome           | Exact event definition, attribution/measurement horizon and reporting delay                      |
 | Economics         | Contribution after fulfilment, subsidy, contact, returns and service costs; currency and horizon |
 | Constraints       | Inventory, minimum margin, subsidy/contact budget, fatigue and applicable customer policy        |
-| Evidence          | Randomized assignments or identification assumptions; historical support for actions             |
+| Evidence          | Randomised assignments or identification assumptions; historical support for actions             |
 | Success           | Minimum useful effect and uncertainty; service, spend and customer guardrails                    |
 | Fallback          | Existing approved policy when features, evidence or serving are inadequate                       |
 
-Do not substitute revenue for contribution or churn risk for retained value. If cost or treatment
-data is missing, state the narrower predictive question you can answer and collect the missing data.
+Measure contribution instead of revenue, and retained value instead of churn risk. If cost or
+treatment data is missing, state the narrower predictive question you can answer and collect the
+missing data.
 
 ## 2. Create the data and label contract
 
-Use UTC in stored timestamps; preserve the local calendar needed for business features. Specify the
-unique snapshot key and keep customer IDs as join keys unless an ID feature is intentionally
-justified. For each snapshot at `as_of`, record feature lookback, maximum permissible availability
-time, label window, label completion time and training cutoff.
+Store timestamps in UTC and keep the local calendar that business features need. Define the unique
+snapshot key. Use customer IDs as join keys, and as features only for a deliberate reason. For
+each snapshot at `as_of`, record the feature lookback, latest allowed availability time, label
+window, label completion time and training cutoff.
 
 For fixed-horizon targets, require `label_available_at <= training_cutoff` and verified outcome
-coverage through `label_end` at fitting time. Apply any documented reporting allowance as well. A
-passed calendar horizon alone does not establish completeness when the outcome feed is delayed or
-missing.
+coverage through `label_end` at fitting time. Apply any documented reporting allowance too. A
+passed calendar horizon is not enough when the outcome feed is late or missing.
 
-For [survival targets](churn.md#6-when-to-use-survival-analysis), retain the event indicator and
-observed event/censoring duration instead. Use only records available at the training cutoff and a
-verified observation limit. Partial follow-up can be retained under the censoring assumptions; an
+For [survival targets](churn.md#6-when-to-use-survival-analysis), keep the event indicator and
+observed event or censoring time instead. Use only records available at the training cutoff and a
+verified observation limit. Partial follow-up can stay under the censoring assumptions, but an
 unfinished horizon is not a negative fixed-horizon label. Document the supported evaluation horizons
-and censoring/reference-sample protocol.
+and the censoring/reference-sample protocol.
 
-An illustrative historical aggregation, assuming `available_at` means first usability and each event
-has an immutable ID:
+An example historical aggregation, assuming `available_at` is when an event became usable and each
+event has an immutable ID:
 
 ```sql
 SELECT s.customer_id, s.as_of,
@@ -72,26 +72,25 @@ LEFT JOIN purchase_events AS e
 GROUP BY s.customer_id, s.as_of;
 ```
 
-This is a query pattern, not a complete feature system. Deduplicate upstream, validate timezone
-types and join cardinality, and version corrections instead of replacing historical values with
-today's truth. If a margin was finalized later, it needs its own availability/version record. Use
-the same definitions for replay and serving; historical retrieval tools still require you to verify
-availability semantics
+This is a query pattern, not a complete feature system. Deduplicate upstream and check timezone
+types and join cardinality. Version corrections instead of overwriting history with today's values.
+A margin finalised later needs its own availability and version record. Use the same definitions for
+replay and serving. Retrieval tools still leave you to check what “available” means
 ([Feast point-in-time joins](https://docs.feast.dev/getting-started/concepts/point-in-time-joins)).
 
-For experiments, retain eligible opportunities even when no action was delivered. Keep assignment,
-exposure/delivery and outcome in separate tables: assignment is the primary analysis group, while
-delivery explains implementation failures. Do not restrict the main result to redeemers, buyers,
-contacted responders or other groups selected after treatment.
+For experiments, keep eligible opportunities even when no action was delivered. Keep assignment,
+delivery and outcome in separate tables. Assignment defines the main analysis group, and delivery
+explains implementation failures. Report the main result on everyone assigned, not only redeemers,
+buyers, contacted responders or other groups selected after treatment.
 
 ## 3. Train, compare and freeze a release
 
-Compare the business-as-usual rule, a simple statistical baseline and one challenger. Use the split
-in the selected guide, keeping all tuning and preprocessing out of the final test. With dependent
-rows, report uncertainty at the customer, market or time-block level relevant to the decision.
-Evaluate both model quality and the policy derived from the model.
+Compare the business-as-usual rule, a simple statistical baseline and one challenger. Use your
+guide's split and keep all tuning and preprocessing out of the final test. When rows depend on
+each other, report uncertainty at the customer, market or time-block level that matches the
+decision. Evaluate both the model and the policy built from it.
 
-Save a release manifest like this, using actual values instead of placeholders:
+Save a release manifest like this, with real values instead of placeholders:
 
 ```yaml
 release_id: example-2026-10-08-001
@@ -114,15 +113,14 @@ fallback_policy: <version>
 This manifest is enough for a first project.
 [MLflow's model registry](https://mlflow.org/docs/latest/ml/model-registry/workflow/) adds lifecycle
 management when a team needs it. A deployment must load the matching feature schema, model,
-calibrator and policy together; changing a threshold or budget is a policy release.
+calibrator and policy together. Changing a threshold or budget counts as a policy release.
 
 ## 4. Evaluate an action policy honestly
 
-Report predictive metrics separately from causal/policy evidence. An offline comparison of people
-who did and did not receive a discount can be dominated by how the old team selected them. If
-randomized logged actions support the target policy, evaluate that frozen policy on held-out
-assignments. For a frozen deterministic target policy on a discrete action set, an
-inverse-propensity estimate is:
+Report predictive metrics separately from causal and policy results. An offline comparison of people
+who did and did not get a discount can mostly reflect how the old team chose them. If randomised
+logged actions support the target policy, evaluate that frozen policy on held-out assignments. For a
+frozen deterministic target policy on a discrete action set, an inverse-propensity estimate is:
 
 ```text
 estimated_value(policy) = mean(
@@ -130,126 +128,125 @@ estimated_value(policy) = mean(
 )
 ```
 
-For a stochastic target policy, replace the indicator with the target probability of the logged
-action, conditional on the same context and feasible set.
+For a stochastic target policy, replace the indicator with the target probability of
+the logged action, given the same context and feasible set.
 
-The logging probability is the probability of that action under the **actual** assignment policy,
-conditional on context and candidate eligibility. It is not the model's confidence. Inspect overlap,
-extreme weights and effective sample size; a deterministic old policy cannot evaluate actions it
-never tried. Specify uncertainty and any clipping bias. Doubly robust estimation can reduce some
-estimation errors, but cannot repair missing action support or arbitrary unobserved confounding
+The logging probability is the chance of that action under the **actual** assignment policy, given
+context and candidate eligibility. It is not the model's confidence. Inspect overlap, extreme weights
+and effective sample size, since a deterministic old policy cannot evaluate actions it never tried.
+State the uncertainty and any clipping bias. Doubly robust estimation can reduce some errors, but it
+cannot repair missing action support or arbitrary unobserved confounding
 ([Dudík, Langford and Li, 2011](https://arxiv.org/abs/1103.4601)).
 
-Here `net_outcome` is observed mature net contribution for every eligible assignment unit, including
-no purchase and no offer, after actual costs. A contacted nonbuyer can have negative contribution.
-It is not a predicted score or an already baseline-subtracted uplift quantity. This formula
-evaluates an assignment policy when `logged_action` records assignment. Preserve that original
-assignment for intention-to-treat after human overrides or delivery failures. Evaluation of actual
-executed actions needs their own justified propensities; do not attach the original assignment
-probability to an override whose selection mechanism is unknown. Constraints applied **before** the
-random draw belong in the known assignment mechanism; a delivery failure after the draw is a
-different record, not permission to invent a new randomized probability.
+Here `net_outcome` is the observed, mature net contribution after actual costs for every eligible
+assignment unit, including no purchase and no offer. A contacted nonbuyer can have negative
+contribution. It is measured, not a predicted score or a baseline-subtracted uplift. The
+formula evaluates an assignment policy when `logged_action` records assignment. Keep that original
+assignment for intention-to-treat after human overrides or delivery failures. Executed actions need
+their own justified propensities, so do not reuse the original probability for an override chosen
+in an unknown way. Constraints applied **before** the random draw belong in the known assignment
+mechanism. A delivery failure after the draw is a separate record, not a reason to invent a new
+randomised probability.
 
 **For combined actions, log the joint assignment mechanism.** An action can be a tuple of offer,
-price and retention choice, including their no-change options. Its propensity is the probability of
-that tuple under the coordinator, conditional on eligible candidates and pre-decision inventory,
-budget, contact history and other assignment state. Multiplying three marginal probabilities is
-valid only when the design makes the choices conditionally independent. Mutually exclusive or
-budget-coupled choices usually are not. For staged random draws, use the recorded conditional
-probability at each stage, including earlier choices; their product gives the tuple probability.
-Keep the coordinator version and assignment history needed to reproduce it.
+price and retention choice, each with its no-change option. Its propensity is the probability of
+that tuple under the coordinator, given eligible candidates and pre-decision inventory, budget,
+contact history and other assignment state. Multiplying three marginal probabilities is valid
+only when the design makes the choices conditionally independent, which mutually exclusive or
+budget-sharing choices usually are not. For staged random draws, use the recorded conditional
+probability at each stage, given earlier choices. Their product is the tuple probability. Keep the
+coordinator version and assignment history to reproduce it.
 
-This is a one-decision contextual policy estimate for the stated outcome horizon. It does not
-automatically identify a sequential campaign policy when contacts change later eligibility or prices
-deplete shared inventory. Those claims need a sequential/interference-aware design or a prospective
-experiment of the whole policy. Conditioning on recorded stock and budget does not by itself
-evaluate a new policy's effect on their future distribution. A chain of conditional probabilities
-for one compound action is also not a longitudinal policy evaluator. Sequential off-policy methods
-require supported decision histories, correctly specified assignment probabilities and an
-appropriate dependence model;
+This estimate covers one contextual decision over the stated outcome horizon. It does not identify
+a sequential campaign policy, where contacts change later eligibility or prices use up shared
+inventory. That needs a design that handles sequences and interference, or a prospective experiment
+of the whole policy. Conditioning on recorded stock and budget cannot show a new policy's effect on
+their future distribution, and a chain of probabilities for one compound action cannot evaluate a
+policy over time. Sequential off-policy methods need supported decision histories, correct
+assignment probabilities and a suitable dependence model.
 [Jiang and Li's ICML 2016 paper](https://proceedings.mlr.press/v48/jiang16.html) develops a
-sequential doubly robust estimator under its stated trajectory assumptions. Use a controlled test of
-the whole coordinator as the first practical route when allocations interact across customers.
+sequential doubly robust estimator under its stated trajectory assumptions. When allocations
+interact across customers, start with a controlled test of the whole coordinator.
 
-If assignment probabilities adapt to accumulating results, retain their values at each draw and use
+If assignment probabilities adapt as results come in, keep their value at each draw and use
 inference valid for that adaptive design. Ordinary independent-row intervals can fail even with
 known probabilities. [Hadad et al., 2021 (author preprint)](https://arxiv.org/abs/1911.02768)
-studies policy-evaluation inference for adaptive experiments; its conditions must be checked rather
-than treating propensity logging as sufficient.
+studies policy-evaluation inference for adaptive experiments. Check its conditions, because
+logging propensities alone is not enough.
 
-For continuous prices, this discrete formula applies only when you deliberately use a logged finite
-price grid; a new continuous-price policy needs suitable density-based or structural methods with
-additional assumptions. Prefer a bounded randomized experiment over unsupported extrapolation.
-Uplift ranking scores alone do not establish net business value.
+For continuous prices, this discrete formula applies only to a deliberately logged, finite price
+grid. A new continuous-price policy needs density-based or structural methods with more assumptions.
+Prefer a bounded randomised experiment to unsupported extrapolation. Uplift ranking scores alone
+cannot show net business value.
 
 ## 5. Design the experiment before launch
 
-Write the hypothesis, control policy, target population, primary outcome, minimum detectable effect,
-power/sample-size assumptions, assignment unit, duration and stopping rule. Use pre-treatment
-variance estimates and account for repeat observations, clustering, delayed labels and attrition.
-Count independent assignment units; rows are not automatically independent samples. A retention test
-needs its full outcome horizon and a pricing test needs mature returns/costs.
+Write the hypothesis, control policy, target population, primary outcome, minimum detectable
+effect, power and sample-size assumptions, assignment unit, duration and stopping rule. Use
+pre-treatment variance estimates and allow for repeat observations, clustering, delayed labels and
+attrition. Count independent assignment units, because rows are not automatically independent. A
+retention test needs its full outcome horizon, and a pricing test needs mature returns and costs.
 
-**A power sanity check.** For two equally sized independent arms, a continuous outcome and a fixed
-two-sided 5% test with 80% power, a normal approximation gives:
+**A power sanity check.** For two equal independent arms, a continuous outcome and a fixed
+two-sided 5% test with 80% power (the chance of detecting the minimum effect), a normal
+approximation gives:
 
 ```text
 n_per_arm ≈ 2 × (1.96 + 0.84)^2 × outcome_variance / minimum_effect^2
 ```
 
-With an invented per-eligible-account contribution standard deviation of ₹200 and a minimum useful
-mean difference of ₹5, this is about **25,088 accounts per arm**. Halving the effect requires
-roughly four times as many accounts. This is a planning illustration, not a campaign-size rule:
-heavy tails, unequal arms, multiple comparisons, covariate adjustment, attrition and clustered
+With an invented contribution standard deviation of ₹200 per eligible account and a minimum
+useful mean difference of ₹5, this is about **25,088 accounts per arm**. Halving the effect needs
+roughly four times as many accounts. This is a planning illustration, not a campaign-size rule.
+Heavy tails, unequal arms, multiple comparisons, covariate adjustment, attrition and clustered
 assignment change the calculation. Use design-based simulation or a suitable power method with
 representative pre-treatment data. Pricing market-days and repeat contacts are not independent
-accounts. Count the outcome-maturation delay after the last assignment when planning the calendar.
+accounts. Allow time for outcomes to mature after the last assignment.
 
 Keep assignments stable where repeat exposure matters. If inventory, household sharing or market
-competition create interference, consider cluster randomization or a switchback design with its own
-carryover assumptions. Prespecify important segment checks and multiplicity treatment. For ongoing
-peeking, use a valid sequential method; ordinary fixed-horizon intervals do not become valid
-stopping rules just because the dashboard updates daily.
+competition cause interference, consider cluster randomisation or a switchback design (switching
+units between arms over time), with its own carryover assumptions. Prespecify important segment
+checks and multiplicity handling. For ongoing peeking, use a valid sequential method. A daily
+dashboard does not turn fixed-horizon intervals into valid stopping rules.
 
-Run an A/A or replay instrumentation check where feasible, reconcile assignment to delivery and
-outcome joins, and diagnose sample-ratio mismatch before reading lift. Microsoft documents the
+Where feasible, run an A/A test (both groups treated alike) or a replay to check
+instrumentation. Reconcile assignment with delivery and outcome joins, and diagnose sample-ratio
+mismatch before reading lift. Microsoft documents the
 [pre-experiment design practices](https://www.microsoft.com/en-us/research/articles/patterns-of-trustworthy-experimentation-pre-experiment-stage/)
 and
 [SRM checks](https://www.microsoft.com/en-us/research/articles/diagnosing-sample-ratio-mismatch-in-a-b-testing/).
-Use intention-to-treat as the primary randomized analysis, report actual delivery separately, and
-explain any additional estimand.
+Use intention-to-treat as the main analysis, report actual delivery separately and explain any
+extra estimand.
 
-Assignment analysis still needs defensible outcome observation. Report follow-up completeness by
-assigned arm; retrieve missing outcomes where possible. Do not exclude unreachable accounts or
-replace unknown margin with zero. Predeclare justified missing-data/censoring methods and
-sensitivity analyses; treatment-dependent observation can bias a comparison despite randomization
-([Lee's sample-selection analysis](https://www.nber.org/papers/w11721)). Distinguish a verified
-zero-purchase outcome from an unobserved one, and postpone the impact claim when the evidence is
-insufficient.
+Analysis by assignment still needs defensible outcomes. Report follow-up completeness by arm and
+recover missing outcomes where possible. Keep unreachable accounts in, and leave unknown margins
+missing instead of zero. Predeclare justified missing-data, censoring and sensitivity methods. If
+treatment affects whose outcome you observe, randomisation alone cannot prevent bias
+([Lee's sample-selection analysis](https://www.nber.org/papers/w11721)). Separate a verified
+zero-purchase outcome from an unobserved one, and postpone the impact claim when evidence is thin.
 
-For higher-variance outcomes, a predeclared covariate adjustment such as CUPED can improve
-precision. Use covariates available **before assignment**, never treatment-affected purchases or
-engagement. [June 2026 CUPED research](https://arxiv.org/abs/2606.18750) examines adjustment and
-valid variance estimation. Cross-fit learned adjustments where required; preserve the
-assignment/clustering structure in inference. Validate coverage in an A/A simulation and update the
-power calculation with justified variance estimates rather than assuming a fixed percentage
-reduction.
+For high-variance outcomes, a predeclared covariate adjustment such as CUPED can improve precision.
+Use only covariates available **before assignment**, not purchases or engagement that treatment
+affects. [June 2026 CUPED research](https://arxiv.org/abs/2606.18750) examines adjustment and
+valid variance estimation. Cross-fit learned adjustments where required, and keep the assignment and
+clustering structure in inference. Check coverage in an A/A simulation, and update the power
+calculation with justified variance estimates instead of assuming a fixed reduction.
 
-Compare against the current business policy, not just an intentionally weak model. Require a
-meaningful contribution result and acceptable guardrails; a statistically significant click-rate
-gain is not the same business claim. Investigate missing telemetry and immature labels before
-interpreting a negative or positive result.
+Compare against the current business policy, not only a deliberately weak model. Look for a
+meaningful contribution result with acceptable guardrails, since a significant click-rate gain is a
+different claim. Investigate missing telemetry and immature labels before interpreting any
+result.
 
-Decide how results generalize before expanding the pilot. An experiment among eligible existing
-customers in one region establishes an effect for that population and period. Compare eligibility,
-action support, baseline outcomes, costs and delivery capacity in a new population. Use a staged
-replication when those change materially; a larger model does not make a transportability claim
-valid. Preserve a control or a new valid experiment when expanding the action policy.
+Decide how results generalise before expanding the pilot. An experiment among eligible existing
+customers in one region shows an effect for that population and period. In a new population,
+compare eligibility, action support, baseline outcomes, costs and delivery capacity. If those change
+much, replicate in stages: a larger model cannot make a transportability claim valid. Keep a
+control or run a new valid experiment when expanding the action policy.
 
 ## 6. Deliver and log the decision
 
-Start with batch scoring for daily campaigns or retention queues. Prefer an API only for a decision
-that needs current session or inventory context. Both paths need schema validation, authorization,
+Start with batch scoring for daily campaigns or retention queues. Use an API only when a decision
+needs current session or inventory context. Both paths need schema validation, authorisation,
 deterministic eligibility checks, freshness limits, deadlines and fallbacks.
 
 The decision record should contain:
@@ -265,19 +262,19 @@ The decision record should contain:
 | Execution   | Delivery status/time, idempotency key, override/fallback reason                                                      |
 | Outcomes    | Mature outcome reference, horizon, net cost/contribution and observation completeness                                |
 
-Keep asynchronous outcomes in their own table joined by stable keys. Store scores and reason codes
-needed for debugging, with restricted access and retention periods; do not put customer secrets in
-general request logs. At execution, recheck inventory, contact fatigue and campaign/price validity.
-Reserve budget transactionally before delivery. Retries must not send duplicate incentives or apply
-a price change twice.
+Keep late outcomes in their own table, joined by stable keys. Store scores and reason codes needed
+for debugging, with restricted access and retention periods. Keep customer secrets out of general
+request logs. At execution, recheck inventory, contact fatigue and campaign and price validity.
+Reserve budget transactionally before delivery. Retries must never send duplicate incentives or
+apply a price change twice.
 
-Release a reservation only after confirmed terminal nondelivery/non-issuance; retain and reconcile
-uncertain timeouts so an issued benefit does not become unreserved. Log assignment, proposed action,
-executed action and override mechanism separately, marking unknown execution propensities.
+Release a reservation only after confirming the benefit was finally not delivered or issued.
+Reconcile uncertain timeouts so an issued benefit keeps its reservation. Log assignment, proposed
+action, executed action and override mechanism separately, marking unknown execution propensities.
 
-For unavailable evidence, return the currently permitted baseline with a reason. If even that
-baseline is invalid, return `review_required` and execute nothing. A novel action chosen by
-extrapolation is not a reliable fallback. Rehearse stale features, empty candidates, exhausted
+When evidence is missing, return the currently allowed baseline with a reason. If even that baseline
+is invalid, return `review_required` and execute nothing. A new action chosen by
+extrapolation makes an unreliable fallback. Rehearse stale features, empty candidates, exhausted
 budget, missing inventory, invalid input, timeout and duplicated delivery.
 
 ## 7. Monitor the service, policy and outcomes
@@ -292,20 +289,19 @@ Use a small dashboard with an owner and a response for each alert:
 | Service  | p95 latency, timeout/error rate, duplicate deliveries, cost per decision           | Route to baseline and repair serving                      |
 | Business | Experiment contribution, returns, opt-outs, complaints and retention horizon       | Check telemetry and stop according to declared guardrails |
 
-Record baseline levels and select alert limits from business tolerance and observed variability.
-Tutorial thresholds are placeholders. Keep an appropriate holdout/control so changes in the world
-are not automatically credited to the model. Monitor subgroup performance and allocation against the
-customer policy established for the project.
+Record baseline levels and set alert limits from business tolerance and observed variability.
+Tutorial thresholds are placeholders. Keep a suitable holdout or control so the model is not
+credited with changes in the world. Monitor subgroup performance and allocation against the
+project's customer policy.
 
-Retrain on a documented schedule or a justified trigger after checking the data. Compare the
-challenger on recent mature cohorts and a stable benchmark, then shadow/canary it. Update the
-calibration and policy evaluation with the exact released model. Roll back the complete compatible
-release or switch to the baseline; retain the incident evidence.
+Retrain on a documented schedule or justified trigger after checking the data. Compare the
+challenger on recent mature cohorts and a stable benchmark, then shadow or canary it. Update
+calibration and policy evaluation with the exact released model. Roll back the whole compatible
+release or switch to the baseline, and keep the incident records.
 
 ## 8. Package the project and check completion
 
-The following is a **target layout for the project you build**, not a claim that these artifacts
-already exist in this book:
+Below is a **target layout for the project you build**. You create these artifacts yourself:
 
 ```text
 business-ml-project/
@@ -320,9 +316,9 @@ business-ml-project/
   operations/               # dashboard specification, rollout and rollback runbook
 ```
 
-Document commands that create data, train, evaluate, replay decisions and start serving from a clean
-environment. A notebook can explore; the delivered pipeline must run without manual cell ordering.
-Use synthetic examples for restricted data and disclose their generating assumptions.
+Document commands that create data, train, evaluate, replay decisions and start serving from a
+clean environment. A notebook can explore, but the delivered pipeline must run without manual cell
+ordering. Use synthetic examples for restricted data and state how they were generated.
 
 | Gate             | Evidence required                                                                        | Completion level                         |
 | ---------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------- |
@@ -333,9 +329,9 @@ Use synthetic examples for restricted data and disclose their generating assumpt
 | Launch readiness | Experiment protocol, owners, shadow results and stop/rollback criteria                   | Ready for a controlled pilot             |
 | Measured value   | Executed valid assignments, mature outcomes, effect intervals and guardrails             | Evidence for a business rollout decision |
 
-An inconclusive or negative experiment is a completed analysis. Explain the result and retain the
-baseline when the evidence does not justify replacement. End to end means the loop reaches a
-defensible decision, including the decision to collect more data.
+An inconclusive or negative experiment is a completed analysis. Explain the result and keep the
+baseline when the evidence does not justify replacing it. End to end means the loop reaches a
+defensible decision, which may be to collect more data.
 
 ---
 

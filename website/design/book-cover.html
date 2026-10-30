@@ -1,0 +1,302 @@
+<!doctype html>
+<!--
+  Ground Truth book cover, 1600 x 2400 px, for ebook stores and the EPUB.
+  It reuses the site's fonts, colours and the home page figure. After a change, run from website/:
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+    --window-size=1600,2400 --screenshot=public/book-cover.png "file://$PWD/design/book-cover.html"
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ground Truth cover</title>
+    <style>
+      @font-face {
+        font-family: 'Newsreader Variable';
+        font-weight: 200 800;
+        src: url('../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'Newsreader Variable';
+        font-style: italic;
+        font-weight: 200 800;
+        src: url('../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-italic.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'DM Sans Variable';
+        font-weight: 100 1000;
+        src: url('../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2')
+          format('woff2');
+      }
+      :root {
+        --paper: #f7f4ed;
+        --surface: #eeefe6;
+        --ink: #1b302e;
+        --accent: #c4ed83;
+        --muted: #5c6b62;
+        --line: #d4d8cb;
+        --link: #286344;
+        --font-heading: 'Newsreader Variable', Georgia, serif;
+        --font-sans: 'DM Sans Variable', system-ui, sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        width: 1600px;
+        height: 2400px;
+        overflow: hidden;
+      }
+      body {
+        background: var(--paper);
+        background-image: radial-gradient(circle, rgba(27, 48, 46, 0.13) 1.6px, transparent 1.8px);
+        background-size: 40px 40px;
+        color: var(--ink);
+        font-family: var(--font-sans);
+        position: relative;
+      }
+      .frame {
+        position: absolute;
+        inset: 56px;
+        border: 2px solid var(--ink);
+      }
+      .top {
+        position: absolute;
+        top: 120px;
+        left: 130px;
+        right: 130px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font: 500 27px var(--font-mono);
+        letter-spacing: 5px;
+      }
+      .top .dot {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--link);
+        margin-right: 22px;
+        vertical-align: 2px;
+      }
+      h1 {
+        position: absolute;
+        top: 250px;
+        left: 118px;
+        font: 420 330px/0.9 var(--font-heading);
+        letter-spacing: -0.055em;
+      }
+      h1 span {
+        color: var(--link);
+      }
+      .subtitle {
+        position: absolute;
+        top: 905px;
+        left: 130px;
+        width: 1180px;
+        font: 400 58px/1.32 var(--font-sans);
+        color: var(--muted);
+      }
+      .art {
+        position: absolute;
+        top: 1110px;
+        left: 300px;
+        width: 1000px;
+      }
+      .art-band {
+        position: absolute;
+        top: 1080px;
+        left: 130px;
+        right: 130px;
+        height: 2px;
+        background: var(--line);
+      }
+      .cover-art {
+        width: 1000px;
+        height: auto;
+        display: block;
+      }
+      .art-orbit {
+        fill: none;
+        stroke: var(--line);
+        stroke-dasharray: 2 7;
+      }
+      .art-wire {
+        fill: none;
+        stroke: var(--ink);
+        stroke-width: 1.4;
+      }
+      .art-data rect,
+      .art-model rect,
+      .art-outcome rect {
+        fill: var(--paper);
+        stroke: var(--ink);
+        stroke-width: 1.2;
+      }
+      .art-model rect {
+        fill: var(--accent);
+        stroke: none;
+      }
+      .art-data circle,
+      .art-traveller {
+        fill: var(--ink);
+      }
+      .art-kicker {
+        font: 500 9px var(--font-mono);
+        fill: var(--ink);
+        letter-spacing: 0.4px;
+      }
+      .art-small {
+        font: 400 9px var(--font-mono);
+        fill: var(--muted);
+      }
+      .art-table-line {
+        stroke: var(--line);
+        fill: none;
+      }
+      .art-network {
+        fill: none;
+        stroke: #69834b;
+        stroke-width: 1;
+      }
+      .art-neurons circle {
+        fill: #1b302e;
+      }
+      .art-decision path {
+        fill: var(--surface);
+        stroke: var(--ink);
+        stroke-width: 1.2;
+      }
+      .art-chart {
+        stroke: var(--ink);
+        stroke-width: 1.5;
+        fill: none;
+      }
+      .art-return {
+        stroke: var(--muted);
+        stroke-dasharray: 4 5;
+        fill: none;
+      }
+      .art-note path {
+        stroke: var(--line);
+      }
+      .tagline {
+        position: absolute;
+        top: 2010px;
+        left: 130px;
+        font: 420 92px/1 var(--font-heading);
+        letter-spacing: -0.04em;
+      }
+      .tagline em {
+        color: var(--link);
+      }
+      .author {
+        position: absolute;
+        bottom: 130px;
+        left: 130px;
+        font: 500 46px var(--font-sans);
+        letter-spacing: 0.5px;
+      }
+      .edition {
+        position: absolute;
+        bottom: 138px;
+        right: 130px;
+        font: 500 25px var(--font-mono);
+        letter-spacing: 4px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame"></div>
+    <div class="top">
+      <span><span class="dot"></span>AN OPEN FIELD GUIDE</span><span>FOR WORKING DEVELOPERS</span>
+    </div>
+    <h1>Ground<br />Truth<span>.</span></h1>
+    <p class="subtitle">A working developer’s path into AI and machine learning</p>
+    <div class="art-band"></div>
+    <div class="art">
+      <svg viewBox="0 0 560 480" aria-hidden="true" class="cover-art">
+        <defs>
+          <pattern id="dot-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r=".8" fill="currentColor" opacity=".14" />
+          </pattern>
+          <marker
+            id="arrow"
+            viewBox="0 0 8 8"
+            refX="7"
+            refY="4"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto"
+          >
+            <path d="m1 1 5 3-5 3" fill="none" stroke="currentColor" />
+          </marker>
+        </defs>
+        <rect width="560" height="480" fill="url(#dot-grid)" />
+        <circle class="art-orbit" cx="286" cy="230" r="173" />
+        <circle class="art-orbit" cx="286" cy="230" r="119" />
+        <path
+          class="art-wire"
+          d="M87 144H185Q211 144 211 170V200M360 245H456V325M275 310V378H160V350"
+          marker-end="url(#arrow)"
+        />
+        <g class="art-data">
+          <rect x="30" y="68" width="143" height="113" rx="4" />
+          <text x="45" y="91" class="art-kicker">01 / RAW MATERIAL</text>
+          <path
+            d="M45 106H157M45 125H157M45 144H157M75 102V161M113 102V161"
+            class="art-table-line"
+          />
+          <circle cx="60" cy="115" r="3" />
+          <circle cx="96" cy="135" r="3" />
+          <circle cx="135" cy="154" r="3" />
+          <path d="m130 111 7 7m0-7-7 7" class="art-table-line" />
+        </g>
+        <g class="art-model">
+          <rect x="200" y="168" width="166" height="145" rx="4" />
+          <text x="217" y="193" class="art-kicker">02 / LEARN A PATTERN</text>
+          <path
+            d="m229 227 53 21 55-25m-108 4 53 50 55-54m-108 56 53-31 55 31m-108 0 53-2 55 2"
+            class="art-network"
+          />
+          <g class="art-neurons">
+            <circle cx="229" cy="227" r="7" />
+            <circle cx="229" cy="279" r="7" />
+            <circle cx="282" cy="248" r="9" />
+            <circle cx="282" cy="277" r="6" />
+            <circle cx="337" cy="223" r="7" />
+            <circle cx="337" cy="279" r="7" />
+          </g>
+        </g>
+        <g class="art-decision">
+          <path d="m455 286 66 53-66 53-66-53Z" />
+          <text x="455" y="333" text-anchor="middle" class="art-kicker">03 / ACT</text>
+          <text x="455" y="352" text-anchor="middle" class="art-small">with constraints</text>
+        </g>
+        <g class="art-outcome">
+          <rect x="78" y="350" width="154" height="75" rx="4" />
+          <text x="94" y="373" class="art-kicker">04 / CHECK REALITY</text>
+          <path d="m95 405 21-13 20 8 22-25 20 10 33-17" class="art-chart" />
+        </g>
+        <path class="art-return" d="M455 393V437H42V201" marker-end="url(#arrow)" />
+        <text x="285" y="456" text-anchor="middle" class="art-small">
+          Evidence closes the loop.
+        </text>
+        <circle class="art-traveller" cx="187" cy="144" r="5" />
+        <g class="art-note">
+          <path d="M402 95h95M402 102h62" />
+          <text x="402" y="84" class="art-small">FOLLOW THE EVIDENCE</text>
+        </g>
+      </svg>
+    </div>
+    <p class="tagline">Build the thing. Understand <em>why.</em></p>
+    <p class="author">Santosh Shinde</p>
+    <p class="edition">FREE &amp; OPEN EDITION</p>
+  </body>
+</html>

@@ -18,7 +18,12 @@ jobs:
           node-version-file: website/.nvmrc
           cache: npm
           cache-dependency-path: website/package-lock.json
+      # Test the oldest Python the book and lab document.
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.10'
       - run: npm ci
+      - run: npm run format:check
       - run: npm run check
       - run: npm test
       - run: npm run build

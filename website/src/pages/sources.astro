@@ -4,7 +4,9 @@ import Base from '../layouts/Base.astro';
 import { basePath } from '../lib/book.mjs';
 import { fromWebsite } from '../lib/paths.mjs';
 import type { SourceInventory } from '../lib/types';
-const inventory: SourceInventory = JSON.parse(await fs.readFile(fromWebsite('public/sources.json'), 'utf8'));
+const inventory: SourceInventory = JSON.parse(
+  await fs.readFile(fromWebsite('public/sources.json'), 'utf8'),
+);
 ---
 
 <Base
@@ -19,9 +21,9 @@ const inventory: SourceInventory = JSON.parse(await fs.readFile(fromWebsite('pub
       <em>in sight.</em>
     </h1>
     <p>
-      The papers, documentation, courses and practitioner writing cited in this edition. The
-      inventory records where each link is used. Inclusion is not an endorsement of every claim, and
-      the edition date is not an independent verification date for every source.
+      The papers, documentation, courses and practitioner writing cited in this edition, with the
+      pages that use each link. Listing a source does not endorse every claim in it. The edition
+      date does not mean each source was independently checked on that date.
     </p>
     <div class="source-controls">
       <label for="source-filter">Find a source</label>

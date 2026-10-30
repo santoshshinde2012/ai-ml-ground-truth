@@ -112,11 +112,11 @@ function updateProgress() {
     el.hidden = !completed.has(el.dataset.completedFor);
   });
   $$('[data-progress-label]').forEach(
-    (el) => (el.textContent = `${completed.size} of 9 chapters complete`),
+    (el) => (el.textContent = `${completed.size} of ${chapters.length} chapters complete`),
   );
   $$('[data-book-progress]').forEach((el) => {
     el.value = completed.size;
-    el.textContent = `${completed.size} of 9`;
+    el.textContent = `${completed.size} of ${chapters.length}`;
   });
   $$('[data-mark-complete]').forEach((button) => {
     const done = completed.has(button.dataset.markComplete);

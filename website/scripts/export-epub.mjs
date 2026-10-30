@@ -10,6 +10,7 @@ import { spawnSync } from 'node:child_process';
 import { parse, parseFragment } from 'parse5';
 import { zipSync, strToU8 } from 'fflate';
 import { websiteRoot, repositoryRoot, fromRepository } from '../src/lib/paths.mjs';
+import { updated } from '../src/lib/catalog.mjs';
 
 const root = websiteRoot;
 const siteOrigin = new URL(process.env.SITE_URL ?? 'https://santoshshinde2012.github.io').origin;
@@ -278,9 +279,10 @@ function xhtml(title, body) {
   return `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="${htmlNamespace}" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" lang="en"><head><meta charset="utf-8" /><title>${escapeText(title)}</title><link rel="stylesheet" type="text/css" href="../Styles/book.css" /></head><body>${body}</body></html>`;
 }
 
-// Prefer a raster cover for broad reader compatibility. Register it directly
-// from public/ so an older built asset cannot replace the current cover.
-for (const candidate of ['public/cover.png', 'public/cover.svg']) {
+// Prefer the portrait book cover, then the raster social image, for broad reader
+// compatibility. Register it directly from public/ so an older built asset cannot
+// replace the current cover.
+for (const candidate of ['public/book-cover.png', 'public/cover.png', 'public/cover.svg']) {
   if (await exists(path.join(root, candidate))) {
     coverImageHref = await registerImage(path.join(root, candidate));
     coverImageFilename = path.posix.basename(coverImageHref);
@@ -333,7 +335,7 @@ if (!coverDocument) {
 archive['EPUB/Text/about.xhtml'] = strToU8(
   xhtml(
     'About this edition',
-    `<section epub:type="preface"><h1>About this edition</h1><p>This EPUB contains the canonical chapters, applied guides, annotated resources and reference-lab instructions from the web book. Exercise answers are expanded for offline reading. Interactive controls are available in the <a href="${escapeAttribute(siteURL)}">web edition</a>; the surrounding worked examples and descriptive diagram captions remain here.</p><p>The companion data and numerical reference results are synthetic teaching material. They establish no real customer performance, causal benefit or production readiness.</p><p>Copyright © 2026 Santosh Shinde. The book and accompanying repository are distributed under the <a href="https://github.com/santoshshinde2012/ai-ml-ground-truth/blob/main/LICENSE">MIT license</a>. Linked external resources retain their respective terms.</p></section>`,
+    `<section epub:type="preface"><h1>About this edition</h1><p>This EPUB holds the canonical chapters, applied guides, annotated resources and reference-lab instructions from the web book. Exercise answers are expanded for offline reading. The interactive controls are in the <a href="${escapeAttribute(siteURL)}">web edition</a>. The worked examples around them and the diagram descriptions are all here.</p><p>The companion data and numerical reference results are synthetic teaching material. They show nothing about real customer performance, causal benefit or production readiness.</p><p>Copyright © 2026 Santosh Shinde. The text, illustrations and laboratory reports are licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The code is licensed under the <a href="https://github.com/santoshshinde2012/ai-ml-ground-truth/blob/main/LICENSE-CODE">MIT licence</a>. Linked external resources keep their own terms.</p></section>`,
   ),
 );
 const navigation = `<nav epub:type="toc" id="toc"><h1>Contents</h1><ol><li><a href="cover.xhtml">Ground Truth · Cover</a></li><li><a href="about.xhtml">About this edition</a></li>${readingDocuments.map((document) => `<li><a href="${document.filename}">${escapeText(document.title)}</a></li>`).join('')}</ol></nav><nav epub:type="landmarks" aria-label="Book landmarks" hidden="hidden"><h2>Book landmarks</h2><ol><li><a epub:type="cover" href="cover.xhtml">Cover</a></li><li><a epub:type="toc" href="nav.xhtml#toc">Contents</a></li><li><a epub:type="bodymatter" href="${firstReadingDocument?.filename || 'about.xhtml'}">Start reading</a></li></ol></nav>`;
@@ -379,7 +381,7 @@ const identifier = `urn:sha256:${crypto
       .join('\n'),
   )
   .digest('hex')}`;
-const modified = '2026-10-30T00:00:00Z';
+const modified = `${updated}T00:00:00Z`;
 const coverMetadata = coverImageFilename ? '<meta name="cover" content="cover-image" />' : '';
 const imageManifest = sortedAssets
   .map(([filename, asset], index) => {
@@ -389,7 +391,7 @@ const imageManifest = sortedAssets
   .join('');
 const spine = `<itemref idref="cover-page" /><itemref idref="about" />${readingDocuments.map((document) => `<itemref idref="${document.id}" />`).join('')}`;
 archive['EPUB/package.opf'] = strToU8(
-  `<?xml version="1.0" encoding="utf-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id" xml:lang="en" prefix="schema: http://schema.org/"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">${identifier}</dc:identifier><dc:title>Ground Truth</dc:title><dc:creator>Santosh Shinde</dc:creator><dc:language>en</dc:language><dc:rights>Copyright © 2026 Santosh Shinde. MIT license.</dc:rights><dc:description>A working developer’s path into AI and machine learning: an illustrated engineering field guide with applied business cases and reproducible labs.</dc:description><meta property="dcterms:modified">${modified}</meta>${coverMetadata}<meta property="schema:accessMode">textual</meta><meta property="schema:accessMode">visual</meta><meta property="schema:accessibilityFeature">tableOfContents</meta><meta property="schema:accessibilityFeature">structuralNavigation</meta><meta property="schema:accessibilitySummary">Reflowable text with headings, expanded exercise answers, a table of contents and image alternatives. Interactive web graphics are represented by descriptive text and source; the web edition supplies their controls.</meta></metadata><manifest><item id="about" href="Text/about.xhtml" media-type="application/xhtml+xml" /><item id="nav" href="Text/nav.xhtml" media-type="application/xhtml+xml" properties="nav" /><item id="css" href="Styles/book.css" media-type="text/css" />${contentManifest.join('')}${imageManifest}</manifest><spine>${spine}</spine></package>`,
+  `<?xml version="1.0" encoding="utf-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id" xml:lang="en" prefix="schema: http://schema.org/"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">${identifier}</dc:identifier><dc:title>Ground Truth</dc:title><dc:creator>Santosh Shinde</dc:creator><dc:language>en</dc:language><dc:rights>Copyright © 2026 Santosh Shinde. Text and illustrations: CC BY 4.0. Code: MIT license.</dc:rights><dc:description>A working developer’s path into AI and machine learning: an illustrated engineering field guide with applied business cases and reproducible labs.</dc:description><meta property="dcterms:modified">${modified}</meta>${coverMetadata}<meta property="schema:accessMode">textual</meta><meta property="schema:accessMode">visual</meta><meta property="schema:accessibilityFeature">tableOfContents</meta><meta property="schema:accessibilityFeature">structuralNavigation</meta><meta property="schema:accessibilitySummary">Reflowable text with headings, expanded exercise answers, a table of contents and image alternatives. Interactive web graphics are represented by descriptive text and source; the web edition supplies their controls.</meta></metadata><manifest><item id="about" href="Text/about.xhtml" media-type="application/xhtml+xml" /><item id="nav" href="Text/nav.xhtml" media-type="application/xhtml+xml" properties="nav" /><item id="css" href="Styles/book.css" media-type="text/css" />${contentManifest.join('')}${imageManifest}</manifest><spine>${spine}</spine></package>`,
 );
 
 await fs.mkdir(path.dirname(output), { recursive: true });

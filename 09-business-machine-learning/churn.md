@@ -1,18 +1,18 @@
 # Churn: predict the risk, then prove the retention action
 
-**About 20–25 hours for the learning project.** &nbsp;·&nbsp; [Chapter 9](README.md) &nbsp;·&nbsp;
+**About 25 hours for the learning project.** &nbsp;·&nbsp; [Chapter 9](README.md) &nbsp;·&nbsp;
 [Index](../README.md) &nbsp;·&nbsp; [Resources](resources/README.md)
 
 **The short version.** Start with a documented churn definition, historical customer snapshots, a
 time-based backtest and logistic regression. My suggested first serious challenger is **CatBoost for
 mixed categorical customer data**, or **LightGBM when its training and serving profile suits the
 workload**. Calibrate the chosen classifier on a later, untouched cohort. Use **survival analysis**
-when follow-up is incomplete or the business needs several time horizons. Use **randomized retention
-experiments and uplift modelling** to choose actions. A model that predicts who will leave cannot,
-by itself, tell you who a discount will save.
+when follow-up is incomplete or the business needs several time horizons. To choose actions, use
+**randomised retention experiments and uplift modelling**. A model that predicts who will leave
+cannot, on its own, tell you who a discount will save.
 
-Those are starting recommendations, not a universal winning model. Choose the simplest candidate
-that improves the operational metric across future cohorts and can be maintained by the team. Read
+These are starting recommendations, not one model that always wins. Choose the simplest candidate
+that improves the operational metric across future cohorts and that your team can maintain. Read
 [Chapter 3](../03-core-machine-learning/README.md) before training and
 [Chapter 6](../06-production/README.md) before connecting the result to a customer workflow.
 
@@ -27,15 +27,15 @@ that improves the operational metric across future cohorts and can be maintained
 ## Your five-session plan
 
 The hours cover a reproducible prototype and a written experiment plan. A retention trial needs real
-customers, permission to operate the campaign, enough observations and time for outcomes to mature;
-those cannot be completed by spending another afternoon on a public CSV.
+customers, permission to run the campaign, enough observations and time for outcomes to mature.
+Another afternoon with a public CSV cannot replace those.
 
-The schedule assumes prepared histories, the earlier environment and a reused delivery boundary;
-reconstructing source data or building a new CRM integration needs its own budget. Read the
-[causal primer](causal-primer.md), complete the fixed-horizon baseline, and add survival or
-treatment-effect modelling when the question and evidence require it. The
-[reference lab](../labs/README.md) supplies a reproducible synthetic fallback, with simulated
-outcomes explicitly separated from real campaign evidence.
+The schedule assumes prepared histories, the earlier environment and a reused delivery boundary.
+Rebuilding source data or a new CRM integration needs its own time. Read the
+[causal primer](causal-primer.md), finish the fixed-horizon baseline, and add survival or
+treatment-effect modelling when the question and evidence call for it. The
+[reference lab](../labs/README.md) gives a reproducible synthetic fallback and keeps simulated
+outcomes clearly apart from real campaign results.
 
 | Session | Hours | Do this                                                                                           | Done when                                                                                                  |
 | ------- | ----- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -45,14 +45,14 @@ outcomes explicitly separated from real campaign evidence.
 | 4       | 5     | Build capacity curves, a CRM export or API, and a retention experiment design                     | Every exported decision has an owner, timestamp, model version and expiry                                  |
 | 5       | 5     | Exercise late labels, missing features and rollback; write results, limits and next gates         | One documented command reproduces the offline result; simulated campaign results are labelled as simulated |
 
-If you only have a customer-level benchmark without dates, complete the model-comparison exercise
-and report its limitations. Do not manufacture prediction dates or claim a temporal backtest. For
-the stronger project, use transaction or subscription histories.
+If you only have a customer-level benchmark without dates, do the model-comparison exercise and
+report its limits. Avoid inventing prediction dates or claiming a temporal backtest. For the
+stronger project, use transaction or subscription histories.
 
 ## 1. Define the decision before choosing the model
 
-Churn has different meanings in different businesses. Subscription cancellation has an observed
-event. A retailer usually observes absence of purchases and defines an inactivity proxy. These
+Churn means different things in different businesses. Subscription cancellation is an observed
+event. A retailer usually sees only missing purchases and defines an inactivity proxy. These
 targets need separate names, horizons and evaluation.
 
 | Contract item      | Subscription example                                                                                      | Retail example                                                                                            |
@@ -69,12 +69,12 @@ These are example definitions. Set inactivity windows from buying cadence, seaso
 available to act. A 60-day gap can be normal for an annual gift buyer. Record whether churn means
 voluntary cancellation, payment failure, non-renewal or any termination. Payment recovery often
 deserves its own model and workflow. Define grace periods, refunds, pauses, account merges and
-reactivation; preserve a new episode when a cancelled subscriber returns.
+reactivation. When a cancelled subscriber returns, start a new episode.
 
 Keep the target **ahead of an actionable decision**. A cancellation reason entered after departure
-is leakage. A notice already submitted before scoring can be a valid signal for an explicitly
-defined cancellation-rescue workflow, but it changes the prediction problem. Do not mix that
-workflow into a model claimed to predict unannounced churn.
+is leakage. A cancellation notice submitted before scoring can be a valid signal for a clearly
+defined cancellation-rescue workflow, but it changes the prediction problem. Keep that workflow out
+of a model that claims to predict unannounced churn.
 
 Write down the comparator too: existing rules, random allocation at the same capacity, or the usual
 retention policy. "Higher accuracy" is not a decision objective.
@@ -82,16 +82,16 @@ retention policy. "Higher accuracy" is not a decision objective.
 ## 2. Build a table that represents what was known then
 
 The primary key is `(customer_id, episode_id, as_of)`. This is a **landmark snapshot**: what you
-knew about an eligible customer at one decision time. The same customer can have many rows; they are
-correlated observations, not many independent customers.
+knew about an eligible customer at one decision time. The same customer can have many rows. They
+are correlated observations, not many independent customers.
 
-Use two clocks when the source permits it. `event_time` records when an event happened;
-`available_at` records when the scoring system could first use it. Features require both to be at or
-before `as_of`. A payment dated Monday but ingested Thursday was unavailable to Tuesday's score.
-Historical dimensions must also use the version available then, rather than today's plan or account
-status copied backwards.
+Use two clocks when the source allows it. `event_time` records when an event happened.
+`available_at` records when the scoring system could first use it. A feature needs both to be at or
+before `as_of`. A payment dated Monday but loaded on Thursday was not available to Tuesday's score.
+Historical dimensions must also use the version available then, not today's plan or account status
+copied backwards.
 
-Your dataset should retain these fields alongside the features:
+Keep these fields alongside the features:
 
 | Field                                                           | Purpose                                                                              |
 | --------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -103,20 +103,22 @@ Your dataset should retain these fields alongside the features:
 | `churn_label` or `event_observed`, `duration`                   | Fixed-horizon classification or survival target                                      |
 | `prior_campaign_id`, `prior_action`, `prior_action_time`        | Describe earlier interventions without importing a future action into features       |
 
-**Build it in this order.** Reconstruct eligible accounts at each scoring time; join only the
-historical events and dimensions available then; compute features; join future outcomes into a
-separate label table; mark incomplete labels as unknown; split by decision time; fit all learned
-transformations inside the training folds. Save the query, extraction date, source versions and
-counts of excluded rows.
+**Build it in this order.** Reconstruct eligible accounts at each scoring time. Join only the
+historical events and dimensions available then, and compute features. Join future outcomes into a
+separate label table and mark incomplete labels as unknown. Split by decision time, and fit all
+learned transformations inside the training folds. Save the query, extraction date, source versions
+and counts of excluded rows.
 
-For fixed-horizon classification, use a uniformly matured cohort rather than mixing early known
-positives with immature presumed negatives. If the outcome feed is complete through day 100, the
-latest fully observed 30-day snapshot is day 70. A snapshot on day 85 with no cancellation yet has
-an **unknown** label. An ingestion allowance can move the eligible cutoff further back; use the
-actual completeness watermark as well as the calendar. A label from day 70 that only arrived on day
-103 was unavailable to a model retrained on day 100.
+For fixed-horizon classification, use a cohort whose labels have all matured. Avoid mixing early
+known positives with immature, presumed negatives. If the outcome feed is complete through day 100,
+the latest fully observed 30-day snapshot is day 70. A snapshot on day 85 with no cancellation yet
+has an **unknown** label. Completeness means what had arrived when you trained, not the calendar
+date. Suppose a day-99 cancellation for the day-70 snapshot only arrived on day 103. The feed was
+then not complete through day 100 for a model retrained on day 100, so that label was unavailable to
+it. Use the completeness watermark recorded at training time. An ingestion allowance moves the
+eligible cutoff further back to cover such delays.
 
-Good initial features are simple aggregates whose provenance you can explain.
+Good first features are simple aggregates whose source you can explain.
 
 | Family          | Examples                                                                      | Availability check                                                                      |
 | --------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
@@ -128,31 +130,31 @@ Good initial features are simple aggregates whose provenance you can explain.
 | Trajectory      | 7-day versus 30-day activity, rolling variance, trend                         | Use fixed past windows with stable handling of low exposure                             |
 | Earlier actions | Prior contact, earlier discount, time since campaign                          | Only earlier actions; keep the forthcoming treatment out of the risk feature table      |
 
-Run feature ablations and inspect implausibly strong predictors. Drop post-churn status, churn
-reason, a supplied churn score, future redemption and hindsight lifetime value. A supplied "customer
-value" field needs an as-of definition before it is usable. Do not assign an arbitrary ordering to
-plan names. CatBoost supports categorical inputs and advises against externally one-hot encoding
-them; its encoding still does not repair an incorrect time split or a future-derived column.
+Run feature ablations and inspect suspiciously strong predictors. Drop post-churn status, churn
+reason, a supplied churn score, future redemption and hindsight lifetime value. A supplied
+"customer value" field needs an as-of definition before use. Avoid giving plan names an arbitrary
+order. CatBoost supports categorical inputs and advises against one-hot encoding them yourself. Its
+encoding still cannot repair a wrong time split or a column derived from the future.
 [CatBoost categorical-feature documentation](https://catboost.ai/docs/en/features/categorical-features).
 
-Earlier campaigns also change the interpretation of the target. A classifier trained on customers
-who received assorted past campaigns estimates risk under that historical policy mixture. It does
-not automatically estimate **untreated** risk. Preserve campaign records and report this limitation;
-use a randomized control group when the decision requires a no-campaign comparator.
+Earlier campaigns also change what the target means. A classifier trained on customers who
+received a mix of past campaigns estimates risk under that historical mix, not **untreated** risk.
+Keep the campaign records and report this limit. When the decision needs a no-campaign comparator,
+use a randomised control group.
 
 ## 3. Use a model ladder that matches the available evidence
 
 ### Model-selection decision tree
 
-Use the prediction tree to choose a risk formulation, then the action tree when the workflow will
+Use the prediction tree to choose a risk formulation, then the action tree if the workflow will
 recommend a retention intervention. **These stages compose:** an R1 classifier or R2 survival model
 can supply risk for triage alongside an A1 action-effect model. Risk alone does not show who an
-offer will save, and causal modelling does not require a separately trained risk classifier.
+offer will save, and causal modelling does not need a separately trained risk classifier.
 
 #### 1. Choose the prediction formulation
 
-“Usable” means that eligibility, feature availability and outcome observation can be reconstructed
-at a real decision time. Incomplete follow-up is usable for survival only when event/censoring times
+“Usable” means you can reconstruct eligibility, feature availability and outcome observation at a
+real decision time. Incomplete follow-up is usable for survival only when event or censoring times
 and the observation limit are recorded. A missing date is not a censored duration.
 
 ```mermaid
@@ -176,9 +178,9 @@ flowchart TB
 
 #### 2. Add the retention-action stage
 
-Apply this second tree when deciding whether to contact a customer or which offer to deliver. Action
-effects need a randomized comparison, or a defensible identified design with its assumptions and
-overlap checked. A contact-response history selected by the old policy is insufficient by itself.
+Use this second tree to decide whether to contact a customer, or which offer to deliver. Action
+effects need a randomised comparison, or a defensible identified design with its assumptions and
+overlap checked. A contact-response history chosen by the old policy is not enough on its own.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"Arial, sans-serif","fontSize":"16px","textColor":"#17324D","primaryColor":"#F5F7FA","primaryTextColor":"#17324D","primaryBorderColor":"#8796A8","lineColor":"#718096","secondaryColor":"#EFF6FF","tertiaryColor":"#E9F6F2","clusterBkg":"#F8FAFC","clusterBorder":"#D6DEE8","edgeLabelBackground":"#FFFFFF"},"flowchart":{"htmlLabels":true,"nodeSpacing":18,"rankSpacing":28,"curve":"linear","padding":10,"subGraphTitleMargin":{"top":8,"bottom":12}}}}%%
@@ -203,60 +205,60 @@ Read each leaf as a starting recommendation with an evidence gate, not an automa
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | **R0 — Repair data; benchmark only if labels are documented.** [Data checks](#2-build-a-table-that-represents-what-was-known-then) · [Dataset limits](#9-choose-a-dataset-without-overstating-what-it-proves) | Missing dates or observation limits prevent a defensible future-cohort claim.      | Recover decision/availability timestamps and matured labels or event/censoring records. A static labelled table supports a predictive exercise only.                         | Reconstruct historical eligibility and feature state before R1/R2. Never invent scoring dates or survival durations.                    |
 | **R1 — Logistic regression, then calibrated CatBoost or LightGBM.** [Classifier protocol](#fit-and-calibrate-the-classifier)                                                                                  | A cheap baseline tests whether nonlinear tabular modelling earns its complexity.   | Dated snapshots, uniformly matured horizon labels, natural validation prevalence, separate later calibration/policy cohorts and a future holdout.                            | Improve capture/precision at capacity and useful probability calibration within serving cost; freeze the release before the final test. |
-| **R2 — Kaplan–Meier and penalized Cox, then survival forest or boosting; Aalen–Johansen for competing causes.** [Survival protocol](#6-when-to-use-survival-analysis)                                         | Preserve partial follow-up and estimate time-dependent risk for the defined event. | Defined origin, event/cause codes, durations, complete-observation watermark, supported horizons and defensible censoring assumptions.                                       | Check model assumptions and censor-aware horizon calibration; use metrics appropriate to the event definition on future cohorts.        |
-| **A0 — Risk triage and a randomized pilot.** [Trial design](#7-risk-is-not-the-expected-effect-of-an-offer)                                                                                                   | High risk does not identify a saveable customer.                                   | Valid risk evidence for triage; a pilot plan with eligible accounts, no-contact control, assignment/delivery logs, outcomes and action costs.                                | Collect mature trial outcomes and independent policy-value evidence before recommending learned retention targeting.                    |
-| **A1 — Arm-level effects, then a T-learner; compare cross-fitted DR when justified.** [Action-model protocol](#7-risk-is-not-the-expected-effect-of-an-offer)                                                 | Choose by incremental churn reduction and net contribution, including no contact.  | Randomized or explicitly identified treatment/control data, assignment probabilities or justified propensities, overlap, pretreatment covariates, mature outcomes and costs. | Evaluate the frozen policy independently; require credible incremental value, uncertainty and guardrails, then a controlled rollout.    |
+| **R2 — Kaplan–Meier and penalised Cox, then survival forest or boosting; Aalen–Johansen for competing causes.** [Survival protocol](#6-when-to-use-survival-analysis)                                         | Preserve partial follow-up and estimate time-dependent risk for the defined event. | Defined origin, event/cause codes, durations, complete-observation watermark, supported horizons and defensible censoring assumptions.                                       | Check model assumptions and censor-aware horizon calibration; use metrics appropriate to the event definition on future cohorts.        |
+| **A0 — Risk triage and a randomised pilot.** [Trial design](#7-risk-is-not-the-expected-effect-of-an-offer)                                                                                                   | High risk does not identify a saveable customer.                                   | Valid risk evidence for triage; a pilot plan with eligible accounts, no-contact control, assignment/delivery logs, outcomes and action costs.                                | Collect mature trial outcomes and independent policy-value evidence before recommending learned retention targeting.                    |
+| **A1 — Arm-level effects, then a T-learner; compare cross-fitted DR when justified.** [Action-model protocol](#7-risk-is-not-the-expected-effect-of-an-offer)                                                 | Choose by incremental churn reduction and net contribution, including no contact.  | Randomised or explicitly identified treatment/control data, assignment probabilities or justified propensities, overlap, pretreatment covariates, mature outcomes and costs. | Evaluate the frozen policy independently; require credible incremental value, uncertainty and guardrails, then a controlled rollout.    |
 
 ### Model ladder
 
 | Need and data                                                  | Baseline                                                    | Suggested next model                                               | Reason and qualification                                                                                    |
 | -------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| Operational triage with a complete fixed-horizon label         | Recent-usage or renewal rule; constant prevalence predictor | Regularized logistic regression                                    | Cheap, inspectable baseline; add sensible nonlinear terms if needed                                         |
+| Operational triage with a complete fixed-horizon label         | Recent-usage or renewal rule; constant prevalence predictor | Regularised logistic regression                                    | Cheap, inspectable baseline; add sensible nonlinear terms if needed                                         |
 | Mixed tabular customer data with nonlinear interactions        | Logistic regression                                         | CatBoost classifier                                                | Useful categorical handling; compare it on future cohorts and keep it only if the gain matters              |
 | Larger tabular workloads or an existing LightGBM stack         | Logistic regression                                         | LightGBM classifier; XGBoost is a valid challenger                 | Measure training memory, scoring cost and operational gain; the library name does not establish superiority |
-| Variable follow-up, censoring, or several time horizons        | Kaplan-Meier curve; penalized Cox model                     | Random survival forest or suitable survival boosting               | Model time to event and censoring rather than treating incomplete follow-up as no churn                     |
-| Which retention action creates value? Randomized campaign data | No incremental contact and current policy                   | Simple uplift learner, then a doubly robust learner when justified | Estimate action effects; risk-only models cannot identify them                                              |
+| Variable follow-up, censoring, or several time horizons        | Kaplan-Meier curve; penalised Cox model                     | Random survival forest or suitable survival boosting               | Model time to event and censoring rather than treating incomplete follow-up as no churn                     |
+| Which retention action creates value? Randomised campaign data | No incremental contact and current policy                   | Simple uplift learner, then a doubly robust learner when justified | Estimate action effects; risk-only models cannot identify them                                              |
 
 ### Fit and calibrate the classifier
 
-For the first classifier, begin with unweighted log loss and a small tuning budget. Compare class
+For the first classifier, start with unweighted log loss and a small tuning budget. Keep class
 weighting only if it improves the operational tradeoff. Tune tree depth or leaves, minimum leaf
-size, learning rate, regularization and the number of trees on earlier validation cohorts. Run early
-stopping there, never on the final test. Carry the same feature availability rules into every
-challenger. Treat sequence models as an additional experiment when event histories contain
-information your aggregates miss and there is enough data to validate the extra complexity.
+size, learning rate, regularisation and the number of trees on earlier validation cohorts. Run early
+stopping there too, not on the final test. Apply the same feature availability rules to every
+challenger. Sequence models are an extra experiment, for when event histories hold information your
+aggregates miss and you have enough data to validate the added complexity.
 
 For smaller tables, you can compare a released tabular foundation model using the
 [Chapter 3 protocol](../03-core-machine-learning/README.md). Report calibration and contact-capacity
 performance on the same future cohort, including sparse-history customers. Use a bounded tuning and
-inference budget; aggregate leaderboard performance does not decide this queue's value.
+inference budget. A leaderboard average does not decide this queue's value.
 
-**Handle imbalance inside the training process.** Never apply SMOTE or undersampling before
-splitting. If you test resampling, apply it only inside each training fold and preserve the natural
-class balance in validation, calibration and test data. This avoids both leakage and evaluation on
-an invented prevalence.
+**Handle imbalance inside the training process.** Avoid SMOTE or undersampling before splitting. If
+you test resampling, apply it only inside each training fold. Keep the natural class balance in
+validation, calibration and test data. This avoids both leakage and evaluation on an invented
+prevalence.
 [imbalanced-learn's resampling pitfalls](https://imbalanced-learn.org/stable/common_pitfalls.html).
 
 Class weighting and sampling can change probability estimates even when ranking improves. LightGBM
-explicitly cautions that `is_unbalance` and `scale_pos_weight` can produce poor individual
-class-probability estimates. Treat those as alternatives, not parameters to enable together.
+warns that `is_unbalance` and `scale_pos_weight` can give poor individual class-probability
+estimates. Use one or the other, not both together.
 [LightGBM objective parameters](https://lightgbm.readthedocs.io/en/stable/Parameters.html#is_unbalance).
 
 After choosing and freezing the classifier, fit a sigmoid calibrator on a later **matured** cohort
-that the classifier did not train on. Isotonic calibration is a challenger when there are enough
-examples to support a flexible fit. Assess reliability plots, log loss and Brier score on the
-untouched final cohort. A Brier score combines calibration and discrimination; inspect the
-reliability plot separately. Do not call a score a probability because the API returned a decimal.
-Calibrators need out-of-sample predictions, and refitting the underlying classifier afterwards can
-invalidate the fitted mapping.
+that the classifier did not train on. Isotonic calibration is a challenger when you have enough
+examples for a flexible fit. Assess reliability plots, log loss and Brier score on the untouched
+final cohort. A Brier score mixes calibration and discrimination, so inspect the reliability plot
+separately. A decimal from the API is not a probability until you check its calibration.
+Calibrators need out-of-sample predictions, and refitting the classifier afterwards can break the
+fitted mapping.
 [scikit-learn calibration guide](https://scikit-learn.org/stable/modules/calibration.html).
 
 ## 4. Validate the next campaign, with its real training cutoff
 
-Use expanding or rolling chronological backtests. At each simulated retraining time, admit only
-features and labels available by that cutoff. Then score a later cohort using that cohort's
-historical feature state. A chronological row split alone is insufficient if training labels reach
-into the validation period and were not known when that model would have been trained.
+Use expanding or rolling chronological backtests. At each simulated retraining time, use only
+features and labels available by that cutoff. Then score a later cohort with that cohort's
+historical feature state. A chronological row split alone is not enough if training labels reach
+into the validation period and were unknown when that model would have been trained.
 
 For a transparent first project, reserve successive time blocks for these purposes:
 
@@ -287,51 +289,50 @@ flowchart TB
     class E neutral;
 ```
 
-**Validation sequence.** Calibration and capacity/policy selection use separate later cohorts. The
-final future cohort does not fit the classifier, calibrator or operating policy.
+**Validation sequence.** Calibration and capacity or policy selection use separate later cohorts.
+The classifier, calibrator and operating policy are all fitted without the final future cohort.
 
-Leave enough space for outcome maturity before each fitting or policy-selection cutoff. Small
+Leave enough time for outcomes to mature before each fitting or policy-selection cutoff. Small
 datasets may instead use carefully designed forward out-of-fold predictions for calibration and
-policy selection; document exactly which earlier data each fitted component saw. Keep a final future
-period untouched. If you have only enough events for two blocks, report the resulting uncertainty
-and simplify the model rather than silently tuning on the final test.
+policy selection. Document exactly which earlier data each fitted component saw. Keep a final
+future period untouched. If you have only enough events for two blocks, report the resulting
+uncertainty and simplify the model instead of quietly tuning on the final test.
 
 **Match customer overlap to deployment.** Weekly scoring usually includes existing customers seen in
-earlier training periods. Earlier history for those customers is legitimate if it was available at
-the simulated training time. Forcing every customer into exactly one lifetime fold answers the
-different question of performance on unseen customers. Report a customer-disjoint, time-respecting
-test as well when onboarding or new-account generalization matters. A random row split across
-monthly snapshots is unsuitable for the main deployment backtest; group-only cross-validation also
-does not guarantee chronological validity.
+earlier training periods. Their earlier history is legitimate if it was available at the simulated
+training time. Putting every customer into exactly one lifetime fold answers a different question:
+performance on unseen customers. When onboarding or new-account generalisation matters, also report
+a customer-disjoint, time-respecting test. A random row split across monthly snapshots is unsuitable
+for the main deployment backtest. Group-only cross-validation does not guarantee chronological
+validity either.
 
-Do not automatically discard overlapping historical feature windows: the past usage they share can
-be legitimate. The danger is future labels, future information, near-duplicate decisions and
-uncertainty estimates that treat repeated customers as independent. Use an embargo or purging where
-label intervals and the actual retraining protocol require it, and justify its length from horizon,
-ingestion delay and data dependencies.
+Overlapping historical feature windows can stay: the past usage they share can be legitimate. The
+danger is future labels, future information, near-duplicate decisions and uncertainty estimates that
+treat repeated customers as independent. Use an embargo or purging (a gap between training and test
+periods) where label intervals and the retraining protocol require it. Justify its length from
+horizon, ingestion delay and data dependencies.
 
 Report by month, tenure, plan, acquisition channel and relevant operating segment. Check both the
-repeat-customer and new-customer cohorts. Estimate uncertainty with customer-level resampling for
-repeated snapshots; use time blocks or another dependence-aware method where common calendar shocks
-matter. State the resampling unit. A narrow interval from bootstrapping individual rows is not
-convincing when one customer appears twelve times.
+repeat-customer and new-customer cohorts. For repeated snapshots, estimate uncertainty by resampling
+customers. Where shared calendar shocks matter, use time blocks or another dependence-aware method.
+State the resampling unit. A narrow interval from bootstrapping single rows means little when one
+customer appears twelve times.
 
-Declare whether each result weights scoring opportunities or unique accounts. A single churn event
-can label several earlier weekly snapshots; that is appropriate for a recurring scoring task, but it
-does not create several independent churn events or saved accounts. Evaluate capacity on the actual
-decision cadence after cooldowns and exclusions, and count realized contribution once in the
-economic follow-up.
+Say whether each result weights scoring opportunities or unique accounts. One churn event can label
+several earlier weekly snapshots. That suits a recurring scoring task, but it does not create
+several independent churn events or saved accounts. Evaluate capacity on the actual decision cadence
+after cooldowns and exclusions, and count realised contribution once in the economic follow-up.
 
 ## 5. Measure the queue the team can actually work
 
 Accuracy rarely helps when churn is uncommon. **Average precision (AP)** is a useful ranking
-summary; if you report "PR-AUC", say whether it means AP or trapezoidal area under the
-precision-recall curve, because they are different computations. The scikit-learn AP definition
+summary. If you report "PR-AUC", say whether it means AP or trapezoidal area under the
+precision-recall curve, because they are computed differently. The scikit-learn AP definition
 weights precision by changes in recall.
 [Average precision documentation](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html).
 
-ROC-AUC remains a valid discrimination measure; it does not tell you whether precision is usable at
-the team's capacity. Precision depends on prevalence, so compare AP and precision-recall curves on
+ROC-AUC remains a valid discrimination measure, but it does not tell you whether precision is usable
+at the team's capacity. Precision depends on prevalence, so compare AP and precision-recall curves on
 comparable populations and show each cohort's churn rate.
 
 | Report                                    | Question it answers                                                               |
@@ -345,98 +346,98 @@ comparable populations and show each cohort's churn rate.
 | Cost or value by capacity, with intervals | Does expanding the queue improve the stated objective?                            |
 
 **An arithmetic example, not a benchmark result.** In a matured cohort of 10,000 accounts, 500
-churn. A queue of 1,000 contains 200 of them. Precision is `200 / 1,000 = 20%`; capture is
-`200 / 500 = 40%`; lift is `20% / 5% = 4`. This is good risk concentration. It says nothing about
+churn. A queue of 1,000 contains 200 of them. Precision is `200 / 1,000 = 20%`, capture is
+`200 / 500 = 40%` and lift is `20% / 5% = 4`. This is good risk concentration. It says nothing about
 how many of those customers a retention offer would save.
 
-For a purely diagnostic alert with stated false-positive and false-negative losses, a probability
-threshold can be derived from those losses. For a retention campaign, use expected **incremental
-value**, action eligibility and capacity. Select its operating point on the policy-selection cohort,
+For a purely diagnostic alert with stated false-positive and false-negative losses, you can derive a
+probability threshold from those losses. For a retention campaign, use expected **incremental
+value**, action eligibility and capacity. Choose its operating point on the policy-selection cohort,
 freeze it and evaluate it on the final cohort. Choose at most `k` feasible actions with positive
-expected benefit; do not fill a quota with negative-value contacts. When budgets or action costs
-differ, use a constrained allocation rather than a single risk threshold.
+expected benefit, even if that leaves a quota unfilled. When budgets or action costs differ, use a
+constrained allocation instead of a single risk threshold.
 
 ## 6. When to use survival analysis
 
-If you observe a subscriber for ten days without churn, you know only that they survived those ten
-days. You do not know their 30-day outcome. Survival analysis stores an event indicator and the
-observed time until churn or **right censoring**. It can use partial follow-up without inventing a
-negative classification label.
+If you observe a subscriber for ten days without churn, you know only that they lasted those ten
+days, not their 30-day outcome. Survival analysis stores an event indicator and the observed time
+until churn or **right censoring** (observation ended before churn was seen). It can use partial
+follow-up without inventing a negative classification label.
 [scikit-survival introduction](https://scikit-survival.readthedocs.io/en/stable/user_guide/00-introduction.html).
 
 Choose the time origin explicitly: acquisition for a lifecycle model, or `as_of` for a landmark
-model predicting remaining lifetime among customers still active then. If modelling lifetime from
-acquisition but the data start later, handle delayed entry; do not pretend customers were observed
+model predicting remaining lifetime among customers still active then. If you model lifetime from
+acquisition but the data start later, handle delayed entry instead of pretending you saw customers
 from signup. Historical tenure alone is not an event time. Censor at the last date the event feed is
-known complete, not simply at the date a CSV was downloaded.
+known complete, not the date a CSV was downloaded.
 
-Estimation as well as evaluation needs defensible censoring assumptions. Record why observation
-ended and whether censoring depends on measured customer history or unobserved risk. Administrative
-study end differs from losing visibility after migration. A more flexible survival model cannot
-recover unobserved outcomes by itself; document conditional modelling or sensitivity assumptions
-when simple independent censoring is implausible.
+Both estimation and evaluation need defensible censoring assumptions. Record why observation ended
+and whether censoring depends on measured customer history or unobserved risk. A planned study end
+differs from losing visibility after a migration. A more flexible survival model cannot recover
+unobserved outcomes by itself. When simple independent censoring is implausible, document
+conditional modelling or sensitivity assumptions.
 
-Start with **Kaplan-Meier** for a population baseline and **penalized Cox** for a compact
+Start with **Kaplan-Meier** for a population baseline and **penalised Cox** for a compact
 conditional model. Cox proportional hazards assumes proportional relative hazards for the covariates
-in its specified form; check that assumption and model fit. Nonlinear terms or stratification may
+in its specified form, so check that assumption and model fit. Nonlinear terms or stratification may
 help, but a coefficient does not identify a causal reason to churn.
 [lifelines survival regression](https://lifelines.readthedocs.io/en/latest/Survival%20Regression.html).
 
 Compare a **random survival forest** when interactions or changing relative risk over time matter.
 It estimates survival functions without imposing Cox proportional hazards. A forest's generic
-`predict` output is a risk score, not a 30-day probability; obtain a survival function and compute
+`predict` output is a risk score, not a 30-day probability. Get a survival function and compute
 `1 - S(30)` for the chosen origin and defined all-cause event. For a particular cause with competing
 events, use the cumulative-incidence approach below.
 [Random survival forest guide](https://scikit-survival.readthedocs.io/en/stable/user_guide/random-survival-forest.html).
 
-**Gradient boosting with a Cox loss** can learn nonlinear feature effects while retaining the
-proportional-hazards structure; it does not automatically solve every violation of that assumption.
+**Gradient boosting with a Cox loss** can learn nonlinear feature effects while keeping the
+proportional-hazards structure. It does not automatically fix every violation of that assumption.
 Other survival losses, including accelerated-failure-time approaches, have different assumptions.
 Name the fitted loss, not just "XGBoost survival" or "survival boosting".
 [Survival boosting guide](https://scikit-survival.readthedocs.io/en/stable/user_guide/boosting.html).
 
 For changing usage, a practical first approach is to rebuild features at each scoring landmark and
 predict the next horizon. More advanced models use start-stop intervals or a discrete-time hazard
-with covariates known at the start of each interval. Do not insert the customer's later usage
-trajectory into an earlier prediction. Time-varying Cox requires interval data, and future
-prediction needs an explicit assumption about future covariates; the library cannot know them. Keep
-repeated landmarks or intervals together for uncertainty calculations.
+with covariates known at the start of each interval. Keep the customer's later usage trajectory out
+of an earlier prediction. Time-varying Cox needs interval data. Predicting ahead also needs an
+explicit assumption about future covariates, because the library cannot know them. Keep repeated
+landmarks or intervals together for uncertainty calculations.
 [lifelines time-varying survival guide](https://lifelines.readthedocs.io/en/latest/Time%20varying%20survival%20regression.html).
 
 Evaluate survival on future cohorts using **IPCW concordance** for ranking, **time-dependent AUC**
 at the decision horizons and **Brier score / integrated Brier score (IBS)** for predicted survival
-probabilities. Harrell's concordance can be optimistic with substantial censoring. IPCW means
-inverse probability of censoring weighting; it relies on an appropriate censoring mechanism and
-adequate follow-up. Marginal censoring estimates need independence assumptions; if censoring depends
-on customer characteristics, consider suitable conditional modelling and sensitivity checks. Choose
-supported time ranges in advance, keep estimated censoring survival positive and estimate censoring
-from the designated training/reference sample. IBS requires survival probabilities, rather than an
-arbitrary risk score.
+probabilities. Harrell's concordance can be optimistic with heavy censoring. IPCW means inverse
+probability of censoring weighting. It relies on a suitable censoring mechanism and enough
+follow-up. Marginal censoring estimates need independence assumptions. If censoring depends on
+customer characteristics, consider conditional modelling and sensitivity checks. Choose supported
+time ranges in advance, keep estimated censoring survival above zero, and estimate censoring from
+the designated training or reference sample. IBS needs survival probabilities, not an arbitrary risk
+score.
 [Survival evaluation guide](https://scikit-survival.readthedocs.io/en/stable/user_guide/evaluating-survival-models.html),
 [time-dependent AUC assumptions](https://scikit-survival.readthedocs.io/en/stable/api/generated/sksurv.metrics.cumulative_dynamic_auc.html),
 [IBS documentation](https://scikit-survival.readthedocs.io/en/stable/api/generated/sksurv.metrics.integrated_brier_score.html).
 
 **Competing events change the probability target.** If closure or a known service migration
-precludes voluntary churn within the episode, retain separate event codes. Start with an
+rules out voluntary churn within the episode, keep separate event codes. Start with an
 **Aalen–Johansen cumulative-incidence** baseline for the probability of voluntary churn before
 competing events. With covariates, cause-specific hazard models for all causes can be combined into
-that probability; a single cause-specific Cox survival complement is insufficient. Censoring
-competing events and reporting `1 - Kaplan–Meier` instead produces a net-risk quantity, not the
-observed probability of voluntary churn before another cause. Use cause-compatible evaluation and
-calibration. Untracked disappearance with unknown cause is loss to follow-up, requiring censoring
-assumptions; it is not automatically a known competing event.
+that probability. A single cause-specific Cox survival complement is not enough. Censoring competing
+events and reporting `1 - Kaplan–Meier` instead gives a net-risk quantity, not the observed
+probability of voluntary churn before another cause. Use cause-compatible evaluation and
+calibration. A disappearance with unknown cause is loss to follow-up and needs censoring
+assumptions. It is not automatically a known competing event.
 [Competing-risk guide](https://scikit-survival.readthedocs.io/en/stable/user_guide/competing-risks.html),
 [Aalen–Johansen implementation](https://lifelines.readthedocs.io/en/latest/fitters/univariate/AalenJohansenFitter.html).
 
 **Check calibration at the operational horizon.** For a fitted lifelines regression model,
 [`survival_probability_calibration`](https://lifelines.readthedocs.io/en/latest/lifelines.calibration.html)
-provides a censor-aware out-of-sample calibration curve at `t0`, with ICI and E50 summaries. It is a
-diagnostic, not a drop-in calibrator for every survival library or a competing-risk evaluator. Never
-turn unfinished follow-up into negative labels or simply discard censored customers. If you fit a
-recalibration mapping, use a separate cohort and preserve coherent survival probabilities across
+gives a censor-aware, out-of-sample calibration curve at `t0`, with ICI and E50 summaries. It is a
+diagnostic, not a drop-in calibrator for every survival library or a competing-risk evaluator. Avoid
+turning unfinished follow-up into negative labels or simply dropping censored customers. If you fit
+a recalibration mapping, use a separate cohort and keep survival probabilities coherent across
 horizons before testing on the final future cohort.
 
-Survival handles observation limits; it does not turn observational customer histories into
+Survival handles observation limits. It does not turn observational customer histories into
 retention experiments.
 
 <details>
@@ -445,24 +446,24 @@ retention experiments.
 [SurvPFN](https://arxiv.org/abs/2606.04564), revised June 2026 and accepted to the ICML 2026
 Foundation Models for Structured Data workshop, uses a NanoTabPFN-style architecture pretrained on
 synthetic censored-survival tasks. Its evaluation uses cross-validation on 22 datasets with at most
-1,000 rows and 10 features; its synthetic prior includes Weibull event times and noninformative
-censoring. This does not establish a winner for large longitudinal CRM tables. The authors report
-Cox as best in their evaluation and no statistically significant pairwise model differences.
+1,000 rows and 10 features. Its synthetic prior includes Weibull event times and noninformative
+censoring, so it does not settle a winner for large longitudinal CRM tables. The authors report Cox
+as best in their evaluation, with no statistically significant pairwise model differences.
 
-For a small censored dataset, optionally compare it against Cox, survival forests and boosting on
-the same landmarks and future cohorts. Report horizon calibration, IPCW metrics, IBS, uncertainty,
+For a small censored dataset, you can compare it with Cox, survival forests and boosting on the
+same landmarks and future cohorts. Report horizon calibration, IPCW metrics, IBS, uncertainty,
 runtime and licence constraints. Test censoring and feature patterns unlike its prior. This is
-optional depth after the 25-hour prototype; survival prediction still does not identify retention
+optional depth after the 25-hour prototype. Survival prediction still does not identify retention
 treatment effects.
 
 </details>
 
 ## 7. Risk is not the expected effect of an offer
 
-This is the most consequential distinction in the use case. Two field experiments in Eva Ascarza's
+This is the most important distinction in the use case. Two field experiments in Eva Ascarza's
 _Retention Futility_ found that the customers at highest risk were not necessarily the best targets
-for retention. It supports testing responsiveness rather than assuming risk ranking is a retention
-policy; it does not promise the same treatment effects in your company.
+for retention. It supports testing who responds instead of treating risk ranking as a retention
+policy. It does not promise the same treatment effects in your company.
 [Ascarza, 2018](https://journals.sagepub.com/doi/10.1509/jmr.16.0163).
 
 For a churn outcome `Y = 1`, define the action effect with a helpful sign:
@@ -473,78 +474,93 @@ tau_a(x) = P(churn by H | do(no incremental contact), x)
 ```
 
 Positive `tau_a` means the action reduces churn. It is a **conditional average treatment effect**
-among customers with similar observed information, not proof that one named individual will be
-saved. Historical response rates among contacted customers cannot identify it: the earlier team may
-have chosen whom to contact using risk, value or information absent from the dataset.
+among customers with similar observed information, not proof that one named person will be saved.
+Historical response rates among contacted customers cannot identify it, because the earlier team
+may have chosen whom to contact using risk, value or information missing from the dataset.
 
-Design a randomized pilot among the eligible population. Include **no incremental retention
-contact**, the current policy and the candidate actions you can operationally deliver. Randomize by
-customer or account; use a household or other appropriate cluster when actions spill over. Avoid
-assigning conflicting treatments to the same customer in simultaneous campaigns. Record assignment
-probabilities, assignment, delivery, cost, redemption and matured outcomes separately. Evaluate the
-main trial by assigned treatment, including failed deliveries, using intention to treat. Make churn
-horizon, follow-up margin, minimum worthwhile effect, stopping rules and sample size assumptions
-part of the plan before reading results. Measure complaints, unsubscribes, discount cost and
-longer-term retention as well as the first renewal.
+Design a randomised pilot among the eligible population. Include **no incremental retention
+contact**, the current policy and the candidate actions you can actually deliver. Randomise by
+customer or account, or by household or another cluster when actions spill over. Avoid giving the
+same customer conflicting treatments in simultaneous campaigns. Record assignment probabilities,
+assignment, delivery, cost, redemption and matured outcomes separately. Evaluate the main trial by
+assigned treatment, including failed deliveries, using intention to treat. Put the churn horizon,
+follow-up margin, minimum worthwhile effect, stopping rules and sample size assumptions in the plan
+before reading results. Measure complaints, unsubscribes, discount cost and longer-term retention as
+well as the first renewal.
 
-With randomized assignment as treatment, outcome learners estimate effects of **assignment with that
-delivery process**, including nondelivery. They do not estimate effects only among recipients.
-Changing the channel, delivery success, overrides or capacity can change those effects; evaluate the
-revised workflow instead of transporting old numbers automatically. Follow the
+With randomised assignment as treatment, outcome learners estimate effects of **assignment with that
+delivery process**, including nondelivery, not effects among recipients only. A change in channel,
+delivery success, overrides or capacity can change those effects. Evaluate the revised workflow
+instead of carrying old numbers over. Follow the
 [shared experiment protocol](delivery-plan.md#5-design-the-experiment-before-launch) for missing
 outcomes and dependent assignment.
 
 My suggested modelling sequence once a valid pilot exists:
 
-1. Estimate average action effects with uncertainty and compare to no contact. A null average does
-   not rule out useful heterogeneity, but a subgroup or targeting-policy claim needs its own
-   prespecified or independent evaluation. Without credible benefit at either level, investigate the
-   intervention and delivery before scaling personalized targeting.
-2. Fit a simple **T-learner**: one regularized logistic or boosted-tree outcome model per arm, and
-   subtract the predicted churn probabilities in the sign convention above. Compare to an S-learner
-   and segment-level effects; a tiny treatment arm cannot support elaborate heterogeneity. The T/S/X
-   learner framework offers different bias and variance tradeoffs, not a guaranteed winner.
+1. Estimate average action effects with uncertainty and compare them with no contact. A null
+   average can still hide useful heterogeneity, but a subgroup or targeting-policy claim needs its
+   own prespecified or independent evaluation. If neither level shows credible benefit, investigate
+   the intervention and delivery before scaling personalised targeting.
+2. Fit a simple **T-learner**: one regularised logistic or boosted-tree outcome model per arm.
+   Subtract the predicted churn probabilities in the sign convention above. Compare it with an
+   S-learner and segment-level effects, since a tiny treatment arm cannot support elaborate
+   heterogeneity. The T/S/X learner framework offers different bias and variance tradeoffs, not a
+   guaranteed winner.
    [Künzel et al., 2019](https://www.pnas.org/doi/10.1073/pnas.1804597116).
-3. When sample size and overlap support it, compare a **cross-fitted doubly robust learner** or an
-   appropriate causal forest. Use the known randomized propensities where supported, keep nuisance
+3. When sample size and overlap support it, compare a **cross-fitted doubly robust learner** or a
+   suitable causal forest. Use the known randomised propensities where supported, keep nuisance
    fitting and policy evaluation separate, and check effect stability. Doubly robust methods still
-   require identification and overlap; they do not fix unrecorded confounding in a historical
+   need identification and overlap. They cannot fix unrecorded confounding in a historical
    campaign. [EconML doubly robust learning](https://www.pywhy.org/EconML/spec/estimation/dr.html).
-4. On an independent randomized evaluation cohort, compare the frozen targeting policy to current
-   policy, equal-capacity risk targeting and no incremental contact. Report uplift or Qini curves
-   with their sign and normalization, but make **incremental contribution at the actual budget**,
-   with a confidence interval, the decision metric. For unequal assignment probabilities, use an
-   appropriate propensity-weighted or doubly robust policy-value estimator and inspect overlap and
+4. On an independent randomised evaluation cohort, compare the frozen targeting policy with the
+   current policy, equal-capacity risk targeting and no incremental contact. Report uplift or Qini
+   curves with their sign and normalisation. The decision metric is **incremental contribution at
+   the actual budget**, with a confidence interval. For unequal assignment probabilities, use a
+   suitable propensity-weighted or doubly robust policy-value estimator, and inspect overlap and
    weight variance. Repeat in a prospective controlled rollout.
 
 **A margin example, using hypothetical known effects.** Assume avoiding a churn event creates ₹1,500
-of incremental contribution over the chosen follow-up, and an assigned action costs ₹100 in total
-regardless of response. This simplifying value assumption must itself be checked.
+of incremental contribution over the chosen follow-up, and an assigned action costs ₹100 in total,
+whatever the response. Check this simplifying value assumption too.
 
 | Customer segment | No-contact churn risk | Churn risk under action | Absolute reduction   | Expected incremental contribution |
 | ---------------- | --------------------- | ----------------------- | -------------------- | --------------------------------- |
 | A                | 60%                   | 56%                     | 4 percentage points  | `0.04 × ₹1,500 - ₹100 = -₹40`     |
 | B                | 25%                   | 13%                     | 12 percentage points | `0.12 × ₹1,500 - ₹100 = ₹80`      |
 
-At a one-contact capacity, B creates the higher expected value despite lower churn risk. Include
+At a one-contact capacity, B gives the higher expected value despite its lower churn risk. Include
 discounts given to customers who would have stayed anyway. If the discount is paid only on
-redemption, use expected redemption cost instead of subtracting a fixed assigned cost. If an offer
-merely delays churn, a short-horizon rescue probability times a long-horizon value may be
-misleading; evaluate incremental realized contribution over a suitable follow-up directly.
+redemption, use expected redemption cost instead of a fixed assigned cost. If an offer only delays
+churn, a short-horizon rescue probability times a long-horizon value can mislead. Evaluate realised
+incremental contribution over a suitable follow-up directly.
+
+**Try it yourself.** In the margin example, how large must segment A's absolute churn reduction be
+for the ₹100 action to break even? If the action cost falls to ₹50, which segments have positive
+expected value, and which comes first at a one-contact capacity?
+
+<details>
+<summary>Hint and explained answer</summary>
+
+Break-even needs `reduction × ₹1,500 = ₹100`, a reduction of about 6.7 percentage points. A's 4
+points falls short despite its 60% risk. At ₹50, A gives `0.04 × ₹1,500 - ₹50 = ₹10` and B gives
+`0.12 × ₹1,500 - ₹50 = ₹130`. Both are positive and B still comes first. Risk ranking would have
+chosen A both times. A's ₹10 rests on a hypothetical effect, so it needs an interval from a
+randomised evaluation before it earns budget.
+
+</details>
 
 For value forecasts, use revenue **minus** fulfilment, service, incentive and relevant contact
 costs, with a stated horizon and discounting assumption. Build those forecasts from information
-available at `as_of`; handle incomplete future observation honestly. A total-spend or CLTV column
-computed after departure is hindsight. Do not multiply current revenue by a risk score and call it
-incremental lifetime value. Keep causal benefit estimation separate from model explanations: SHAP
-can describe a classifier's score, but cannot establish that fixing a feature will retain the
-customer.
+available at `as_of`, and handle incomplete future observation with care. A total-spend or CLTV
+column computed after departure is hindsight. Current revenue times a risk score is not incremental
+lifetime value. Keep causal benefit estimation separate from model explanations. SHAP can describe
+a classifier's score, but cannot show that fixing a feature will keep the customer.
 
 ## 8. Connect the decision to a working retention workflow
 
-Most churn decisions tolerate batch scoring. Begin with a daily or weekly job that materializes
-point-in-time features, scores eligible accounts and writes a versioned decision table. Add an API
-only when a live workflow needs fresher information; an endpoint does not make the model more
+Most churn decisions suit batch scoring. Start with a daily or weekly job that builds point-in-time
+features, scores eligible accounts and writes a versioned decision table. Add an API
+only when a live workflow needs fresher information. An endpoint does not make the model more
 actionable.
 
 ```mermaid
@@ -581,31 +597,31 @@ flowchart TB
 ```
 
 **Retention workflow.** Risk scores and intervention evidence serve different purposes. The pilot
-includes a randomized no-contact comparator; the policy compares incremental value and feasible
+includes a randomised no-contact comparator. The policy compares incremental value and feasible
 actions before delivery. Assignment, delivery and cost logs join to matured outcomes for governed
 model and policy review, including the option of no incremental contact.
 
 Export `decision_id`, account, `as_of`, horizon, expiry, calibrated risk, model and feature
 versions, assigned action, policy version and a workflow reason. If an effect estimate exists, store
 its sign convention, action and expected incremental value too. Join the eventual outcome back to
-the original decision. Make the write idempotent so a retry cannot generate duplicate contacts or
-allocate the same budget twice.
+the original decision. Make the write idempotent so a retry cannot create duplicate contacts or
+spend the same budget twice.
 
-Include the experiment/assignment key, actual assignment probability and relevant coordinator state
-from the [shared decision record](delivery-plan.md#6-deliver-and-log-the-decision). Preserve the
-assigned action after delivery overrides; log execution separately.
+Include the experiment or assignment key, actual assignment probability and relevant coordinator
+state from the [shared decision record](delivery-plan.md#6-deliver-and-log-the-decision). Keep the
+assigned action after delivery overrides, and log execution separately.
 
-Recheck eligibility at execution: the account may have cancelled since scoring, lost contact
+Recheck eligibility at execution. The account may have cancelled since scoring, lost contact
 eligibility or already received an offer. Enforce suppression lists, cooldowns, budget, agent
 capacity and mutually exclusive campaigns. Log the action actually delivered separately from the
-proposed action. Label explanation text as a model explanation; agents should not read it as a
+proposed action. Label explanation text as a model explanation, so agents do not read it as a
 verified cause of churn. If an LLM drafts message copy, keep it downstream of the validated decision
 and evaluate it as its own feature.
 
 For stale or missing required data, use a documented fallback such as the existing service workflow
-or no incremental campaign. Route payment issues to payment recovery rather than automatically
-subsidizing every high-risk account. Keep a manual escalation path for account questions that the
-score cannot resolve.
+or no incremental campaign. Route payment issues to payment recovery instead of automatically
+subsidising every high-risk account. Keep a manual escalation path for account questions the score
+cannot resolve.
 
 Monitor at three speeds:
 
@@ -617,10 +633,10 @@ Monitor at three speeds:
 
 Document data and calibration triggers for retraining, the available-label cutoff, model owner,
 rollback artefact and campaign stop owner. Shadow a challenger before it allocates contacts. Review
-policy changes as well as model changes: a new discount or altered renewal terms changes the outcome
-distribution. Preserve a randomized control group when measuring continuing impact; the model should
-not be declared worse merely because successful interventions reduced churn among its high-risk
-customers. A drifting input distribution is a signal to investigate, not proof that a replacement
+policy changes as well as model changes, because a new discount or altered renewal terms changes the
+outcome distribution. Keep a randomised control group when measuring continuing impact. Without it,
+the model can look worse simply because successful interventions reduced churn among its high-risk
+customers. A drifting input distribution is a reason to investigate, not proof that a replacement
 model is better.
 
 ## 9. Choose a dataset without overstating what it proves
@@ -633,50 +649,50 @@ model is better.
 | Your permissioned subscription and event history                                                                     | A realistic risk/survival backtest, CRM integration and delayed-outcome monitoring               | You still need an intervention study, or explicitly defensible causal assumptions, to claim retention benefit                                                                                          |
 | Clearly marked synthetic campaigns                                                                                   | Exercising assignment logs, delayed-label logic, policy allocation and rollback                  | Synthetic effects come from your generator; they are not evidence of real model uplift or profitability                                                                                                |
 
-IBM documents a **fictional-company sample** and distinguishes provided churn labels from supplied
-churn scores and churn reasons, which makes it useful for a leakage exercise. Dataset variants have
-different fields; audit the dictionary rather than copying a public notebook. UCI documents Iranian
-Churn as first-nine-month feature aggregates with churn status at month twelve, a three-month
-planning gap. That supports its stated customer-table task, without supplying per-customer event
+IBM documents a **fictional-company sample** and separates provided churn labels from supplied churn
+scores and churn reasons, which makes it useful for a leakage exercise. Dataset variants have
+different fields, so check the dictionary instead of copying a public notebook. UCI documents
+Iranian Churn as first-nine-month feature aggregates with churn status at month twelve, a
+three-month planning gap. That supports its stated customer-table task, without per-customer event
 dates.
 
-Online Retail provides invoice generation times, with no ingestion/version history. A snapshot lab
-that assumes immediate availability must state that assumption and test simulated late arrivals; it
-cannot verify historical production availability from this release. Limit matured inactivity labels
-to the documented observation window and the customers you can identify. These are practice
-opportunities with different evidential limits. Keep dataset license, attribution, checksum and
-provenance in the project README.
+Online Retail provides invoice generation times, with no ingestion or version history. A snapshot
+lab that assumes immediate availability must state that assumption and test simulated late
+arrivals. This release cannot verify historical production availability. Limit matured inactivity
+labels to the documented observation window and the customers you can identify. These are practice
+datasets with different limits. Keep the dataset licence, attribution, checksum and provenance in
+the project README.
 
 ## What to build and what counts as complete
 
-Build **a retention decision service with an evidence report**. These are project deliverables to
-create in your own project, not artefacts supplied by this roadmap:
+Build **a retention decision service with an evidence report**. You create these deliverables in
+your own project. This roadmap does not supply them:
 
 - `decision-contract.md`: population, episode rules, event, horizon, label maturity, capacity,
   comparator, costs and action owner.
-- A versioned snapshot query and data dictionary; a saved example showing that a late event cannot
-  alter features available to an earlier decision.
+- A versioned snapshot query and data dictionary, with a saved example showing that a late event
+  cannot change features available to an earlier decision.
 - A reproducible training and chronological backtest command, source hashes, dependency versions and
   a table comparing rules, logistic regression and the chosen challenger.
 - A calibration report and capacity curve with future-cohort results, segment counts and
   dependence-aware uncertainty. Use survival diagnostics too if that is your target formulation.
 - A batch CRM export or validated API, idempotent decision writes, eligibility rechecks and action
   logs linked to decision IDs.
-- A randomized pilot plan; an uplift and margin report **only when valid intervention data exist**.
-  Mark a simulated campaign as a simulation and a historical association as an association.
+- A randomised pilot plan, and an uplift and margin report **only when valid intervention data
+  exist**. Label a simulated campaign as a simulation and a historical association as an association.
 - Monitoring and rollback instructions, plus checks for feature availability, label maturity,
   duplicate decisions, exhausted budgets and contact cooldowns.
 
 | Gate                  | Required evidence                                                                                                                                       | Honest completion claim                                                                                   |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Offline prototype     | Reproducible snapshots, mature horizon labels or valid event/censoring records, future-cohort comparison, appropriate calibration and capacity analysis | "The model prioritizes observed future risk under the documented data and policy"                         |
+| Offline prototype     | Reproducible snapshots, mature horizon labels or valid event/censoring records, future-cohort comparison, appropriate calibration and capacity analysis | "The model prioritises observed future risk under the documented data and policy"                         |
 | Operational readiness | Successful shadow run, execution-time eligibility, idempotency, logging, fallback, ownership and rollback                                               | "The workflow can deliver and audit decisions"                                                            |
 | Retention effect      | A completed controlled trial with matured outcomes, uncertainty, incremental net contribution and guardrails                                            | "Estimated the tested policy’s effect in this population and period"; state its direction and uncertainty |
 | Sustained operation   | Repeated outcome review, control comparison, model and policy governance, documented maintenance                                                        | "The service has evidence and an owner for continuing use"                                                |
 
-A learner can finish the first gate and demonstrate the second with a local integration. Do not
-claim the last two from a public benchmark. If the data do not support a gate, name the missing
-evidence and provide the concrete collection plan.
+A learner can finish the first gate and show the second with a local integration. The last two need
+more than a public benchmark. If the data do not support a gate, name the missing evidence and give
+a concrete plan to collect it.
 
 ## Before you move on
 
@@ -687,7 +703,7 @@ evidence and provide the concrete collection plan.
   benefit.
 - You can say when survival changes the target formulation and what censoring assumptions you used.
 - You can show the actual queue capacity, its expected costs and the no-contact option.
-- You can identify which claimed result requires a live trial and who owns that trial and rollback.
+- You can identify which claimed result needs a live trial, and who owns that trial and rollback.
 
 ---
 

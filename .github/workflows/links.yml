@@ -1,0 +1,35 @@
+name: External link report
+on:
+  schedule:
+    - cron: '23 5 1 * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Fails only on repeated 404/410 responses. Bot restrictions and timeouts
+      # are listed for manual review rather than treated as broken links.
+      - name: Check external references
+        run: python3 website/scripts/check-external-links.py --report "$RUNNER_TEMP/external-links.json"
+      - name: Summarize for review
+        if: always()
+        run: |
+          python3 - "$RUNNER_TEMP/external-links.json" >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json, sys
+          report = json.load(open(sys.argv[1], encoding="utf-8"))
+          counts = report["summary"]
+          print(f"## External references: {counts['verified']} verified, "
+                f"{counts['unverified']} unverified, {counts['broken']} broken\n")
+          for state in ("broken", "unverified"):
+              rows = [r for r in report["results"] if r["state"] == state]
+              if rows:
+                  print(f"### {state.capitalize()}\n")
+                  for r in rows:
+                      where = ", ".join(f"`{l['file']}:{l['line']}`" for l in r["locations"])
+                      print(f"- {r['url']} ({r['reason']}) in {where}")
+                  print()
+          PY

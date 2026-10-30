@@ -1,5 +1,5 @@
 export const edition = '2026.10';
-export const updated = '2026-10-30';
+export const updated = '2026-10-31';
 export const repository = 'https://github.com/santoshshinde2012/ai-ml-ground-truth';
 export const chapters = [
   {
@@ -30,7 +30,7 @@ export const chapters = [
     number: 3,
     dir: '03-core-machine-learning',
     title: 'Core machine learning',
-    short: 'Make an honest prediction',
+    short: 'Make a fair prediction',
     description:
       'Build a baseline, protect the holdout, and connect a prediction to the decision it informs.',
     hours: '80 hours',
@@ -43,7 +43,7 @@ export const chapters = [
     dir: '04-deep-learning',
     title: 'Deep learning',
     short: 'Look inside the model',
-    description: 'Follow the gradient. Train a small network. Learn what to inspect when it fails.',
+    description: 'Follow the gradient. Train a small network. Learn what to check when it fails.',
     hours: '90 hours',
     weeks: 'Weeks 14–22',
     lab: 'gradients',
@@ -55,7 +55,7 @@ export const chapters = [
     title: 'Language models & AI engineering',
     short: 'Build with language',
     description:
-      'Work from real examples and independent evaluations toward a useful language-model application.',
+      'Use real examples and independent evaluations to build a useful language-model application.',
     hours: '100 hours',
     weeks: 'Weeks 23–32',
     lab: 'retrieval',
@@ -77,7 +77,7 @@ export const chapters = [
     dir: '07-specialisation',
     title: 'Choosing a specialisation',
     short: 'Choose your depth',
-    description: 'Take one role seriously and build a capstone that makes your judgement visible.',
+    description: 'Commit to one role and build a capstone that shows your judgement.',
     hours: '70 hours',
     weeks: 'Weeks 38–43',
     lab: null,
@@ -89,7 +89,7 @@ export const chapters = [
     title: 'Finding the work',
     short: 'Show your work',
     description:
-      'Present evidence, prepare for interviews, and learn from a careful job-search record.',
+      'Show your results, prepare for interviews, and learn from a careful job-search log.',
     hours: '3–4 hours / week',
     weeks: 'Alongside Chapter 6',
     lab: null,
@@ -127,7 +127,7 @@ export const extras = [
     file: '09-business-machine-learning/causal-primer.md',
     slug: '09-business-machine-learning/causal-primer',
     title: 'A small causal primer',
-    description: 'What changes because of an action, and what the data can establish.',
+    description: 'What changes because of an action, and what the data can show.',
     category: 'Applied guide',
     chapter: 9,
   },
@@ -135,7 +135,7 @@ export const extras = [
     file: '09-business-machine-learning/offer-recommendation.md',
     slug: '09-business-machine-learning/offer-recommendation',
     title: 'Offer recommendation',
-    description: 'Choose offers by incremental value, feasible actions and honest evidence.',
+    description: 'Choose offers by incremental value, feasible actions and fair tests.',
     category: 'Applied guide',
     chapter: 9,
     lab: 'retention',
@@ -145,7 +145,7 @@ export const extras = [
     slug: '09-business-machine-learning/price-recommendation',
     title: 'Price recommendation',
     description:
-      'Model demand, distinguish causal response, and optimize within supported constraints.',
+      'Model demand, separate the causal response, and optimise within supported limits.',
     category: 'Applied guide',
     chapter: 9,
     lab: 'pricing',
@@ -172,43 +172,42 @@ export const extras = [
     file: 'labs/README.md',
     slug: 'reference-lab',
     title: 'The reference laboratory',
-    description:
-      'A deterministic, local, reproducible teaching project. No model API or paid service required.',
+    description: 'A local, reproducible teaching project. No model API or paid service needed.',
     category: 'Laboratory',
   },
   {
     file: 'labs/reference/evaluation.md',
     slug: 'reference-lab/evaluation',
     title: 'A completed evaluation',
-    description: 'The seed-42 reference comparison, uncertainty and simulated-prototype decision.',
+    description: 'The seed-42 reference comparison, its uncertainty and the prototype decision.',
     category: 'Lab report',
   },
   {
     file: 'labs/reference/data-card.md',
     slug: 'reference-lab/data-card',
     title: 'Reference data card',
-    description: 'The simulator, population, clocks, permitted interpretation and limitations.',
+    description: 'The simulator, population, clocks, what you may conclude, and the limits.',
     category: 'Lab report',
   },
   {
     file: 'labs/reference/model-card.md',
     slug: 'reference-lab/model-card',
     title: 'Reference model card',
-    description: 'Training, calibration, evaluation and the boundaries of the synthetic example.',
+    description: 'Training, calibration, evaluation and the limits of the synthetic example.',
     category: 'Lab report',
   },
   {
     file: 'labs/reference/incident-report.md',
     slug: 'reference-lab/incident-report',
     title: 'An incident rehearsal',
-    description: 'A filled example of delivery failure, reconciliation and recovery.',
+    description: 'A worked example of delivery failure, reconciliation and recovery.',
     category: 'Lab report',
   },
   {
     file: 'content/publishing.md',
     slug: 'publishing',
     title: 'Publishing & contributing',
-    description: 'Build the book, propose a correction, and keep its evidence traceable.',
+    description: 'Build the book, suggest a correction, and keep its sources traceable.',
     category: 'Reference',
   },
 ];

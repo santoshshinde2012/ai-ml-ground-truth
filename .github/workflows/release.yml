@@ -1,0 +1,52 @@
+name: Release edition
+on:
+  push:
+    tags: ['edition-*']
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: website/.nvmrc
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - name: Confirm the tag matches the edition
+        run: |
+          edition=$(node --input-type=module -e "import { edition } from './src/lib/catalog.mjs'; console.log(edition)")
+          if [ "$GITHUB_REF_NAME" != "edition-$edition" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match edition $edition in src/lib/catalog.mjs"
+            exit 1
+          fi
+          if ! grep -q "^version: '$edition'" ../CITATION.cff; then
+            echo "::error::CITATION.cff does not declare version '$edition'"
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npm run export:pdf
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          edition="${GITHUB_REF_NAME#edition-}"
+          cp dist/downloads/ground-truth.epub "ground-truth-$edition.epub"
+          cp dist/downloads/ground-truth.pdf "ground-truth-$edition.pdf"
+          gh release create "$GITHUB_REF_NAME" "ground-truth-$edition.epub" "ground-truth-$edition.pdf" \
+            --verify-tag \
+            --title "Ground Truth · edition $edition" \
+            --notes "The complete book for offline reading: EPUB for e-readers and PDF for print. Read the current web edition at https://santoshshinde2012.github.io/ai-ml-ground-truth/. See the reader's guide section \"Keeping this book current\" for what changed. Laboratory data and business results are simulated teaching examples. Text, illustrations and reports: CC BY 4.0. Code: MIT license. External sources retain their own terms."

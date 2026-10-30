@@ -5,7 +5,6 @@ import { edition, updated } from '../src/lib/catalog.mjs';
 import { fromRepository, fromWebsite } from '../src/lib/paths.mjs';
 
 await fs.mkdir(fromWebsite('.cache'), { recursive: true });
-await fs.mkdir(fromWebsite('public/downloads'), { recursive: true });
 await fs.cp(fromRepository('labs/reference'), fromWebsite('public/lab-reference'), {
   recursive: true,
 });
@@ -39,7 +38,7 @@ await fs.writeFile(
 const titlePage = {
   title: 'Ground Truth',
   slug: 'title-page',
-  html: `<img src="${basePath()}/cover.png" alt="Ground Truth. Build the thing. Understand why. An open field guide for working developers."/><h1>Ground Truth</h1><p>A working developer’s path into AI and machine learning.</p><p>Written by Santosh Shinde · Edition ${edition}</p><p>MIT license. External sources retain their own terms. The reference data and business results are simulated teaching examples.</p>`,
+  html: `<img src="${basePath()}/cover.png" alt="Ground Truth. Build the thing. Understand why. An open field guide for working developers."/><h1>Ground Truth</h1><p>A working developer’s path into AI and machine learning.</p><p>Written by Santosh Shinde · Edition ${edition}</p><p>Text and illustrations: CC BY 4.0. Code: MIT licence. External sources keep their own terms. The reference data and business results are simulated teaching examples.</p>`,
 };
 await fs.writeFile(
   fromWebsite('.cache/book-export.json'),

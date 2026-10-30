@@ -4,13 +4,13 @@
 
 **The short version.** Eight core chapters take you from shipping software to shipping AI systems in
 about 450 hours. A ninth applied chapter covers **offer recommendation, price recommendation and
-churn**, with model choices and a full business decision workflow. You build on **one thread** — one
-dataset becomes one model becomes one AI product. Each chapter has a practical plan and a
+churn**, with model choices and a full business decision workflow. You build on **one thread** —
+one dataset becomes one model becomes one AI product. Each chapter has a practical plan and a
 `resources` folder for deeper reading.
 
 The illustrated web edition adds worked lessons, eight interactive explanations and a reproducible
-reference laboratory. The [reader's guide](content/reader-guide.md) contains the original long-form
-introduction, learning philosophy, [schedule and assumptions](content/reader-guide.md#time),
+reference lab. The [reader's guide](content/reader-guide.md) holds the original long introduction,
+learning approach, [schedule and assumptions](content/reader-guide.md#time),
 [glossary](content/reader-guide.md#glossary), [project ideas](content/reader-guide.md#projects) and
 [author's note](content/reader-guide.md#a-note-from-the-author).
 
@@ -33,8 +33,8 @@ introduction, learning philosophy, [schedule and assumptions](content/reader-gui
 | 09 | [Business machine learning: offers, prices and churn](09-business-machine-learning/README.md) | [Resources](09-business-machine-learning/resources/README.md) |
 
 Follow Chapters 1–8 in order, starting the Chapter 8 job search alongside Chapter 6. Chapter 9 is
-an applied extension after Chapters 3 and 6; one case can supply the Chapter 7 capstone. The
-[reader's guide](content/reader-guide.md#how-to-use) explains the full sequence.
+an applied extension after Chapters 3 and 6. One case can be your Chapter 7 capstone. The
+[reader's guide](content/reader-guide.md#how-to-use) explains the full order.
 
 The applied guides cover [causal foundations](09-business-machine-learning/causal-primer.md),
 [offers](09-business-machine-learning/offer-recommendation.md),
@@ -44,19 +44,21 @@ The applied guides cover [causal foundations](09-business-machine-learning/causa
 
 ## Read, explore, practice
 
-The web edition provides chapter and lesson navigation, local search, eight interactive field notes,
-light/dark appearance, focus reading, optional progress saved on your device, a complete print
-edition and an EPUB download. Core content is readable without JavaScript.
+The web edition offers chapter and lesson menus, local search, eight interactive field notes, light
+and dark themes, focus reading, optional progress saved on your device, a complete print edition and
+an EPUB download. The core content works without JavaScript. Each edition is also on the
+[releases page](https://github.com/santoshshinde2012/ai-ml-ground-truth/releases) as an EPUB and a
+PDF for offline reading.
 
-The Python laboratory runs without paid services, API keys or third-party Python packages:
+The Python lab runs without paid services, API keys or third-party packages:
 
 ```bash
 python3 labs/ground_truth_lab.py all --output labs/output
 python3 -m unittest discover -s labs/tests -v
 ```
 
-Its data and business outcomes are explicitly simulated. See [the lab guide](labs/README.md) for
-assumptions, exercises, filled reports and meaningful failure checks.
+Its data and business outcomes are labelled as simulated. See [the lab guide](labs/README.md) for
+assumptions, exercises, filled reports and checks that stop a bad run.
 
 ## Repository structure
 
@@ -82,30 +84,34 @@ ai-ml-ground-truth/
 │   ├── tests/                # Website content and interaction tests
 │   ├── package.json
 │   └── package-lock.json
-├── .github/workflows/        # Pull-request checks and GitHub Pages deployment
+├── .github/                  # Workflows, issue form, pull-request template and Dependabot
 ├── README.md                 # Repository entry point
-└── LICENSE
+├── CONTRIBUTING.md           # Short contribution guide
+├── CITATION.cff              # Citation metadata for the current edition
+├── LICENSE                   # CC BY 4.0 for the book's text, illustrations and lab reports
+└── LICENSE-CODE              # MIT for the website, lab code and code examples
 ```
 
-Each numbered chapter keeps its main `README.md` and annotated `resources/README.md`. Chapter 9
-also contains the applied guides and shared delivery plan. These Markdown files are the canonical
-book content; the website renders them directly and derives shorter lessons from their sections.
-The chapter directories, `content/` and teaching `labs/` remain at the repository root. The website
-reads these source files in place, so there is no second copy of the book to maintain.
+Each numbered chapter has its main `README.md` and annotated `resources/README.md`. Chapter 9
+also holds the applied guides and shared delivery plan. These Markdown files are the book's source
+of truth. The website renders them directly and builds shorter lessons from their sections. The
+chapter folders, `content/` and teaching `labs/` stay at the repository root. The website reads
+these files in place, so there is only one copy to maintain.
 
-Keep chapter order, learning decisions, explanations and the author's voice intact when changing
-organization or presentation. Keep website code, assets, dependencies, tests and configuration in
+When reorganising or restyling, keep the chapter order, learning decisions, explanations and the
+author's voice. Keep website code, assets, dependencies, tests and configuration in
 `website/`. GitHub requires workflow files in the root `.github/workflows/` directory.
 
-`labs/reference/` contains maintained, versioned examples. Local lab runs go to the ignored
-`labs/output/` directory. Website output (`website/dist/`), intermediates (`website/.astro/` and
-`website/.cache/`), generated public assets and installed dependencies are also ignored. Edit the
-source files rather than those generated copies; see
+`labs/reference/` holds maintained, versioned examples. Local lab runs go to the ignored
+`labs/output/` directory. Website output (`website/dist/`), intermediates (`website/.astro/`
+and `website/.cache/`), generated public assets and installed dependencies are also ignored. Edit
+the source files, not those generated copies. See
 [what to change where](content/publishing.md#what-to-change-where).
 
 ## Develop and publish
 
-Use **Node.js 24** and Python 3.10 or newer. Run these commands from the repository root:
+Use **Node.js 24** (Astro needs at least 22.23.4) and Python 3.10 or newer. Run these commands
+from the repository root:
 
 ```bash
 npm --prefix website ci
@@ -115,23 +121,35 @@ npm --prefix website run dev
 Before publishing:
 
 ```bash
+npm --prefix website run format:check
 npm --prefix website run check
 npm --prefix website test
 npm --prefix website run build
 npm --prefix website run preview
 ```
 
-A build generates the static site, Pagefind search index, offline EPUB and checks internal links.
-Use the URL printed by the preview command to check the complete built edition, including search;
-the development server alone does not generate the search index.
-GitHub Actions verifies pull requests and deploys successful builds from `main` to GitHub Pages.
+A build creates the static site, Pagefind search index and offline EPUB, and checks internal
+links. To check the complete built edition, including search, open the URL the preview command
+prints. The development server alone does not build the search index.
+GitHub Actions checks pull requests and deploys successful builds from `main` to GitHub Pages.
+Pushing an `edition-*` tag publishes a GitHub release with the EPUB and a PDF of the print edition.
 See [publishing and contributing](content/publishing.md) for configuration, source locations,
-review practices and external-link checking.
+review practice and external-link checks.
 
-The reading budgets are planning estimates, not measured completion times or employment guarantees.
+The reading budgets are planning estimates, not measured completion times or job guarantees.
 
 ## Author and reuse
 
 Written by **Santosh Shinde**. The [author’s note and AI-assistance disclosure](content/reader-guide.md#a-note-from-the-author)
-explain the motivation and process. Corrections with primary sources and reproducible examples are
-welcome. Released under the [MIT license](LICENSE); external resources retain their own terms.
+explain the motivation and process. Corrections backed by primary sources and reproducible
+examples are welcome (see [contributing](CONTRIBUTING.md)). To cite the book, use
+[`CITATION.cff`](CITATION.cff) or GitHub's "Cite this repository" button.
+
+**Licence.** The book's text, illustrations and lab reports are released under
+[Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE). You may share, translate and
+adapt them, including commercially, if you give credit, link to the licence and note any
+changes. The website, the lab code and the code examples in the chapters are under the
+[MIT licence](LICENSE-CODE). A suitable credit is: *Ground Truth* by Santosh Shinde,
+https://santoshshinde2012.github.io/ai-ml-ground-truth/, CC BY 4.0. External papers, courses,
+datasets and fonts keep their own terms. Earlier commits of this repository are still available
+under the MIT licence.

@@ -12,15 +12,15 @@ const labs: Record<
     title: 'Shapes tell the story',
     question: 'Predict the output shape before you reveal the expansion.',
     summary:
-      'A (3, 1) column plus a (3,) row broadcasts to a (3, 3) grid. Dimensions are compared from the right; each pair must match or include a 1.',
+      'A (3, 1) column plus a (3,) row broadcasts to a (3, 3) grid. Dimensions are compared from the right. Each pair must match or include a 1.',
     labels: ['(3, 1)', '(3,)', '(3, 3)'],
   },
   timeline: {
     n: '02',
-    title: 'What did we know then?',
-    question: 'Move the decision clock. An event can exist before your system knows about it.',
+    title: 'What did the system know then?',
+    question: 'Move the decision clock. An event can happen before your system knows about it.',
     summary:
-      'At decision day 5, the day-2 purchase that arrived on day 7 is unavailable. Historical features need both event time and availability time.',
+      'On decision day 5, the day-2 purchase that arrived on day 7 is not yet available. Historical features need both event time and availability time.',
     labels: ['Event happens', 'Record arrives', 'Decision happens'],
   },
   validation: {
@@ -28,7 +28,7 @@ const labs: Record<
     title: 'Choose the right boundary',
     question: 'The same records can answer three different deployment questions.',
     summary:
-      'Random splitting can mix repeated customers and future records. A chronological split tests later activity; a group split tests unseen customers.',
+      'Random splitting can mix repeated customers and future records. A chronological split tests later activity. A group split tests unseen customers.',
     labels: ['Random split', 'Time split', 'Group split'],
   },
   gradients: {
@@ -36,7 +36,7 @@ const labs: Record<
     title: 'One node. Two paths.',
     question: 'A reused node receives gradient contributions from every path.',
     summary:
-      'For a = x × x and y = a + a, x = 3 gives y = 18 and dy/dx = 12. Overwriting a reused node’s gradient can incorrectly produce 6.',
+      'For a = x × x and y = a + a, x = 3 gives y = 18 and dy/dx = 12. Overwriting a reused node’s gradient gives the wrong answer, 6.',
     labels: ['x = 3', 'a = x × x', 'y = a + a'],
   },
   retrieval: {
@@ -50,17 +50,17 @@ const labs: Record<
   evaluation: {
     n: '06',
     title: 'Is the improvement convincing?',
-    question: 'Compare paired outcomes, then inspect how much evidence the difference carries.',
+    question: 'Compare paired outcomes, then check how much the difference really tells you.',
     summary:
-      'On 50 illustrative cases, 40 baseline passes and 42 candidate passes give a four-percentage-point difference. A paired bootstrap interval includes zero; defer a superiority claim.',
+      'On 50 illustrative cases, 40 baseline passes and 42 candidate passes give a four-percentage-point difference. A paired bootstrap interval includes zero, so the gain is not yet shown.',
     labels: ['50 shared cases', '40 → 42 passes', 'Uncertainty matters'],
   },
   pricing: {
     n: '07',
     title: 'Find the profit, not the price',
-    question: 'Explore a toy demand curve with a cost and inventory constraint.',
+    question: 'Try a toy demand curve with a unit cost and a stock limit.',
     summary:
-      'In this invented model, deterministic demand is max(0, 130 − 0.65 × price), cost is ₹55, and contribution is (price − cost) × min(demand, stock). For uncertain demand, use the distribution of min(demand, stock); capping the mean is generally incorrect. This is not an estimated causal demand curve.',
+      'In this invented model, deterministic demand is max(0, 130 − 0.65 × price), cost is ₹55, and contribution is (price − cost) × min(demand, stock). For uncertain demand, use the distribution of min(demand, stock). Capping the mean is usually wrong. This is not an estimated causal demand curve.',
     labels: ['Price', 'Demand & stock', 'Contribution'],
   },
   retention: {
@@ -68,7 +68,7 @@ const labs: Record<
     title: 'Risk is not saveability',
     question: 'Who should receive the next retention contact?',
     summary:
-      'For these six invented customers, selecting the highest churn risks produces less incremental value than selecting estimated treatment benefit. Expected incremental contribution is uplift × ₹180 − ₹20 per contact; the estimates are illustrative, not identified from observed risk.',
+      'For these six invented customers, picking the highest churn risks gives less incremental value than picking by estimated treatment benefit. Expected incremental contribution is uplift × ₹180 − ₹20 per contact. The estimates are illustrative, not identified from observed risk.',
     labels: ['Churn risk', 'Treatment benefit', 'Contact decision'],
   },
 };
@@ -240,8 +240,8 @@ const scriptUrl = `${import.meta.env.BASE_URL}scripts/concept-lab.js`;
   </p>
   <p class="lab-footnote">
     Illustrative, deterministic example.{' '}
-    <span class="lab-nojs">Enable JavaScript to explore the controls.</span>
-    <span class="lab-js">Change an input to inspect the result.</span>
+    <span class="lab-nojs">Turn on JavaScript to try the controls.</span>
+    <span class="lab-js">Change an input and watch the result.</span>
     <span class="lab-scrollhint"> The diagram scrolls horizontally.</span>
   </p>
   <p class="lab-print-summary">Static reference: {lab.summary}</p>

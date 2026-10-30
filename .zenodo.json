@@ -1,0 +1,18 @@
+{
+  "upload_type": "publication",
+  "publication_type": "book",
+  "title": "Ground Truth: A working developer's path into AI and machine learning",
+  "creators": [{ "name": "Shinde, Santosh" }],
+  "description": "<p>You already write software. Ground Truth helps you turn that experience into the skill to build, evaluate and run AI systems.</p><p>The book follows one project from start to finish: one dataset becomes one model, and one model becomes one AI product. It covers data foundations, core machine learning, deep learning, language models and running systems in production, then helps you choose a specialisation and find the work. An applied chapter covers offers, prices and churn, with the business decisions behind each model.</p><p>Every chapter has a practical plan, worked examples, exercises with explained answers and annotated resources. A free Python reference lab uses reproducible, simulated data.</p><p>Read the web edition at https://santoshshinde2012.github.io/ai-ml-ground-truth/. The text, illustrations and lab reports are licensed under CC BY 4.0; the code is under the MIT license.</p>",
+  "license": "cc-by-4.0",
+  "language": "eng",
+  "version": "2026.10",
+  "keywords": [
+    "machine learning",
+    "artificial intelligence",
+    "language models",
+    "MLOps",
+    "causal inference",
+    "open textbook"
+  ]
+}
