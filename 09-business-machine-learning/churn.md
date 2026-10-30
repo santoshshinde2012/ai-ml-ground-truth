@@ -186,7 +186,7 @@ overlap checked. A contact-response history chosen by the old policy is not enou
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"Arial, sans-serif","fontSize":"16px","textColor":"#17324D","primaryColor":"#F5F7FA","primaryTextColor":"#17324D","primaryBorderColor":"#8796A8","lineColor":"#718096","secondaryColor":"#EFF6FF","tertiaryColor":"#E9F6F2","clusterBkg":"#F8FAFC","clusterBorder":"#D6DEE8","edgeLabelBackground":"#FFFFFF"},"flowchart":{"htmlLabels":true,"nodeSpacing":18,"rankSpacing":28,"curve":"linear","padding":10,"subGraphTitleMargin":{"top":8,"bottom":12}}}}%%
 flowchart TB
     accTitle: Add evidence for a retention action
-    accDescr: Without identified action effects, use risk for triage and collect a randomized pilot; with valid evidence, evaluate uplift or doubly robust action models.
+    accDescr: Without identified action effects, use risk for triage and collect a randomised pilot; with valid evidence, evaluate uplift or doubly robust action models.
     E{"Action effects<br/>identified?"}
     E -->|No| A0["A0<br/>Triage + pilot"]
     E -->|Yes| A1["A1<br/>Uplift / DR"]
@@ -567,14 +567,14 @@ actionable.
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"Arial, sans-serif","fontSize":"16px","textColor":"#17324D","primaryColor":"#F5F7FA","primaryTextColor":"#17324D","primaryBorderColor":"#8796A8","lineColor":"#718096","secondaryColor":"#EFF6FF","tertiaryColor":"#E9F6F2","clusterBkg":"#F8FAFC","clusterBorder":"#D6DEE8","edgeLabelBackground":"#FFFFFF"},"flowchart":{"htmlLabels":true,"nodeSpacing":18,"rankSpacing":28,"curve":"linear","padding":10,"subGraphTitleMargin":{"top":8,"bottom":12}}}}%%
 flowchart TB
     accTitle: Churn evidence and retention workflow
-    accDescr: Historical snapshots predict risk, randomized pilots estimate action effects, and a constrained policy delivers actions for mature-outcome review.
+    accDescr: Historical snapshots predict risk, randomised pilots estimate action effects, and a constrained policy delivers actions for mature-outcome review.
     subgraph Risk["Risk prediction"]
         direction TB
         D["Eligible<br/>snapshots"] --> M["Risk or<br/>survival"]
     end
     subgraph Effects["Action evidence"]
         direction TB
-        T["Randomized<br/>pilot"] --> A["Action<br/>effects"]
+        T["Randomised<br/>pilot"] --> A["Action<br/>effects"]
     end
     subgraph Delivery["Retention workflow"]
         direction TB
