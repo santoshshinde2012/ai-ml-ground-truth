@@ -6,41 +6,14 @@
  */
 import fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fromWebsite } from '../src/lib/paths.mjs';
+import { base, chromeArguments, findChrome, serveDist } from './browser.mjs';
 
 const dist = fromWebsite('dist');
 const output = path.join(dist, 'downloads/ground-truth.pdf');
-const base = (process.env.BASE_PATH ?? '/ai-ml-ground-truth').replace(/\/$/, '');
-const mediaTypes = {
-  '.html': 'text/html; charset=utf-8',
-  '.css': 'text/css',
-  '.js': 'text/javascript',
-  '.mjs': 'text/javascript',
-  '.json': 'application/json',
-  '.svg': 'image/svg+xml',
-  '.png': 'image/png',
-  '.woff2': 'font/woff2',
-  '.woff': 'font/woff',
-  '.ttf': 'font/ttf',
-};
-
-function findChrome() {
-  const candidates = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/Applications/Chromium.app/Contents/MacOS/Chromium',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-  ];
-  return candidates.find((candidate) => candidate && existsSync(candidate));
-}
 
 const chrome = findChrome();
 if (!chrome) {
@@ -52,27 +25,7 @@ if (!existsSync(path.join(dist, 'print/index.html'))) {
   process.exit(2);
 }
 
-const server = http.createServer(async (request, response) => {
-  const { pathname } = new URL(request.url, 'http://localhost');
-  const relative = decodeURIComponent(pathname).slice(base.length).replace(/^\/+/, '');
-  let file = path.resolve(dist, relative);
-  if (!pathname.startsWith(`${base}/`) || (file !== dist && !file.startsWith(dist + path.sep))) {
-    response.writeHead(404).end();
-    return;
-  }
-  if (!path.extname(file)) file = path.join(file, 'index.html');
-  try {
-    const body = await fs.readFile(file);
-    response.writeHead(200, {
-      'Content-Type': mediaTypes[path.extname(file)] ?? 'application/octet-stream',
-    });
-    response.end(body);
-  } catch {
-    response.writeHead(404).end();
-  }
-});
-await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-const { port } = /** @type {import('node:net').AddressInfo} */ (server.address());
+const site = await serveDist(dist);
 const profile = await fs.mkdtemp(path.join(os.tmpdir(), 'ground-truth-pdf-'));
 
 try {
@@ -81,15 +34,12 @@ try {
   const chromeRun = spawn(
     chrome,
     [
-      '--headless=new',
-      '--disable-gpu',
-      ...(process.platform === 'linux' ? ['--no-sandbox'] : []),
+      ...chromeArguments(profile),
       '--no-pdf-header-footer',
       // Diagrams render in the browser; allow them to finish before printing.
       '--virtual-time-budget=30000',
-      `--user-data-dir=${profile}`,
       `--print-to-pdf=${output}`,
-      `http://127.0.0.1:${port}${base}/print/`,
+      `${site.origin}${base}/print/`,
     ],
     { stdio: ['ignore', 'ignore', 'pipe'], timeout: 180_000 },
   );
@@ -110,6 +60,6 @@ try {
     );
   }
 } finally {
-  server.close();
+  site.close();
   await fs.rm(profile, { recursive: true, force: true });
 }

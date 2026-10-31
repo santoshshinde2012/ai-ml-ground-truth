@@ -260,15 +260,23 @@ if (diagrams.length) {
     rendering = true;
     try {
       const { default: mermaid } = await import('mermaid');
+      // The print edition is for paper, so it always uses the light diagram theme.
       const dark =
-        document.documentElement.dataset.theme === 'dark' ||
-        (!document.documentElement.dataset.theme &&
-          matchMedia('(prefers-color-scheme:dark)').matches);
+        !$('.print-book') &&
+        (document.documentElement.dataset.theme === 'dark' ||
+          (!document.documentElement.dataset.theme &&
+            matchMedia('(prefers-color-scheme:dark)').matches));
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',
+        // Number diagrams with a counter. Time-based IDs repeat when several diagrams
+        // render in the same millisecond, and Mermaid then draws them into one SVG.
+        deterministicIds: true,
         theme: dark ? 'dark' : 'neutral',
         fontFamily: 'DM Sans Variable, sans-serif',
+        // The print edition uses SVG text labels so each diagram can be saved as a
+        // self-contained image for the EPUB; HTML labels do not display inside images.
+        htmlLabels: !$('.print-book'),
         flowchart: { useMaxWidth: true, htmlLabels: false },
       });
       for (let i = 0; i < diagrams.length; i++) {

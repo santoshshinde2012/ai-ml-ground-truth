@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { documentList } from '../src/lib/catalog.mjs';
 import {
@@ -115,4 +116,11 @@ test('currency and prose are not rendered as mathematics', async () => {
     }
   }
   assert.deepEqual(prose, []);
+});
+
+test('diagrams use counter-based IDs so several can render in one millisecond', async () => {
+  // With time-based IDs, diagrams rendered together share an ID and Mermaid draws them all
+  // into the first SVG. This broke the PDF edition of 2026.10.
+  const reader = await fs.readFile(new URL('../src/scripts/reader.js', import.meta.url), 'utf8');
+  assert.match(reader, /deterministicIds:\s*true/);
 });

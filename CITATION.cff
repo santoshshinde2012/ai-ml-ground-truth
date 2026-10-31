@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Shinde
     given-names: Santosh
-version: '2026.10'
+version: '2026.10.1'
 doi: 10.5281/zenodo.23815936
 date-released: '2026-10-31'
 license:
@@ -27,5 +27,5 @@ preferred-citation:
     - family-names: Shinde
       given-names: Santosh
   year: 2026
-  edition: '2026.10'
+  edition: '2026.10.1'
   url: 'https://santoshshinde2012.github.io/ai-ml-ground-truth/'

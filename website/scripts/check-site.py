@@ -232,6 +232,24 @@ def check_epub(path: Path) -> list[str]:
                         issues.append(prefix + f"spine ID not in manifest: {itemref.get('idref', '')}")
                     elif referenced.get("media-type") != "application/xhtml+xml":
                         issues.append(prefix + f"spine item is not XHTML: {itemref.get('idref', '')}")
+                # Navigation may only link to documents in the reading spine.
+                package_dir = posixpath.dirname(package_name)
+                spine_paths = {
+                    posixpath.normpath(posixpath.join(package_dir, unquote(urlsplit(by_id[ref.get("idref", "")].get("href", "")).path)))
+                    for ref in spine if ref.get("idref", "") in by_id
+                }
+                for item in items:
+                    if "nav" not in item.get("properties", "").split():
+                        continue
+                    nav_path = posixpath.normpath(posixpath.join(package_dir, unquote(urlsplit(item.get("href", "")).path)))
+                    nav_root = documents.get(nav_path)
+                    for node in nav_root.findall(".//{*}a") if nav_root is not None else []:
+                        link = urlsplit(node.get("href") or "")
+                        if not link.path or link.scheme or link.netloc:
+                            continue
+                        target = posixpath.normpath(posixpath.join(posixpath.dirname(nav_path), unquote(link.path)))
+                        if target not in spine_paths:
+                            issues.append(prefix + f"navigation links outside the reading spine: {node.get('href')}")
             identifiers = {}
             for name, root in documents.items():
                 counts = Counter(node.get("id") for node in root.iter() if node.get("id"))
@@ -245,6 +263,16 @@ def check_epub(path: Path) -> list[str]:
                 title = root.find("{*}head/{*}title")
                 if title is None or not "".join(title.itertext()).strip():
                     issues.append(prefix + f"XHTML document has no title: {name}")
+                # Rules EpubCheck enforces that browsers forgive; stores reject the file.
+                if any(node.get("align") is not None for node in root.iter()):
+                    issues.append(prefix + f"{name} uses the obsolete align attribute")
+                for figure in root.findall(".//{*}figure"):
+                    children = list(figure)
+                    captions = [i for i, child in enumerate(children) if child.tag.endswith("figcaption")]
+                    if any(i not in (0, len(children) - 1) for i in captions):
+                        issues.append(prefix + f"{name} has a figcaption that is not the first or last child of its figure")
+                if any(nav.get("aria-label") is not None for nav in root.findall(".//{*}nav")):
+                    issues.append(prefix + f"{name} has aria-label on a navigation element")
                 for node in root.iter():
                     for attribute in ("href", "src"):
                         value = node.get(attribute)

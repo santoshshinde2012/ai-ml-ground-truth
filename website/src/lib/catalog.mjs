@@ -1,4 +1,4 @@
-export const edition = '2026.10';
+export const edition = '2026.10.1';
 export const updated = '2026-10-31';
 export const repository = 'https://github.com/santoshshinde2012/ai-ml-ground-truth';
 export const chapters = [

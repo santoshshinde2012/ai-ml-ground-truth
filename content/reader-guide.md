@@ -586,6 +586,8 @@ like this stays useful.
 
 ### What changed in the illustrated edition review
 
+- **Edition 2026.10.1.** Every diagram in the PDF now prints in its own place, and the EPUB passes
+  the EpubCheck validator that ebook stores use.
 - **One thread, end to end.** Chapters 4 and 5 now start with a same-thread build, and Chapter 6
   runs the Chapter 3 model alongside the Chapter 5 application. Chapter 7 shows how each
   capstone stays connected, and Chapter 8 adds operations evidence to the portfolio template.

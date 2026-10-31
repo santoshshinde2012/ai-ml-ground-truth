@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { unified } from 'unified';
@@ -70,7 +71,13 @@ export async function renderContent(markdown, source, { removeTitle = true } = {
               const description =
                 node.value.match(/accDescr:\s*(.+)/)?.[1] ||
                 'A diagram of the process described in the surrounding text.';
-              value = `<figure class="diagram"><div class="mermaid" aria-label="${escapeHTML(description)}">${escapeHTML(diagramSource)}</div><figcaption>${escapeHTML(description)}</figcaption><details class="diagram-source"><summary>Diagram source</summary><pre><code>${escapeHTML(node.value)}</code></pre></details></figure>`;
+              // A stable key lets the EPUB use the image rendered from this diagram.
+              const key = crypto
+                .createHash('sha256')
+                .update(diagramSource)
+                .digest('hex')
+                .slice(0, 16);
+              value = `<figure class="diagram"><div class="mermaid" data-diagram="${key}" aria-label="${escapeHTML(description)}">${escapeHTML(diagramSource)}</div><figcaption>${escapeHTML(description)}</figcaption></figure><details class="diagram-source" data-diagram="${key}"><summary>Diagram source</summary><pre><code>${escapeHTML(node.value)}</code></pre></details>`;
             } else {
               const language = node.lang || 'text';
               try {
@@ -111,6 +118,14 @@ export async function renderContent(markdown, source, { removeTitle = true } = {
           node.properties.decoding = 'async';
           if (node.properties.src && !/^(https?:|data:|\/)/.test(String(node.properties.src)))
             node.properties.src = resolveLink(String(node.properties.src), source);
+        }
+        // Column alignment uses classes: `align` is obsolete in HTML and invalid in EPUB 3.
+        if ((node.tagName === 'th' || node.tagName === 'td') && node.properties.align) {
+          node.properties.className = [
+            ...(node.properties.className || []),
+            `align-${node.properties.align}`,
+          ];
+          delete node.properties.align;
         }
         if (node.tagName === 'table' && parent?.tagName !== 'div' && typeof index === 'number') {
           parent.children[index] = {
