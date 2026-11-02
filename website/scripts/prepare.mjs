@@ -8,7 +8,12 @@ await fs.mkdir(fromWebsite('.cache'), { recursive: true });
 await fs.cp(fromRepository('labs/reference'), fromWebsite('public/lab-reference'), {
   recursive: true,
 });
-await sharp(fromWebsite('public/cover.svg')).png().toFile(fromWebsite('public/cover.png'));
+// The social card names the edition; stamp the current one so link previews never go stale.
+const card = (await fs.readFile(fromWebsite('public/cover.svg'), 'utf8')).replace(
+  /EDITION [\d.]+/,
+  `EDITION ${edition}`,
+);
+await sharp(Buffer.from(card)).png().toFile(fromWebsite('public/cover.png'));
 const pages = await getBook();
 const sources = new Map();
 for (const page of pages) {
