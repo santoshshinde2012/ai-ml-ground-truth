@@ -2100,9 +2100,7 @@
     padding: 0 0 15px;
   }
   .prose {
-    font:
-      11pt/1.55 Georgia,
-      serif;
+    font: 11pt/1.55 var(--font-heading);
   }
   .prose h2 {
     font-size: 23pt;
