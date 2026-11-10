@@ -121,7 +121,8 @@ async function capturePNG(page, box, file) {
   await sharp(Buffer.from(data, 'base64'))
     .flatten({ background: '#ffffff' })
     .resize({ width: 1600, withoutEnlargement: true })
-    .png({ palette: true, quality: 90, compressionLevel: 9, effort: 10 })
+    // Flat-colour line art needs no dithering, which only adds noise that compresses badly.
+    .png({ palette: true, quality: 90, dither: 0, compressionLevel: 9, effort: 10 })
     .toFile(file);
 }
 
