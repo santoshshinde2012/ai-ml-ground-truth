@@ -160,8 +160,17 @@ try {
     index.images[relative] = file;
   }
   await fs.writeFile(path.join(output, 'index.json'), JSON.stringify(index, null, 2));
+  const pngs = (await fs.readdir(output)).filter((name) => name.endsWith('.png'));
+  const details = await Promise.all(
+    pngs.map(async (name) => ({
+      name,
+      bytes: (await fs.stat(path.join(output, name))).size,
+      ...(await sharp(path.join(output, name)).metadata()),
+    })),
+  );
+  const largest = details.toSorted((a, b) => b.bytes - a.bytes)[0];
   console.log(
-    `Figures exported: ${figures.diagrams.length} diagrams, ${figures.plates.length} plates and ${Object.keys(index.images).length} chapter images.`,
+    `Figures exported: ${figures.diagrams.length} diagrams, ${figures.plates.length} plates and ${Object.keys(index.images).length} chapter images · PNGs ${Math.ceil(details.reduce((total, { bytes }) => total + bytes, 0) / 1024)} KiB, ${details.filter(({ isPalette }) => isPalette).length} of ${details.length} with a palette, largest ${largest.name} ${largest.width} x ${largest.height}`,
   );
 } finally {
   await browser.close();
