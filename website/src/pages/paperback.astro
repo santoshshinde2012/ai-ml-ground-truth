@@ -1,0 +1,161 @@
+---
+// The paperback interior, laid out for 7 x 10 inch pages. scripts/export-paperback.mjs
+// prints it to PDF and fills in the contents page numbers. Not linked from the site.
+import '@fontsource/newsreader/400.css';
+import '@fontsource/newsreader/400-italic.css';
+import '@fontsource/newsreader/600.css';
+import '@fontsource/newsreader/600-italic.css';
+import '@fontsource/dm-sans/400.css';
+import '@fontsource/dm-sans/500.css';
+import '@fontsource/dm-sans/600.css';
+import '@fontsource/dm-mono/400.css';
+import '@fontsource/dm-mono/500.css';
+// Fallbacks for symbols the book's fonts lack, such as ₹, arrows and maths signs, so
+// every glyph embeds the same way whichever computer prints the book. Arrows and maths
+// signs come from DejaVu, declared in paperback.css.
+import '@fontsource/noto-serif/400.css';
+import '@fontsource/noto-sans/400.css';
+import '@fontsource/noto-sans-mono/400.css';
+import '../styles/paperback.css';
+import Base from '../layouts/Base.astro';
+import ChapterPlate from '../components/ChapterPlate.astro';
+import { plateFor } from '../lib/plates.mjs';
+import { getBook, bookHref, basePath, printContent, orderForEdition } from '../lib/book.mjs';
+import { edition } from '../lib/catalog.mjs';
+import { displayURL, showLinkTargets, stripNavigation } from '../lib/paperback.mjs';
+import { margins, trim } from '../lib/print-spec.mjs';
+
+const webEdition = displayURL(new URL(`${basePath()}/`, Astro.site).href);
+const groups: Record<string, string> = {
+  'Start here': 'Start here',
+  Chapter: 'Chapters',
+  'Applied guide': 'Applied guides',
+  Laboratory: 'The reference laboratory',
+  'Lab report': 'The reference laboratory',
+  Resources: 'Annotated resources',
+};
+const sections = orderForEdition(await getBook()).map((doc, index) => ({
+  doc,
+  id: `paperback-${doc.slug.replaceAll('/', '-')}`,
+  page: `section-${index + 1}`,
+  heading: doc.category === 'Chapter' ? `Chapter ${doc.chapter} · ${doc.title}` : doc.title,
+  group: groups[doc.category] ?? doc.category,
+  plate: plateFor(doc),
+}));
+const contents = [...Map.groupBy(sections, (section) => section.group)];
+
+// Every page is a named page with this edition's size and margins. Mirrored margins,
+// page numbers on the outer corners and a running head on each page: the book's title
+// on left-hand pages, the section's on right-hand pages. Front matter has neither.
+const inch = (value: number) => `${value}in`;
+const box = 'font: 400 7.5pt "DM Sans", sans-serif; color: #333; letter-spacing: 0.02em;';
+// Chrome does not accept a list of pages in one @page rule, so each page gets its own.
+// It also settles @page rules by order rather than specificity, and the site's A4 rule
+// loads later: !important keeps this edition's size and margins.
+const pageRule = (name: string, heading?: string) => `
+@page ${name} { size: ${inch(trim.width)} ${inch(trim.height)} !important; }
+@page ${name}:left {
+  margin: ${inch(margins.top)} ${inch(margins.inside)} ${inch(margins.bottom)} ${inch(margins.outside)} !important;
+  ${heading ? `@top-left { content: "Ground Truth"; ${box} } @bottom-left { content: counter(page); ${box} }` : ''}
+}
+@page ${name}:right {
+  margin: ${inch(margins.top)} ${inch(margins.outside)} ${inch(margins.bottom)} ${inch(margins.inside)} !important;
+  ${heading ? `@top-right { content: ${JSON.stringify(heading)}; ${box} } @bottom-right { content: counter(page); ${box} }` : ''}
+}`;
+const pageRules = [
+  pageRule('front'),
+  ...sections.map(({ page, heading }) => `.${page} { page: ${page}; }${pageRule(page, heading)}`),
+].join('\n');
+---
+
+<Base
+  title="Paperback edition"
+  description="The paperback interior of Ground Truth, laid out for printing."
+  canonical={`${basePath()}/print/`}
+  noindex
+>
+  <style is:inline slot="head" set:html={pageRules} />
+  <main id="main" class="print-book paperback-book">
+    <section class="paperback-front paperback-half-title">
+      <p>Ground Truth</p>
+    </section>
+    <div class="paperback-front paperback-blank"></div>
+
+    <section class="paperback-front paperback-title-page">
+      <h1>
+        Ground
+        <br />
+        Truth<span>.</span>
+      </h1>
+      <p class="paperback-subtitle">A working developer’s path into AI and machine learning</p>
+      <p class="paperback-author">Santosh Shinde</p>
+      <p class="paperback-edition">OPEN EDITION · {edition}</p>
+    </section>
+
+    <section class="paperback-front paperback-copyright">
+      <p>
+        <strong>Ground Truth: A working developer’s path into AI and machine learning</strong>
+      </p>
+      <p>Open edition {edition}. Paperback.</p>
+      <p class="paperback-isbn" hidden></p>
+      <p>Copyright © 2026 Santosh Shinde.</p>
+      <p>
+        The text, illustrations and laboratory reports are licensed under the Creative Commons
+        Attribution 4.0 International licence (CC BY 4.0): creativecommons.org/licenses/by/4.0. You
+        may share and adapt them for any purpose, if you give appropriate credit. The code is
+        licensed under the MIT licence. Linked external resources keep their own terms.
+      </p>
+      <p>
+        The companion data and numerical reference results are synthetic teaching material. They
+        show nothing about real customer performance, causal benefit or production readiness.
+      </p>
+      <p>
+        The web edition, with the interactive examples and the reference lab, is at {webEdition}.
+        Each section in this book gives its web address. To cite the book, use
+        doi.org/10.5281/zenodo.23815936.
+      </p>
+      <p>Independently published.</p>
+    </section>
+
+    <nav class="paperback-front paperback-contents" aria-label="Contents">
+      <h2>Contents</h2>
+      {contents.map(([group, entries]) => (
+        <section>
+          <h3>{group}</h3>
+          <ol>
+            {entries.map((section) => (
+              <li>
+                <a href={`#${section.id}`}>
+                  <span>{section.heading}</span>
+                  <span class="paperback-leader" />
+                  <span class="paperback-page-number" data-section={section.id} />
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </nav>
+
+    {sections.map(({ doc, id, page, plate }) => (
+      <section
+        class:list={['print-chapter', 'paperback-section', page]}
+        id={id}
+        data-slug={doc.slug}
+      >
+        <div class="eyebrow">
+          {doc.category === 'Chapter' ? `CHAPTER ${doc.chapter}` : doc.category}
+        </div>
+        <h1>{doc.title}</h1>
+        {plate && <ChapterPlate {...plate} instance={id} />}
+        <p class="paperback-web">
+          Web edition: {displayURL(new URL(bookHref(doc.slug), Astro.site).href)}
+        </p>
+        <article
+          class="prose"
+          set:html={showLinkTargets(stripNavigation(printContent(doc.html, doc.slug)))}
+        />
+      </section>
+    ))}
+  </main>
+</Base>

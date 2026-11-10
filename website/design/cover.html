@@ -1,0 +1,532 @@
+<!doctype html>
+<!--
+  Ground Truth covers. One design, three formats, chosen by html[data-format]:
+  - store:  1600 x 2400 px front cover for ebook stores and the EPUB
+  - kindle: 1600 x 2560 px front cover, Amazon's ideal Kindle size
+  - print:  the paperback's back, spine and front on one sheet, with bleed
+  It reuses the site's fonts, colours and the home page figure.
+  scripts/export-covers.mjs renders every format; run it after a change.
+  Sizes are in design pixels: the front is always 1600 wide, so 1 px is 7/1600 inch in print.
+-->
+<html lang="en" data-format="store">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ground Truth cover</title>
+    <style>
+      @font-face {
+        font-family: 'Newsreader Variable';
+        font-weight: 200 800;
+        src: url('../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'Newsreader Variable';
+        font-style: italic;
+        font-weight: 200 800;
+        src: url('../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-italic.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'DM Sans Variable';
+        font-weight: 100 1000;
+        src: url('../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'DM Mono';
+        font-weight: 400;
+        src: url('../node_modules/@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'DM Mono';
+        font-weight: 500;
+        src: url('../node_modules/@fontsource/dm-mono/files/dm-mono-latin-500-normal.woff2')
+          format('woff2');
+      }
+      :root {
+        --paper: #f7f4ed;
+        --surface: #eeefe6;
+        --ink: #1b302e;
+        --accent: #c4ed83;
+        --muted: #5c6b62;
+        --line: #d4d8cb;
+        --link: #286344;
+        --font-heading: 'Newsreader Variable', Georgia, serif;
+        --font-sans: 'DM Sans Variable', system-ui, sans-serif;
+        --font-mono: 'DM Mono', ui-monospace, monospace;
+        /* Set by export-covers.mjs for print: spine width and bleed, in design pixels. */
+        --front-height: 2400px;
+        --spine: 0px;
+        --bleed: 0px;
+      }
+      :root[data-format='kindle'] {
+        --front-height: 2560px;
+      }
+      :root[data-format='print'] {
+        /* 7 x 10 inch trim; 0.125 inch bleed. */
+        --front-height: 2285.7px;
+        --bleed: 28.57px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        overflow: hidden;
+      }
+      body {
+        position: relative;
+        width: 1600px;
+        height: var(--front-height);
+        background: var(--paper);
+        background-image: radial-gradient(circle, rgba(27, 48, 46, 0.13) 1.6px, transparent 1.8px);
+        background-size: 40px 40px;
+        color: var(--ink);
+        font-family: var(--font-sans);
+      }
+      :root[data-format='print'] body {
+        width: calc(var(--bleed) * 2 + 3200px + var(--spine));
+        height: calc(var(--bleed) * 2 + var(--front-height));
+      }
+      /* Amazon suggests a narrow grey edge so a light cover stands out on a white page. */
+      :root:not([data-format='print']) body {
+        box-shadow: inset 0 0 0 4px #9ba49c;
+      }
+      .front,
+      .back,
+      .spine {
+        position: absolute;
+        top: var(--bleed);
+        height: var(--front-height);
+      }
+      .front {
+        left: calc(var(--bleed) + var(--spine));
+        width: 1600px;
+      }
+      :root[data-format='print'] .front {
+        left: calc(var(--bleed) + 1600px + var(--spine));
+      }
+      .back,
+      .spine {
+        display: none;
+      }
+      :root[data-format='print'] .back,
+      :root[data-format='print'] .spine {
+        display: block;
+      }
+      .back {
+        left: var(--bleed);
+        width: 1600px;
+      }
+      .spine {
+        left: calc(var(--bleed) + 1600px);
+        width: var(--spine);
+      }
+
+      /* Front */
+      .frame {
+        position: absolute;
+        inset: 56px;
+        border: 2px solid var(--ink);
+      }
+      /* A thin frame near the trim would show uneven cutting on paper. */
+      :root[data-format='print'] .frame {
+        display: none;
+      }
+      .top {
+        position: absolute;
+        top: 120px;
+        left: 130px;
+        right: 130px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font: 500 27px var(--font-mono);
+        letter-spacing: 5px;
+      }
+      .dot {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--link);
+        margin-right: 22px;
+        vertical-align: 2px;
+      }
+      h1 {
+        position: absolute;
+        top: 250px;
+        left: 118px;
+        font: 420 330px/0.9 var(--font-heading);
+        letter-spacing: -0.055em;
+      }
+      h1 span {
+        color: var(--link);
+      }
+      .subtitle {
+        position: absolute;
+        top: 905px;
+        left: 130px;
+        width: 1180px;
+        font: 400 58px/1.32 var(--font-sans);
+        color: var(--muted);
+      }
+      .art-band {
+        position: absolute;
+        top: 1080px;
+        left: 130px;
+        right: 130px;
+        height: 2px;
+        background: var(--line);
+      }
+      /* The figure fills the space between the subtitle and the tagline, for any height. */
+      .art {
+        position: absolute;
+        top: 1110px;
+        bottom: 420px;
+        left: 130px;
+        right: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cover-art {
+        width: 1000px;
+        max-height: 100%;
+        display: block;
+      }
+      .art-orbit {
+        fill: none;
+        stroke: var(--line);
+        stroke-dasharray: 2 7;
+      }
+      .art-wire {
+        fill: none;
+        stroke: var(--ink);
+        stroke-width: 1.4;
+      }
+      .art-data rect,
+      .art-model rect,
+      .art-outcome rect {
+        fill: var(--paper);
+        stroke: var(--ink);
+        stroke-width: 1.2;
+      }
+      .art-model rect {
+        fill: var(--accent);
+        stroke: none;
+      }
+      .art-data circle,
+      .art-traveller {
+        fill: var(--ink);
+      }
+      .art-kicker {
+        font: 500 9px var(--font-mono);
+        fill: var(--ink);
+        letter-spacing: 0.4px;
+      }
+      .art-small {
+        font: 400 9px var(--font-mono);
+        fill: var(--muted);
+      }
+      .art-table-line {
+        stroke: var(--line);
+        fill: none;
+      }
+      .art-network {
+        fill: none;
+        stroke: #69834b;
+        stroke-width: 1;
+      }
+      .art-neurons circle {
+        fill: #1b302e;
+      }
+      .art-decision path {
+        fill: var(--surface);
+        stroke: var(--ink);
+        stroke-width: 1.2;
+      }
+      .art-chart {
+        stroke: var(--ink);
+        stroke-width: 1.5;
+        fill: none;
+      }
+      .art-return {
+        stroke: var(--muted);
+        stroke-dasharray: 4 5;
+        fill: none;
+      }
+      .art-note path {
+        stroke: var(--line);
+      }
+      .tagline {
+        position: absolute;
+        bottom: 298px;
+        left: 130px;
+        font: 420 92px/1 var(--font-heading);
+        letter-spacing: -0.04em;
+      }
+      .tagline em {
+        color: var(--link);
+      }
+      .author {
+        position: absolute;
+        bottom: 130px;
+        left: 130px;
+        font: 500 46px var(--font-sans);
+        letter-spacing: 0.5px;
+      }
+      .edition {
+        position: absolute;
+        bottom: 138px;
+        right: 130px;
+        font: 500 25px var(--font-mono);
+        letter-spacing: 4px;
+        color: var(--muted);
+      }
+
+      /* Spine: reads top to bottom, as on books printed for English-language shelves. */
+      /* KDP prints spine text only on books of 79 pages or more; export-covers.mjs hides it below. */
+      .spine-text {
+        position: absolute;
+        inset: 120px 0 130px;
+        writing-mode: vertical-rl;
+        display: var(--spine-text, flex);
+        align-items: center;
+        justify-content: space-between;
+      }
+      .spine-title {
+        font: 420 calc(var(--spine) * 0.5) / 1 var(--font-heading);
+        letter-spacing: -0.03em;
+      }
+      .spine-title span {
+        color: var(--link);
+      }
+      .spine-author {
+        font: 500 calc(var(--spine) * 0.2) / 1 var(--font-mono);
+        letter-spacing: 0.18em;
+      }
+
+      /* Back */
+      .back-top {
+        position: absolute;
+        top: 120px;
+        left: 130px;
+        right: 130px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font: 500 27px var(--font-mono);
+        letter-spacing: 5px;
+      }
+      .back-copy {
+        position: absolute;
+        top: 260px;
+        left: 130px;
+        width: 1290px;
+      }
+      .back-copy h2 {
+        font: 420 104px/1.02 var(--font-heading);
+        letter-spacing: -0.035em;
+      }
+      .back-copy h2 em {
+        color: var(--link);
+      }
+      .back-copy p,
+      .back-copy li {
+        font: 400 38px/1.5 var(--font-sans);
+      }
+      .back-copy .lede {
+        margin-top: 52px;
+      }
+      .label {
+        display: block;
+        margin: 64px 0 22px;
+        font: 500 25px var(--font-mono);
+        letter-spacing: 4px;
+        color: var(--muted);
+      }
+      .back-copy ul {
+        padding: 0;
+        list-style: none;
+      }
+      .back-copy li {
+        position: relative;
+        padding-left: 44px;
+        margin-top: 12px;
+      }
+      .back-copy li::before {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 22px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--link);
+      }
+      .back-rule {
+        height: 2px;
+        margin-top: 64px;
+        background: var(--line);
+      }
+      .back-foot {
+        position: absolute;
+        left: 130px;
+        bottom: 130px;
+        width: 860px;
+        font: 400 28px/1.45 var(--font-sans);
+        color: var(--muted);
+      }
+      .back-foot strong {
+        display: block;
+        white-space: nowrap;
+        font: 500 26px var(--font-mono);
+        letter-spacing: 1px;
+        color: var(--ink);
+        margin: 6px 0 18px;
+      }
+      /* Kept clear for the barcode Amazon prints: 2 x 1.2 inch, lower right. */
+      .barcode-space {
+        position: absolute;
+        right: 57px;
+        bottom: 57px;
+        width: 520px;
+        height: 330px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="back" aria-label="Back cover">
+      <div class="back-top">
+        <span><span class="dot"></span>AN OPEN FIELD GUIDE</span
+        ><span>COMPUTERS / MACHINE LEARNING</span>
+      </div>
+      <div class="back-copy">
+        <h2>You already write software. <em>Start there.</em></h2>
+        <p class="lede">
+          Ground Truth helps you turn that experience into the skill to build, evaluate and run AI
+          systems. The book follows one project from start to finish: one dataset becomes one model,
+          and one model becomes one AI product.
+        </p>
+        <span class="label">INSIDE</span>
+        <ul>
+          <li>
+            Data foundations, core machine learning, deep learning, language models and production
+            systems
+          </li>
+          <li>
+            An applied chapter on offers, prices and churn, with the business decision behind each
+            model
+          </li>
+          <li>Worked examples, exercises with explained answers and annotated resources</li>
+          <li>A Python reference lab with reproducible, simulated data</li>
+        </ul>
+        <div class="back-rule"></div>
+        <span class="label">ABOUT THE AUTHOR</span>
+        <p>
+          Santosh Shinde has built software across many domains. Each move taught the same lesson:
+          start with a clear roadmap. Ground Truth is that roadmap, written for anyone moving from
+          software into AI and machine learning.
+        </p>
+      </div>
+      <p class="back-foot">
+        Web edition, with interactive examples and the reference lab:
+        <strong>santoshshinde2012.github.io/ai-ml-ground-truth</strong>
+        Text and illustrations CC BY 4.0 · Code MIT licence
+      </p>
+      <div class="barcode-space"></div>
+    </section>
+    <section class="spine" aria-label="Spine">
+      <div class="spine-text">
+        <span class="spine-title">Ground Truth<span>.</span></span>
+        <span class="spine-author">SANTOSH SHINDE</span>
+      </div>
+    </section>
+    <section class="front" aria-label="Front cover">
+      <div class="frame"></div>
+      <div class="top">
+        <span><span class="dot"></span>AN OPEN FIELD GUIDE</span><span>FOR WORKING DEVELOPERS</span>
+      </div>
+      <h1>Ground<br />Truth<span>.</span></h1>
+      <p class="subtitle">A working developer’s path into AI and machine learning</p>
+      <div class="art-band"></div>
+      <div class="art">
+        <svg viewBox="0 0 560 480" aria-hidden="true" class="cover-art">
+          <defs>
+            <marker
+              id="arrow"
+              viewBox="0 0 8 8"
+              refX="7"
+              refY="4"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto"
+            >
+              <path d="m1 1 5 3-5 3" fill="none" stroke="currentColor" />
+            </marker>
+          </defs>
+          <circle class="art-orbit" cx="286" cy="230" r="173" />
+          <circle class="art-orbit" cx="286" cy="230" r="119" />
+          <path
+            class="art-wire"
+            d="M87 144H185Q211 144 211 170V200M360 245H456V325M275 310V378H160V350"
+            marker-end="url(#arrow)"
+          />
+          <g class="art-data">
+            <rect x="30" y="68" width="143" height="113" rx="4" />
+            <text x="45" y="91" class="art-kicker">01 / RAW MATERIAL</text>
+            <path
+              d="M45 106H157M45 125H157M45 144H157M75 102V161M113 102V161"
+              class="art-table-line"
+            />
+            <circle cx="60" cy="115" r="3" />
+            <circle cx="96" cy="135" r="3" />
+            <circle cx="135" cy="154" r="3" />
+            <path d="m130 111 7 7m0-7-7 7" class="art-table-line" />
+          </g>
+          <g class="art-model">
+            <rect x="200" y="168" width="166" height="145" rx="4" />
+            <text x="217" y="193" class="art-kicker">02 / LEARN A PATTERN</text>
+            <path
+              d="m229 227 53 21 55-25m-108 4 53 50 55-54m-108 56 53-31 55 31m-108 0 53-2 55 2"
+              class="art-network"
+            />
+            <g class="art-neurons">
+              <circle cx="229" cy="227" r="7" />
+              <circle cx="229" cy="279" r="7" />
+              <circle cx="282" cy="248" r="9" />
+              <circle cx="282" cy="277" r="6" />
+              <circle cx="337" cy="223" r="7" />
+              <circle cx="337" cy="279" r="7" />
+            </g>
+          </g>
+          <g class="art-decision">
+            <path d="m455 286 66 53-66 53-66-53Z" />
+            <text x="455" y="333" text-anchor="middle" class="art-kicker">03 / ACT</text>
+            <text x="455" y="352" text-anchor="middle" class="art-small">with constraints</text>
+          </g>
+          <g class="art-outcome">
+            <rect x="78" y="350" width="154" height="75" rx="4" />
+            <text x="94" y="373" class="art-kicker">04 / CHECK REALITY</text>
+            <path d="m95 405 21-13 20 8 22-25 20 10 33-17" class="art-chart" />
+          </g>
+          <path class="art-return" d="M455 393V437H42V201" marker-end="url(#arrow)" />
+          <text x="285" y="456" text-anchor="middle" class="art-small">
+            Evidence closes the loop.
+          </text>
+          <circle class="art-traveller" cx="187" cy="144" r="5" />
+          <g class="art-note">
+            <path d="M402 95h95M402 102h62" />
+            <text x="402" y="84" class="art-small">FOLLOW THE EVIDENCE</text>
+          </g>
+        </svg>
+      </div>
+      <p class="tagline">Build the thing. Understand <em>why.</em></p>
+      <p class="author">Santosh Shinde</p>
+      <p class="edition">OPEN EDITION</p>
+    </section>
+  </body>
+</html>

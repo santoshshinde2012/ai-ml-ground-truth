@@ -273,7 +273,10 @@ if (diagrams.length) {
         // render in the same millisecond, and Mermaid then draws them into one SVG.
         deterministicIds: true,
         theme: dark ? 'dark' : 'neutral',
-        fontFamily: 'DM Sans Variable, sans-serif',
+        // The paperback uses static fonts, which print more reliably than variable ones.
+        fontFamily: $('.paperback-book')
+          ? 'DM Sans, Noto Sans, Book Symbols, sans-serif'
+          : 'DM Sans Variable, sans-serif',
         // The print edition uses SVG text labels so each diagram can be saved as a
         // self-contained image for the EPUB; HTML labels do not display inside images.
         htmlLabels: !$('.print-book'),

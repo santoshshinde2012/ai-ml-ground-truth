@@ -642,9 +642,7 @@ const hot = (i: number) => (labStage === i ? 'plate-key' : 'plate-outline');
     <text x="48" y="51" class="plate-label">
       GROUND TRUTH / {code}
     </text>
-    <text x="708" y="51" text-anchor="end" class="plate-mark">
-      ↗
-    </text>
+    <path class="plate-mark" d="M692 49 706 35M696 35h10v10" />
   </svg>
   <figcaption>
     {caption}
@@ -759,9 +757,13 @@ const hot = (i: number) => (labStage === i ? 'plate-key' : 'plate-outline');
     fill: #1b302e;
     font: 26px var(--font-heading, Georgia, serif);
   }
+  /* Drawn rather than typed, so the arrow looks the same without any particular font. */
   .plate-mark {
-    font: 25px var(--font-sans, system-ui, sans-serif);
-    fill: currentColor;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
   figcaption {
     display: flex;

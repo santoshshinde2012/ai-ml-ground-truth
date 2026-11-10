@@ -39,6 +39,9 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run export:pdf
+      # Poppler lets the paperback check where ink falls on every page.
+      - run: sudo apt-get install --yes --no-install-recommends poppler-utils
+      - run: npm run export:amazon
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -46,7 +49,12 @@ jobs:
           edition="${GITHUB_REF_NAME#edition-}"
           cp dist/downloads/ground-truth.epub "ground-truth-$edition.epub"
           cp dist/downloads/ground-truth.pdf "ground-truth-$edition.pdf"
-          gh release create "$GITHUB_REF_NAME" "ground-truth-$edition.epub" "ground-truth-$edition.pdf" \
+          cp dist/downloads/ground-truth-kindle.epub "ground-truth-$edition-kindle.epub"
+          cp dist/downloads/ground-truth-kindle-cover.jpg "ground-truth-$edition-kindle-cover.jpg"
+          cp dist/downloads/ground-truth-paperback.pdf "ground-truth-$edition-paperback-interior.pdf"
+          cp dist/downloads/ground-truth-paperback-cover.pdf "ground-truth-$edition-paperback-cover.pdf"
+          gh release create "$GITHUB_REF_NAME" ground-truth-"$edition"*.epub ground-truth-"$edition"*.pdf \
+            "ground-truth-$edition-kindle-cover.jpg" \
             --verify-tag \
             --title "Ground Truth · edition $edition" \
-            --notes "The complete book for offline reading: EPUB for e-readers and PDF for print. Read the current web edition at https://santoshshinde2012.github.io/ai-ml-ground-truth/. See the reader's guide section \"Keeping this book current\" for what changed. Laboratory data and business results are simulated teaching examples. Text, illustrations and reports: CC BY 4.0. Code: MIT license. External sources retain their own terms."
+            --notes "The complete book for offline reading: EPUB for e-readers and PDF for print. Read the current web edition at https://santoshshinde2012.github.io/ai-ml-ground-truth/. The Kindle EPUB and cover, and the 7 x 10 inch paperback interior and cover, are the files for Amazon KDP; anyone may print or share them under the licence. See the reader's guide section \"Keeping this book current\" for what changed. Laboratory data and business results are simulated teaching examples. Text, illustrations and reports: CC BY 4.0. Code: MIT license. External sources retain their own terms."

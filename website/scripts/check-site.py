@@ -331,7 +331,7 @@ def main() -> int:
             failures.append(f"{label}: missing responsive viewport metadata")
         if not page.h1_count:
             failures.append(f"{label}: missing h1")
-        elif page.h1_count > 1 and label != "print/index.html":
+        elif page.h1_count > 1 and label not in {"print/index.html", "paperback/index.html"}:
             failures.append(f"{label}: expected one h1, found {page.h1_count}")
         if len(page.canonical) != 1:
             failures.append(f"{label}: expected one canonical URL")

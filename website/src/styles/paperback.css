@@ -1,0 +1,250 @@
+/*
+ * The paperback interior: 7 x 10 inch pages printed in black ink. Static fonts embed
+ * as ordinary font programs, which print more reliably than variable fonts. Page size,
+ * margins, running heads and page numbers are set in src/pages/paperback.astro from
+ * src/lib/print-spec.mjs. On screen the page reads like the print edition.
+ */
+/* Arrows, maths signs and superscripts, which the text fonts lack. */
+@font-face {
+  font-family: 'Book Symbols';
+  src: url('../../node_modules/dejavu-fonts-ttf/ttf/DejaVuSans.ttf') format('truetype');
+  unicode-range: U+2070-209F, U+2190-21FF, U+2200-22FF, U+2300-23FF, U+25A0-25FF, U+2700-27BF;
+}
+@font-face {
+  font-family: 'Book Symbols Mono';
+  src: url('../../node_modules/dejavu-fonts-ttf/ttf/DejaVuSansMono.ttf') format('truetype');
+  unicode-range: U+2070-209F, U+2190-21FF, U+2200-22FF, U+2300-23FF, U+2500-25FF, U+2700-27BF;
+}
+.paperback-book {
+  --font-heading: 'Newsreader', 'Noto Serif', 'Book Symbols', serif;
+  --font-sans: 'DM Sans', 'Noto Sans', 'Book Symbols', sans-serif;
+  --font-mono: 'DM Mono', 'Noto Sans Mono', 'Book Symbols Mono', monospace;
+}
+
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    --paper: #fff;
+    --ink: #000;
+    --muted: #333;
+    --line: #a6a6a6;
+    --surface: #f1f1f1;
+    --link: #000;
+  }
+  .paperback-front {
+    page: front;
+  }
+  /* A page left empty so the next part starts on a right-hand page. */
+  .paperback-blank {
+    break-before: page;
+    height: 1px;
+  }
+  .paperback-book {
+    color: #000;
+  }
+
+  /* Front matter: half-title, title page, copyright page and contents. */
+  .paperback-half-title p {
+    margin-top: 2.6in;
+    text-align: center;
+    font: 400 22pt var(--font-heading);
+    letter-spacing: -0.01em;
+  }
+  .paperback-title-page {
+    break-before: page;
+    padding-top: 1.6in;
+  }
+  .paperback-title-page h1 {
+    font: 400 58pt/0.92 var(--font-heading);
+    letter-spacing: -0.045em;
+  }
+  .paperback-subtitle {
+    margin-top: 0.35in;
+    max-width: 4.2in;
+    font: 400 15pt/1.35 var(--font-sans);
+    color: #333;
+  }
+  .paperback-author {
+    margin-top: 2.4in;
+    font: 500 13pt var(--font-sans);
+  }
+  .paperback-edition {
+    margin-top: 0.08in;
+    font: 500 7.5pt var(--font-mono);
+    letter-spacing: 0.16em;
+    color: #333;
+  }
+  .paperback-copyright {
+    break-before: page;
+    padding-top: 3.6in;
+    font: 400 8.5pt/1.5 var(--font-sans);
+  }
+  .paperback-copyright p {
+    margin: 0 0 0.9em;
+  }
+  .paperback-contents {
+    break-before: page;
+  }
+  .paperback-contents h2 {
+    margin: 0 0 0.25in;
+    font: 400 26pt var(--font-heading);
+  }
+  .paperback-contents h3 {
+    margin: 0.2in 0 0.06in;
+    font: 500 7.5pt var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #333;
+    break-after: avoid;
+  }
+  .paperback-contents ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .paperback-contents li {
+    margin: 0;
+    break-inside: avoid;
+  }
+  .paperback-contents a {
+    display: grid;
+    grid-template-columns: auto 1fr 2.4em;
+    align-items: baseline;
+    gap: 0.5em;
+    padding: 0.035in 0;
+    color: inherit;
+    text-decoration: none;
+    font: 400 10.5pt/1.35 var(--font-heading);
+  }
+  .paperback-leader {
+    border-bottom: 1px dotted #777;
+  }
+  .paperback-page-number {
+    text-align: right;
+    font: 400 9pt var(--font-sans);
+  }
+
+  /* Sections start on a new page; export-paperback.mjs adds a blank page where needed
+     so each starts on a right-hand page, as chapters do in printed books. */
+  .paperback-book .paperback-section {
+    break-before: page;
+  }
+  .paperback-book .print-chapter .eyebrow {
+    font: 500 7.5pt var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #333;
+  }
+  .paperback-book .print-chapter > h1 {
+    margin: 0.06in 0 0.18in;
+    font: 400 26pt/1.1 var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+  .paperback-web {
+    margin: 0.12in 0 0.22in;
+    font: 400 7.5pt var(--font-mono);
+    color: #333;
+  }
+
+  /* Text */
+  .paperback-book .prose,
+  .paperback-book .print-chapter .prose {
+    font: 400 10.5pt/1.5 var(--font-heading);
+  }
+  .paperback-book .prose p {
+    margin: 0 0 0.75em;
+  }
+  .paperback-book .prose ul,
+  .paperback-book .prose ol {
+    margin: 0 0 0.8em;
+  }
+  .paperback-book .prose li {
+    margin-bottom: 0.3em;
+  }
+  .paperback-book .prose h2,
+  .paperback-book .print-chapter .prose h1 {
+    margin: 1.4em 0 0.5em;
+    padding: 0;
+    font: 400 17pt/1.2 var(--font-heading);
+  }
+  .paperback-book .prose h3 {
+    margin: 1.3em 0 0.4em;
+    font: 600 10.5pt/1.4 var(--font-sans);
+  }
+  .paperback-book .prose h4 {
+    margin: 1.1em 0 0.3em;
+    font: 600 9.5pt/1.4 var(--font-sans);
+  }
+  .paperback-book .prose blockquote {
+    margin: 1em 0;
+    padding: 0.02in 0 0.02in 0.16in;
+    border-left: 1.5pt solid #555;
+  }
+  .paperback-book .prose hr {
+    margin: 1.4em 0;
+    border-top: 0.75pt solid #a6a6a6;
+  }
+
+  /* Links cannot be followed on paper: show the address of external ones instead. */
+  .paperback-book .prose a,
+  .paperback-book .prose a:visited {
+    color: inherit;
+    text-decoration: none;
+  }
+  .paperback-url {
+    font: 400 7pt var(--font-mono);
+    color: #333;
+    overflow-wrap: anywhere;
+  }
+
+  /* Code */
+  .paperback-book .prose code {
+    font: 400 0.82em/1.5 var(--font-mono);
+    background: #f1f1f1;
+  }
+  .paperback-book .prose pre {
+    margin: 0.2em 0 1em;
+    padding: 0.09in 0.11in;
+    font: 400 7.6pt/1.5 var(--font-mono);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: #f1f1f1 !important;
+    border-radius: 2pt;
+  }
+  .paperback-book .prose pre code {
+    font-size: inherit;
+    background: none;
+  }
+
+  /* Tables */
+  .paperback-book .prose table {
+    margin: 0.2em 0 1em;
+    font: 400 7.6pt/1.45 var(--font-sans);
+  }
+  .paperback-book .prose th,
+  .paperback-book .prose td {
+    padding: 0.045in 0.06in;
+    font-size: 7.6pt;
+    border-bottom: 0.5pt solid #a6a6a6;
+  }
+  .paperback-book .prose th {
+    background: #ececec;
+  }
+
+  /* Pictures */
+  .paperback-book .chapter-plate {
+    margin: 0 0 0.12in;
+  }
+  .paperback-book .diagram .mermaid svg {
+    max-height: 5.8in;
+  }
+  .paperback-book .prose img {
+    max-width: 100%;
+    height: auto;
+  }
+  .paperback-book .prose details {
+    margin: 0 0 1em;
+    padding: 0.08in 0.12in;
+    border: 0.75pt solid #a6a6a6;
+  }
+}

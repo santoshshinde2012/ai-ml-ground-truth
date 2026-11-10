@@ -11,12 +11,15 @@ interface Props {
   description?: string;
   reader?: boolean;
   canonical?: string;
+  /** Keep a working page, such as the paperback layout, out of search engines. */
+  noindex?: boolean;
 }
 const {
   title = 'A working developer’s path into AI',
   description = 'An illustrated engineering field guide to data, machine learning, language models and defensible decisions. By Santosh Shinde.',
   reader = false,
   canonical,
+  noindex = false,
 } = Astro.props;
 const base = basePath();
 const canonicalURL = new URL(canonical || Astro.url.pathname, Astro.site);
@@ -31,6 +34,7 @@ const canonicalURL = new URL(canonical || Astro.url.pathname, Astro.site);
     <meta name="theme-color" content="#f7f4ed" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#142321" media="(prefers-color-scheme: dark)" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="author" content="Santosh Shinde" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={`${title} · Ground Truth`} />
@@ -48,6 +52,7 @@ const canonicalURL = new URL(canonical || Astro.url.pathname, Astro.site);
       href={`${base}/downloads/ground-truth.epub`}
     />
     <title>{title} · Ground Truth</title>
+    <slot name="head" />
     <script is:inline>
       try {
         const t = localStorage.getItem('ground-truth-theme');

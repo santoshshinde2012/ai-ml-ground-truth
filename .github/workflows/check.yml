@@ -27,3 +27,6 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
+      # Poppler lets the paperback check where ink falls on every page.
+      - run: sudo apt-get install --yes --no-install-recommends poppler-utils
+      - run: npm run export:amazon

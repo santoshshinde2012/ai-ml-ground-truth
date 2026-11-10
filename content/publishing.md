@@ -59,31 +59,54 @@ The web book always shows `main`. An edition is a fixed, citable snapshot with o
 
 The release workflow rejects a tag that does not match the catalog and citation file. It reruns the
 checks, builds the book, renders the print edition to PDF with headless Chrome, and attaches
-`ground-truth-<edition>.epub` and `ground-truth-<edition>.pdf` to a GitHub release. Locally, after
-a build, `npm --prefix website run export:pdf` writes `website/dist/downloads/ground-truth.pdf`.
-Set `CHROME_PATH` if Chrome or Chromium is not in a standard location.
+`ground-truth-<edition>.epub` and `ground-truth-<edition>.pdf` to a GitHub release, with the Amazon
+files described below. Locally, after a build, `npm --prefix website run export:pdf` writes
+`website/dist/downloads/ground-truth.pdf`. Set `CHROME_PATH` if Chrome or Chromium is not in a
+standard location.
+
+## Amazon editions
+
+After a build, `npm --prefix website run export:amazon` writes the files Amazon KDP asks for to
+`website/dist/downloads/`:
+
+- `ground-truth-paperback.pdf`, the interior: 7 x 10 inch pages with mirrored margins, running heads,
+  page numbers and a contents page with page numbers. Each section starts on a right-hand page.
+  External links show their web address, because paper cannot be clicked.
+- `ground-truth-paperback-cover.pdf`, the back, spine and front on one sheet at 400 DPI, sized for
+  the interior's page count.
+- `ground-truth-kindle.epub` and `ground-truth-kindle-cover.jpg`. The Kindle EPUB uses PNG pictures,
+  because Kindle does not display SVG reliably, and it sets no text colours, so Kindle's dark and
+  sepia themes stay readable.
+
+The export stops if the interior breaks one of KDP's rules: a page that is not 7 x 10 inches, a
+margin below KDP's minimum for the page count, content wider than the text block, a font that is
+not embedded, or text set in a font the book does not bundle. With Poppler installed, it also
+checks where ink falls on every page. To print the ISBN on the copyright page, set
+`PAPERBACK_ISBN` when you run it. The paperback's size and margins live in
+`website/src/lib/print-spec.mjs`, with a note of the KDP pages they follow.
 
 ## What to change where
 
-| Change | Source |
-| --- | --- |
-| Chapter prose and resource notes | The numbered chapter directories |
-| Front matter | `content/` |
-| Site menus and chapter descriptions | `website/src/lib/catalog.mjs` |
-| Edition number and date | `website/src/lib/catalog.mjs` and `CITATION.cff` |
-| Reading layout and typography | `website/src/layouts/` and `website/src/styles/` |
-| Interactive explanations | `website/src/components/ConceptLab.astro` and `website/public/scripts/concept-lab.js` |
-| Chapter, guide and lab plates | `website/src/components/ChapterPlate.astro` |
-| Book cover for stores and the EPUB | `website/design/book-cover.html`, rendered to `website/public/book-cover.png` |
-| Zenodo archive metadata | `.zenodo.json` |
-| Reproducible examples and the checks that stop a bad run | `labs/` |
-| Checked-in reference reports and figures | `labs/reference/` |
-| Website content and interaction tests | `website/tests/` |
-| Python reference-lab tests | `labs/tests/` |
-| Build, EPUB and PDF export, and link checks | `website/scripts/` |
-| Website dependencies and configuration | `website/package.json`, `website/package-lock.json` and `website/astro.config.mjs` |
-| Pull-request checks, deployment, releases and the link report | `.github/workflows/` |
-| Issue form, pull-request template and dependency updates | `.github/` |
+| Change                                                        | Source                                                                                                       |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Chapter prose and resource notes                              | The numbered chapter directories                                                                             |
+| Front matter                                                  | `content/`                                                                                                   |
+| Site menus and chapter descriptions                           | `website/src/lib/catalog.mjs`                                                                                |
+| Edition number and date                                       | `website/src/lib/catalog.mjs` and `CITATION.cff`                                                             |
+| Reading layout and typography                                 | `website/src/layouts/` and `website/src/styles/`                                                             |
+| Interactive explanations                                      | `website/src/components/ConceptLab.astro` and `website/public/scripts/concept-lab.js`                        |
+| Chapter, guide and lab plates                                 | `website/src/components/ChapterPlate.astro`                                                                  |
+| Book covers for stores, Kindle and the paperback              | `website/design/cover.html`, rendered by `website/scripts/export-covers.mjs`                                 |
+| Paperback layout                                              | `website/src/pages/paperback.astro`, `website/src/styles/paperback.css` and `website/src/lib/print-spec.mjs` |
+| Zenodo archive metadata                                       | `.zenodo.json`                                                                                               |
+| Reproducible examples and the checks that stop a bad run      | `labs/`                                                                                                      |
+| Checked-in reference reports and figures                      | `labs/reference/`                                                                                            |
+| Website content and interaction tests                         | `website/tests/`                                                                                             |
+| Python reference-lab tests                                    | `labs/tests/`                                                                                                |
+| Build, EPUB and PDF export, and link checks                   | `website/scripts/`                                                                                           |
+| Website dependencies and configuration                        | `website/package.json`, `website/package-lock.json` and `website/astro.config.mjs`                           |
+| Pull-request checks, deployment, releases and the link report | `.github/workflows/`                                                                                         |
+| Issue form, pull-request template and dependency updates      | `.github/`                                                                                                   |
 
 The nine numbered folders keep the chapter structure and learning order. Each chapter has a main
 `README.md` and a `resources/README.md`. Chapter 9 also holds the applied case guides.

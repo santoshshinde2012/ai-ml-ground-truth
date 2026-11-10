@@ -2,6 +2,11 @@
  * Build an offline EPUB 3 from the same canonical prose used by the web edition.
  * The archive is deterministic: no wall-clock timestamps, network fetches or
  * third-party services. Run after `scripts/prepare.mjs` and the Astro build.
+ *
+ * `--kindle` writes the Kindle edition instead, following Amazon's guidelines: PNG
+ * pictures rather than SVG, the Kindle cover as the only cover (no HTML cover page),
+ * the contents page in the reading order, and no forced text or background colours,
+ * so Kindle's dark and sepia themes stay readable. Run export-covers.mjs first.
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -17,7 +22,8 @@ const siteOrigin = new URL(process.env.SITE_URL ?? 'https://santoshshinde2012.gi
 const defaultBase = '/ai-ml-ground-truth/';
 const siteBase = (process.env.BASE_PATH ?? defaultBase).replace(/\/?$/, '/');
 const siteURL = `${siteOrigin}${siteBase}`;
-const output = path.join(root, 'dist/downloads/ground-truth.epub');
+const kindle = process.argv.includes('--kindle');
+const output = path.join(root, `dist/downloads/ground-truth${kindle ? '-kindle' : ''}.epub`);
 const htmlNamespace = 'http://www.w3.org/1999/xhtml';
 const mathNamespace = 'http://www.w3.org/1998/Math/MathML';
 const svgNamespace = 'http://www.w3.org/2000/svg';
@@ -100,22 +106,32 @@ async function exists(file) {
 }
 
 // Pictures saved by export-figures.mjs; without them the EPUB keeps text descriptions.
+// The Kindle edition uses the PNG saved beside each SVG.
 async function readFigures() {
   const folder = path.join(root, '.cache/figures');
+  const picture = (file) => path.join(folder, kindle ? file.replace(/\.svg$/, '.png') : file);
   try {
     const index = JSON.parse(await fs.readFile(path.join(folder, 'index.json'), 'utf8'));
     const diagrams = new Map(
-      Object.entries(index.diagrams).map(([key, file]) => [key, path.join(folder, file)]),
+      Object.entries(index.diagrams).map(([key, file]) => [key, picture(file)]),
     );
     const plates = new Map(
       Object.entries(index.plates).map(([slug, plate]) => [
         slug,
-        { ...plate, file: path.join(folder, plate.file) },
+        { ...plate, file: picture(plate.file) },
       ]),
     );
-    return { diagrams, plates };
+    const images = new Map(
+      Object.entries(index.images ?? {}).map(([relative, file]) => [
+        relative,
+        path.join(folder, file),
+      ]),
+    );
+    return { diagrams, plates, images };
   } catch {
-    return { diagrams: new Map(), plates: new Map() };
+    if (kindle)
+      throw new Error('The Kindle edition needs the PNG figures. Run export-figures.mjs.');
+    return { diagrams: new Map(), plates: new Map(), images: new Map() };
   }
 }
 const figures = await readFigures();
@@ -163,6 +179,10 @@ async function readBook() {
 }
 
 const documents = (await readBook()).filter((document) => document.slug !== 'publishing');
+// The store edition opens on a cover page; the Kindle edition on a plain title page.
+const titlePage = kindle
+  ? { filename: 'title.xhtml', id: 'title-page', label: 'Title page' }
+  : { filename: 'cover.xhtml', id: 'cover-page', label: 'Ground Truth · Cover' };
 if (!documents.length) throw new Error('Refusing to export an empty book.');
 const routes = new Map();
 for (const [index, document] of documents.entries()) {
@@ -178,9 +198,9 @@ for (const [index, document] of documents.entries()) {
     throw new Error(`Duplicate/empty book slug: ${document.slug}`);
   document.filename =
     document.slug === 'title-page'
-      ? 'cover.xhtml'
+      ? titlePage.filename
       : `chapter-${String(index + 1).padStart(3, '0')}.xhtml`;
-  document.id = document.slug === 'title-page' ? 'cover-page' : `chapter-${index + 1}`;
+  document.id = document.slug === 'title-page' ? titlePage.id : `chapter-${index + 1}`;
   routes.set(document.slug, document.filename);
 }
 
@@ -209,6 +229,8 @@ async function registerImage(source) {
   const extension = path.extname(source).toLowerCase();
   const mediaType = mediaTypes[extension];
   if (!mediaType) return null;
+  if (kindle && extension === '.svg')
+    throw new Error(`The Kindle edition must not contain SVG images: ${source}`);
   const bytes = await fs.readFile(source);
   const hash = crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 16);
   const filename = `${hash}${extension}`;
@@ -223,6 +245,7 @@ async function bundleImage(value, document) {
   const relative = decoded.startsWith(siteBase)
     ? decoded.slice(siteBase.length)
     : decoded.replace(/^\/+/, '');
+  if (kindle && figures.images.has(relative)) return registerImage(figures.images.get(relative));
   const candidates = [path.join(root, 'dist', relative), path.join(root, 'public', relative)];
   if (relative.startsWith('lab-reference/'))
     candidates.push(fromRepository('labs/reference', relative.slice('lab-reference/'.length)));
@@ -259,6 +282,8 @@ async function serialize(node, document, parentNamespace = htmlNamespace) {
     return `<p>Online media${href ? `: <a href="${escapeAttribute(href)}">${escapeText(original.title || original.src || 'Open the media')}</a>` : ' is available in the web edition.'}</p>`;
   }
   if (node.tagName === 'img') {
+    // Amazon asks for the cover image alone, without an HTML cover page as well.
+    if (kindle && document.slug === 'title-page') return '';
     const src =
       document.slug === 'title-page' &&
       /(?:^|\/)cover\.(?:svg|png)(?:[?#].*)?$/.test(original.src || '') &&
@@ -308,14 +333,19 @@ function xhtml(title, body) {
 
 // Prefer the portrait book cover, then the raster social image, for broad reader
 // compatibility. Register it directly from public/ so an older built asset cannot
-// replace the current cover.
-for (const candidate of ['public/book-cover.png', 'public/cover.png', 'public/cover.svg']) {
+// replace the current cover. The Kindle edition uses only the Kindle cover.
+const coverCandidates = kindle
+  ? ['dist/downloads/ground-truth-kindle-cover.jpg']
+  : ['public/book-cover.png', 'public/cover.png', 'public/cover.svg'];
+for (const candidate of coverCandidates) {
   if (await exists(path.join(root, candidate))) {
     coverImageHref = await registerImage(path.join(root, candidate));
     coverImageFilename = path.posix.basename(coverImageHref);
     break;
   }
 }
+if (kindle && !coverImageHref)
+  throw new Error('The Kindle cover was not found. Run export-covers.mjs first.');
 const coverDocument = documents.find((document) => document.slug === 'title-page');
 const readingDocuments = documents.filter((document) => document !== coverDocument);
 const firstReadingDocument =
@@ -346,12 +376,16 @@ for (const document of documents) {
     xhtml(
       document.title,
       document === coverDocument
-        ? `<section epub:type="cover" class="cover-page" id="cover">${html}</section>`
+        ? kindle
+          ? `<section epub:type="titlepage" class="title-page" id="title">${html}</section>`
+          : `<section epub:type="cover" class="cover-page" id="cover">${html}</section>`
         : `<section epub:type="chapter"><h1>${escapeText(document.title)}</h1>${plateHTML}${html}<p class="web-source">Web edition: <a href="${escapeAttribute(`${siteURL}book/${document.slug}/`)}">${escapeText(document.title)}</a></p></section>`,
     ),
   );
 }
 
+if (!coverDocument && kindle)
+  throw new Error('The Kindle edition needs the title page from prepare.mjs.');
 if (!coverDocument) {
   contentManifest.unshift(
     '<item id="cover-page" href="Text/cover.xhtml" media-type="application/xhtml+xml" />',
@@ -366,32 +400,43 @@ if (!coverDocument) {
 archive['EPUB/Text/about.xhtml'] = strToU8(
   xhtml(
     'About this edition',
-    `<section epub:type="preface"><h1>About this edition</h1><p>This EPUB holds the canonical chapters, applied guides, annotated resources and reference-lab instructions from the web book. Exercise answers are expanded for offline reading. The interactive controls are in the <a href="${escapeAttribute(siteURL)}">web edition</a>. The worked examples around them, the diagrams and the chapter illustrations are all here.</p><p>The companion data and numerical reference results are synthetic teaching material. They show nothing about real customer performance, causal benefit or production readiness.</p><p>Copyright © 2026 Santosh Shinde. The text, illustrations and laboratory reports are licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The code is licensed under the <a href="https://github.com/santoshshinde2012/ai-ml-ground-truth/blob/main/LICENSE-CODE">MIT licence</a>. Linked external resources keep their own terms.</p></section>`,
+    `<section epub:type="preface"><h1>About this edition</h1><p>This ebook holds the canonical chapters, applied guides, annotated resources and reference-lab instructions from the web book. Exercise answers are expanded for offline reading. The interactive controls are in the <a href="${escapeAttribute(siteURL)}">web edition</a>. The worked examples around them, the diagrams and the chapter illustrations are all here.</p><p>The companion data and numerical reference results are synthetic teaching material. They show nothing about real customer performance, causal benefit or production readiness.</p><p>Copyright © 2026 Santosh Shinde. The text, illustrations and laboratory reports are licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The code is licensed under the <a href="https://github.com/santoshshinde2012/ai-ml-ground-truth/blob/main/LICENSE-CODE">MIT licence</a>. Linked external resources keep their own terms.</p></section>`,
   ),
 );
-const navigation = `<nav epub:type="toc" id="toc"><h1>Contents</h1><ol><li><a href="cover.xhtml">Ground Truth · Cover</a></li><li><a href="about.xhtml">About this edition</a></li>${readingDocuments.map((document) => `<li><a href="${document.filename}">${escapeText(document.title)}</a></li>`).join('')}</ol></nav><nav epub:type="landmarks" hidden="hidden"><h2>Book landmarks</h2><ol><li><a epub:type="cover" href="cover.xhtml">Cover</a></li><li><a epub:type="bodymatter" href="${firstReadingDocument?.filename || 'about.xhtml'}">Start reading</a></li></ol></nav>`;
+// Landmarks may only point into the reading order: the Kindle edition reads its contents
+// page in order and has no cover page; the store edition is the other way round.
+const landmark = kindle
+  ? '<li><a epub:type="toc" href="nav.xhtml">Contents</a></li>'
+  : '<li><a epub:type="cover" href="cover.xhtml">Cover</a></li>';
+const navigation = `<nav epub:type="toc" id="toc"><h1>Contents</h1><ol><li><a href="${titlePage.filename}">${titlePage.label}</a></li><li><a href="about.xhtml">About this edition</a></li>${readingDocuments.map((document) => `<li><a href="${document.filename}">${escapeText(document.title)}</a></li>`).join('')}</ol></nav><nav epub:type="landmarks" hidden="hidden"><h2>Book landmarks</h2><ol>${landmark}<li><a epub:type="bodymatter" href="${firstReadingDocument?.filename || 'about.xhtml'}">Start reading</a></li></ol></nav>`;
 archive['EPUB/Text/nav.xhtml'] = strToU8(xhtml('Contents', navigation));
-archive['EPUB/Styles/book.css'] = strToU8(`
-html { color: #173d35; background: #fffef9; }
+// Kindle readers choose their own colours and themes, so its edition sets none.
+const theme = kindle
+  ? 'pre { border: 1px solid #b8c3b7; }'
+  : `html { color: #173d35; background: #fffef9; }
+a { color: #156952; }
+pre { background: #f1f0e8; }
+figcaption,.web-source,.diagram-offline,.image-alternative { color: #45594c; }`;
+archive['EPUB/Styles/book.css'] = strToU8(`${theme}
 body { font-family: Georgia, serif; line-height: 1.55; margin: 1em; }
 h1,h2,h3,h4 { font-family: sans-serif; line-height: 1.2; break-after: avoid; }
 h1 { font-size: 1.9em; margin-top: 1em; }
 h2 { font-size: 1.35em; margin-top: 1.6em; }
 h3 { font-size: 1.1em; margin-top: 1.3em; }
 p,li { orphans: 2; widows: 2; }
-a { color: #156952; text-decoration: underline; }
+a { text-decoration: underline; }
 pre,code { font-family: monospace; font-size: .86em; }
-pre { background: #f1f0e8; padding: .7em; white-space: pre-wrap; overflow-wrap: anywhere; }
+pre { padding: .7em; white-space: pre-wrap; overflow-wrap: anywhere; }
 code { overflow-wrap: anywhere; }
 table { border-collapse: collapse; width: 100%; font-size: .82em; margin: 1em 0; }
 th,td { border: 1px solid #b8c3b7; text-align: left; padding: .35em; vertical-align: top; overflow-wrap: anywhere; }
 blockquote { margin: 1em 0; padding-left: 1em; border-left: .2em solid #749985; }
 img,svg,figure { max-width: 100%; height: auto; }
 figure { margin: 1em 0; }
-figcaption,.web-source,.diagram-offline,.image-alternative { font-size: .85em; color: #45594c; }
+figcaption,.web-source,.diagram-offline,.image-alternative { font-size: .85em; }
 section > h1 { break-before: page; }
 .book-title { font-size: 3em; margin-top: 2em; }
-.cover-page > h1 { break-before: auto; }
+.cover-page > h1, .title-page > h1 { break-before: auto; }
 .cover-page img { display: block; margin: 0 auto; }
 .edition { font-family: sans-serif; font-size: .8em; letter-spacing: .12em; }
 .diagram-source { font-size: .8em; }
@@ -426,7 +471,7 @@ const imageManifest = sortedAssets
     return `<item id="${isCover ? 'cover-image' : `image-${index + 1}`}" href="Images/${filename}" media-type="${asset.mediaType}"${isCover ? ' properties="cover-image"' : ''} />`;
   })
   .join('');
-const spine = `<itemref idref="cover-page" /><itemref idref="about" />${readingDocuments.map((document) => `<itemref idref="${document.id}" />`).join('')}`;
+const spine = `<itemref idref="${titlePage.id}" /><itemref idref="about" />${kindle ? '<itemref idref="nav" />' : ''}${readingDocuments.map((document) => `<itemref idref="${document.id}" />`).join('')}`;
 archive['EPUB/package.opf'] = strToU8(
   `<?xml version="1.0" encoding="utf-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id" xml:lang="en" prefix="schema: http://schema.org/"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">${identifier}</dc:identifier><dc:title>Ground Truth</dc:title><dc:creator>Santosh Shinde</dc:creator><dc:language>en</dc:language><dc:rights>Copyright © 2026 Santosh Shinde. Text and illustrations: CC BY 4.0. Code: MIT license.</dc:rights><dc:description>A working developer’s path into AI and machine learning: an illustrated engineering field guide with applied business cases and reproducible labs.</dc:description><meta property="dcterms:modified">${modified}</meta>${coverMetadata}<meta property="schema:accessMode">textual</meta><meta property="schema:accessMode">visual</meta><meta property="schema:accessibilityFeature">tableOfContents</meta><meta property="schema:accessibilityFeature">structuralNavigation</meta><meta property="schema:accessibilitySummary">Reflowable text with headings, expanded exercise answers, a table of contents and image alternatives. Interactive web graphics are represented by descriptive text and source; the web edition supplies their controls.</meta></metadata><manifest><item id="about" href="Text/about.xhtml" media-type="application/xhtml+xml" /><item id="nav" href="Text/nav.xhtml" media-type="application/xhtml+xml" properties="nav" /><item id="css" href="Styles/book.css" media-type="text/css" />${contentManifest.join('')}${imageManifest}</manifest><spine>${spine}</spine></package>`,
 );
@@ -467,7 +512,7 @@ with zipfile.ZipFile(book) as z:
         assert covers[0].attrib['id'] == 'cover-image', 'Cover metadata must identify the declared image'
         assert covers[0].attrib['media-type'].startswith('image/'), 'Cover resource must be an image'
         assert package.find('opf:metadata/opf:meta[@name="cover"]', ns).attrib['content'] == 'cover-image', 'Legacy cover metadata mismatch'
-    assert package.find('opf:spine', ns)[0].attrib['idref'] == 'cover-page', 'Cover must begin the reading spine'
+    assert package.find('opf:spine', ns)[0].attrib['idref'] == sys.argv[2], 'The cover or title page must begin the reading spine'
     for item in manifest:
         target = posixpath.normpath('EPUB/' + item.attrib['href'])
         assert target in files, 'Missing manifest resource: ' + target
@@ -494,6 +539,7 @@ with zipfile.ZipFile(book) as z:
 print('EPUB XML, manifest, spine, local links and ZIP ordering verified')
 `,
     output,
+    titlePage.id,
   ],
   { encoding: 'utf8' },
 );
