@@ -110,9 +110,15 @@ function collectFigures() {
   return { diagrams, plates, images };
 }
 
-/** Capture `box` as an opaque, palette-compressed PNG about 1600 px wide. */
+/**
+ * Capture `box` as an opaque, palette-compressed PNG about 1600 px wide. A whole-number
+ * scale keeps edges crisp; fractional scales blur them into extra colours on some systems.
+ */
 async function capturePNG(page, box, file) {
-  const scale = Math.max(1, Math.min(4, 1600 / box.width, 2400 / box.height));
+  const scale = Math.max(
+    1,
+    Math.min(4, Math.round(1600 / box.width), Math.floor(2400 / box.height)),
+  );
   const { data } = await page.send('Page.captureScreenshot', {
     format: 'png',
     captureBeyondViewport: true,
@@ -120,9 +126,8 @@ async function capturePNG(page, box, file) {
   });
   await sharp(Buffer.from(data, 'base64'))
     .flatten({ background: '#ffffff' })
-    .resize({ width: 1600, withoutEnlargement: true })
-    // Flat-colour line art needs no dithering, which only adds noise that compresses badly.
-    .png({ palette: true, quality: 90, dither: 0, compressionLevel: 9, effort: 10 })
+    // Flat-colour line art needs neither dithering nor many colours.
+    .png({ palette: true, colours: 64, dither: 0, compressionLevel: 9, effort: 10 })
     .toFile(file);
 }
 
