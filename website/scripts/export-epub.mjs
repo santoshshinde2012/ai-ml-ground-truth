@@ -550,7 +550,19 @@ if (validation.error || validation.status !== 0) {
   );
 }
 console.log(validation.stdout.trim());
-console.log(
-  `EPUB exported: ${path.relative(root, output)} · ${documents.length} documents · ${assets.size} bundled images · ${Math.ceil((await fs.stat(output)).size / 1024)} KiB`,
+const size = (await fs.stat(output)).size;
+const kib = (bytes) => `${Math.ceil(bytes / 1024)} KiB`;
+const pictures = [...assets].reduce(
+  (total, [filename, asset]) =>
+    filename === coverImageFilename ? total : total + asset.bytes.length,
+  0,
 );
+console.log(
+  `EPUB exported: ${path.relative(root, output)} · ${documents.length} documents · ${assets.size} bundled images · ${kib(size)} (cover ${kib(assets.get(coverImageFilename)?.bytes.length ?? 0)}, pictures ${kib(pictures)})`,
+);
+// KDP's lowest Kindle price, $0.99, needs a file under 3 MB.
+if (kindle && size >= 3_000_000) {
+  await fs.rm(output, { force: true });
+  throw new Error(`The Kindle EPUB is ${kib(size)}; KDP's lowest price needs it under 3 MB.`);
+}
 for (const warning of warnings) console.warn(`EPUB note: ${warning}`);
