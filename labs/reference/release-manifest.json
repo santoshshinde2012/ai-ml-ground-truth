@@ -21,6 +21,6 @@
   },
   "real_world_launch_approved": false,
   "release_id": "synthetic-v1.1.0-seed-42",
-  "source_sha256": "22e9a57372c15448f516c3e2af004bccba734cb59dc2cc0e0f974c945246722e",
+  "source_sha256": "4ee47a0938b440b6a7c82a23f98102825bce1f835bfdc84534435da137a24f15",
   "training_cutoff": "2025-03-05T12:00:00Z"
 }

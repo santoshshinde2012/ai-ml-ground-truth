@@ -4,11 +4,12 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23815936.svg)](https://doi.org/10.5281/zenodo.23815936)
 
-**The short version.** Eight core chapters take you from shipping software to shipping AI systems in
-about 450 hours. A ninth applied chapter covers **offer recommendation, price recommendation and
-churn**, with model choices and a full business decision workflow. You build on **one thread** —
-one dataset becomes one model becomes one AI product. Each chapter has a practical plan and a
-`resources` folder for deeper reading.
+**The short version.** Ground Truth is a practical path from shipping software to building,
+evaluating and operating ML and AI systems. Eight core chapters carry you from messy data to
+production decisions in about 450 hours. A ninth applied chapter covers **offer recommendation,
+price recommendation and churn**, with model choices and a full business decision workflow. You
+build on **one thread** — one dataset becomes one model becomes one AI product. Each chapter has
+a practical plan and a `resources` folder for deeper reading.
 
 The illustrated web edition adds worked lessons, eight interactive explanations and a reproducible
 reference lab. The [reader's guide](content/reader-guide.md) holds the original long introduction,
