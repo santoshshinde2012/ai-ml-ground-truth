@@ -3,6 +3,7 @@
 **A working developer's path into AI and machine learning.**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23815936.svg)](https://doi.org/10.5281/zenodo.23815936)
+[![Buy Me a Coffee](https://img.shields.io/badge/buymeacoffee-black?style=for-the-badge&logo=buymeacoffee&logoColor=white)](https://buymeacoffee.com/santoshshin)
 
 **The short version.** Ground Truth is a practical path from shipping software to building,
 evaluating and operating ML and AI systems. Eight core chapters carry you from messy data to
